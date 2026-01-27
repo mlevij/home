@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<!-- AES Data -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AES Soil Data</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+
+  <!-- AOS, icons, charts -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- ArcGIS API for JavaScript -->
+  <link rel="stylesheet" href="https://js.arcgis.com/4.28/esri/themes/light/main.css">
+  <script src="https://js.arcgis.com/4.28/"></script>
+
+  <style>
+    .sidebar { width: 280px; }
+    .sticky-header { position: sticky; top: 0; z-index: 30; }
+    .card { background:#fff; border-radius:0.75rem; box-shadow:0 10px 20px rgba(0,0,0,.06); }
+    .kpi { background:#f9fafb; border-radius:.5rem; }
+    .active-station { color:#1E4D2B !important; text-decoration: underline; }
+    .mini-map { height: 700px; width: 100%; border-radius: 0rem; overflow: hidden; }
+    .esri-popup__main-container {
+      max-width: 300px !important;
+      max-height: 700px !important;
+    }
+
+    :root {
+      --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+                   Roboto, "Helvetica Neue", Arial, "Apple Color Emoji",
+                   "Segoe UI Emoji", "Segoe UI Symbol";
+    }
+    html, body, button, input, select, textarea { font-family: var(--font-sans); }
+    
+    /* ArcGIS font override */
+    .esri-widget, .esri-view, .esri-popup__main-container, .esri-popup__header-title,
+    .esri-legend__message, .esri-legend__layer-caption, .esri-legend__service-label,
+    .esri-legend__layer-cell { font-family: var(--font-sans); }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <header class="bg-[#1E4D2B] text-white shadow-md">
+    <div class="container mx-auto px-4 py-2 flex justify-between items-center">
+      <div class="flex items-center space-x-4">
+        <a href="https://www.colostate.edu/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity">
+          <img
+            src="https://huggingface.co/spaces/mlevij/aes-soil-map/resolve/main/CSU-Symbol-r-357-617-RGB.png"
+            alt="Colorado State University"
+            class="h-20 w-auto"
+          />
+        </a>
+        
+        <a href="https://agsci.colostate.edu/research-and-engagement/agricultural-experiment-station/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity">
+          <img
+            src="https://huggingface.co/spaces/mlevij/aes-soil-map/resolve/main/AES%20Type%20Only_White.png"
+            alt="Agricultural Experiment Station"
+            class="h-9 w-auto"
+          />
+        </a>
+      </div>
+      
+      <div class="hidden md:flex items-center space-x-6">
+        <h1 class="text-xl font-normal">AES Research Center More Info</h1>
+        <span class="text-white/40">|</span>
+        <a href="./" class="hover:text-green-200">Map</a>
+        <a href="./AES Data.html" class="hover:text-green-200">More Info</a>
+      </div>
+  
+      <button class="md:hidden" id="mobile-menu-button">
+        <i data-feather="menu" class="w-6 h-6"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-6">
+    <div class="flex gap-6">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="card p-4" data-aos="fade-right">
+          <h2 class="text-lg font-semibold text-gray-800 mb-3">Stations</h2>
+          <div id="stationList" class="space-y-3"></div>
+        </div>
+      </aside>
+
+      <!-- Content -->
+      <section class="flex-1 space-y-6">
+        <!-- Title -->
+        <div id="titleCard" class="card p-5 rounded-b-none" data-aos="fade-up">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 id="pageTitle" class="text-2xl font-bold text-gray-900">Select a station</h2>
+              <p id="pageSub" class="text-gray-500 text-sm mt-1">
+                Station-level <span class="font-medium">area-weighted</span> averages (Sand, Silt, Clay, pH, OM, BD, CaCO₃, EC). See "Maps & description" for sources/methods.
+              </p>
+            </div>
+            <div class="text-xs text-gray-300">live from ArcGIS services</div>
+          </div>
+        </div>
+
+        <!-- KPIs + Dropdown -->
+        <div class="card -mt-4 rounded-t-none p-5" data-aos="fade-up">
+          <!-- KPIs -->
+          <div id="kpiRow" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"></div>
+
+          <!-- Collapsible (expands above the button) -->
+          <div id="moreBox" class="overflow-hidden max-h-0 transition-[max-height] duration-300 ease-in-out">
+            <div id="moreInner" class="pt-4 space-y-6">
+              <!-- Interactive map -->
+              <div>
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">Interactive station map</h3>
+                <div id="mediaHost" class="border rounded-lg overflow-hidden bg-white">
+                  <div class="flex">
+                    <div id="miniMapContainer" class="mini-map flex-1"></div>
+                    <div id="mapLegend" class="w-72 border-l bg-gray-50 p-3 overflow-y-auto max-h-[700px]">
+                      <h4 class="text-sm font-semibold text-gray-700 mb-2">Map Unit Symbols</h4>
+                      <div id="legendContent" class="text-xs text-gray-600">Loading...</div>
+                    </div>
+                  </div>
+                  <div class="px-3 py-2 text-xs text-gray-600 border-t">
+                    Map showing <span id="mapStationName">station</span> soil boundaries with Map Unit Symbols.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Write-up -->
+              <div>
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">Station description</h3>
+                <div id="writeupHost" class="text-sm text-gray-700 leading-6"></div>
+              </div>
+
+              <!-- Source & methods -->
+              <div class="border rounded-lg">
+                <div class="bg-gray-50 px-4 py-2 text-sm font-medium">Data source & averaging method</div>
+                <div class="px-4 py-3 text-sm text-gray-700">
+                  <ul class="list-disc pl-5 space-y-1">
+                    <li><span class="font-medium">Source:</span> Values are read from CSU AES soils Feature Layers (ArcGIS FeatureServer). Layers are built from USDA-NRCS SSURGO geopackage data, sampled at 0-6" depth. Citation: Soil Survey Staff, Natural Resources Conservation Service, United States Department of Agriculture. Web Soil Survey. Available online at http://websoilsurvey.nrcs.usda.gov/. Accessed 7/15/2025.</li>
+                    <li><span class="font-medium">Scope:</span> Features within the station boundary only.</li>
+                    <li><span class="font-medium">Averaging:</span> <u>Area-weighted</u> by each feature's area field (e.g., <code>shape_Area</code>, <strong>EPSG:26913 / UTM Zone 13N m²</strong>). For every attribute we compute ∑(value × area) ÷ ∑(area) using only features with a value for that attribute.</li>
+                    <li><span class="font-medium">Units:</span> Sand/Silt/Clay/OM and CaCO₃ are %, pH is unitless, EC is dS/m (if populated), BD is g/cm³ (if populated).</li>
+                    <li><span class="font-medium">Projection:</span> Data uses EPSG:26913 (NAD83 / UTM Zone 13N) for accurate area calculations in Colorado.</li>
+                    <li><span class="font-medium">Maps:</span> Interactive maps show real-time data with MUSYM labels and can be configured with custom symbology.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Toggle -->
+          <div class="mt-4 border-t pt-4">
+            <button id="btnMore"
+              class="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-md text-[#1E4D2B] hover:text-[#006144] bg-gray-50 hover:bg-gray-100">
+              <span id="moreLabel">Maps & description</span>
+              <i id="moreArrow" data-feather="chevron-down" class="w-4 h-4 transition-transform duration-200"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="card p-5" data-aos="fade-up">
+            <h3 class="text-lg font-semibold mb-3">Soil texture (area-weighted avg %)</h3>
+            <div class="h-72"><canvas id="chartStationTexture"></canvas></div>
+          </div>
+
+          <div class="card p-5" data-aos="fade-up">
+            <h3 class="text-lg font-semibold mb-3">pH and OM (area-weighted avg)</h3>
+            <div class="h-72"><canvas id="chartStationChem"></canvas></div>
+          </div>
+
+          <div class="card p-5" data-aos="fade-up">
+            <h3 class="text-lg font-semibold mb-3">BD, CaCO₃, EC (area-weighted avg)</h3>
+            <div class="h-72"><canvas id="chartStationPhysChem"></canvas></div>
+          </div>
+        </div>
+
+        <div class="text-xs text-gray-500">
+          Notes: This page shows <em>only</em> individual stations. No all-station averages are displayed. Area calculations use EPSG:26913 (UTM Zone 13N) for accuracy.
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Source Metadata -->
+  <div id="sourceMeta" class="container mx-auto px-4 py-3 text-xs text-gray-600 border-t bg-white">
+    Source: <span data-meta="Title"></span>. Originator: <span data-meta="Originator"></span>.
+    Publication date: <span data-meta="PubDateFmt"></span>. Currentness: <span data-meta="Currentness_Reference"></span>.
+    Progress: <span data-meta="Progress"></span>. Access: <span data-meta="Access_Constraints"></span>.
+    Use constraints: <span data-meta="Use_Constraints"></span>.
+    <div class="mt-1">
+      Abstract: <span data-meta="Abstract"></span>
+    </div>
+  </div>
+
+  <footer class="text-center py-10 text-gray-400">
+    Colorado State University – Agricultural Experiment Station
+  </footer>
+
+  <script>
+    // Wait for AOS library to load before initializing
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof AOS !== 'undefined') {
+        AOS.init();
+      }
+    });
+    
+    feather.replace();
+    Chart.defaults.font.family = '"Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial';
+
+    // ---------- Stations - UPDATED TO EPSG:26913 URLs ----------
+    const BASE_URL = 'https://services1.arcgis.com/KNdRU5cN6ENqCTjk/arcgis/rest/services/CSU_Agricultural_Experiment_Station_WFL1/FeatureServer';
+    
+    const STATIONS = [
+      { group:'AGRICULTURAL RESEARCH, DEVELOPMENT AND EDUCATION CENTER', items:[
+        { name:'ARDEC',        svc:'ARDEC Soils',        url:`${BASE_URL}/9` },
+        { name:'ARDEC South',  svc:'ARDEC South Soils',  url:`${BASE_URL}/8` },
+      ]},
+      { group:'WESTERN COLORADO RC', items:[
+        { name:'Grand Valley RC',  svc:'GVRC Soils', url:`${BASE_URL}/2` },
+        { name:'Rogers Mesa RC',   svc:'RMRC Soils', url:`${BASE_URL}/0` },
+        { name:'Orchard Mesa RC',  svc:'OMRC Soils', url:`${BASE_URL}/1` },
+      ]},
+      { group:'OTHER RCs', items:[
+        { name:'Eastern Colorado RC',  svc:'ECRC Soils', url:`${BASE_URL}/6` },
+        { name:'Southwest Colorado RC',svc:'SWCRC Soils',url:`${BASE_URL}/3` },
+        { name:'San Luis Valley RC',   svc:'SLVRC Soils',url:`${BASE_URL}/4` },
+        { name:'Arkansas Valley RC',   svc:'AVRC Soils', url:`${BASE_URL}/7` },
+        { name:'Plainsman RC',         svc:'PRC Soils',  url:`${BASE_URL}/5` },
+      ]},
+    ];
+
+    // ---------- Write-ups ----------
+    const WRITEUPS = {
+      'ARDEC': `Based on the Larimer County Soil Survey (1:24,000). Soils formed on nearly level fans, terraces and valley side slopes from mixed alluvium and some eolian sediments weathered from nearby sandstones and shales. Most are very deep and well-drained, though areas such as MU 5 and 76 can have a seasonally high water table. Near-neutral sandy loams/loams/clay loams at the surface trend to higher clay and pH with depth.`,
+      'San Luis Valley RC': `From the Rio Grande County Soil Survey (1:24,000). Soils formed in calcareous coarse-textured alluvium over sand and gravel. Several soils have abundant gravel/cobbles with pH ~7.5–8.5. Norte (~45%) has a fluctuating water table (somewhat poorly drained). Quamon is moderately well drained (seasonally high WT at ~3–5 ft). Dunul is well to excessively drained. San Arcacio (~⅓) is well drained with higher clay and lower gravel than others.`,
+      'Arkansas Valley RC': `From the Otero County Soil Survey (1:24,000). Entire station is mapped as Rocky Ford silty clay loam (mostly 0–1% slopes). Very deep soil formed in mixed alluvium; surface clay content is elevated by sediment-rich irrigation water. Well drained; pH ~7.6 at surface increasing to ~8.6 with depth.`,
+      'Southwest Colorado RC': `From the Cortez Area Soil Survey (1:24,000). Wetherill soils (~75%) formed in eolian material from sandstone/shale; well drained; pH near neutral at surface rising to ~8.0 with depth; clay increases with depth. Cahona is very deep/well drained in eolian sandstone, typically with shallower carbonate accumulations. Sharps is similar, with shale/soft sandstone bedrock usually within ~40 inches.`,
+      'Orchard Mesa RC': `From the Mesa County Soil Survey (1:24,000). Level to gently sloping (0–2%), well-drained, very deep. Fruitvale formed in sandstone/shale alluvium; clay loam–silty clay loam throughout; pH ~7.6–7.8; gypsum masses ~2 ft. Gyprockmesa similar with cobbles starting ~15". Turley has clay loam throughout and higher CaCO₃ (pH ~8.2–8.6). Blackston is gravelly (15–60% in upper ~15", >60% below ~15").`,
+      'Grand Valley RC': `From the Mesa County Soil Survey (1:24,000). Seven mapped soils on 0–2% slopes; well drained; mostly alluvium from sandstone/shale; ≥5 ft deep (except Killpack with shale ~2–3 ft). Sagrlite loam (~⅓) has loam/silt loam with pH ~7.4–8.0. Sagers/Turley have higher clay than Sagrlite. Fruitvale clay loam ranges to silty clay; gypsum often within ~2 ft (pH ~7.7). Glenton/Fruitland are sandier (pH ~8.0–8.2).`,
+      'Rogers Mesa RC': `From the Paonia Area Soil Survey (1:24,000). Almost two-thirds is Mesa–Ultaline stony loam and Mesa loam. Very deep, well drained; formed in alluvium/colluvium. Mesa: loam/clay loam, gravel increases near ~20". pH ~7.6 at surface rising to ~8.4. Ultaline: loam throughout with cobbles (15–35% surface up to ~60% with depth; pH ~8.2). Agua Fria is very deep/well drained, alluvium from crystalline rocks; thin loam over clay/clay loam then loams again; gypsum ~4 ft; pH ~7.5 rising to ~8.5–9.0 with depth; rock fragments high at depth.`,
+      'Plainsman RC': `From the Baca County Soil Survey (1:20,000). Very deep, well-drained, nearly level to very gently sloping; slightly to strongly alkaline; derived mainly from loess. ~75% is Wiley loam and Richfield silt loam (silt loam over silty clay loam). A small area is Wiley, eroded (thinner surface). Ulysses–Norka complex from loess/loess+alluvium (Ulysses mostly silt loam; Norka higher-clay subsoil). Baca silt loam and Campo clay loam occur only in the southern PRC.`,
+      'Eastern Colorado RC': `From the Washington County Soil Survey (1:24,000). The soils in this area were originally surveyed in 1982 and finalized in correlation in 1986. The survey area is characterized by soils formed primarily in loess and alluvial deposits typical of the High Plains region of eastern Colorado. The landscape consists of nearly level to very gently sloping terrain. Detailed soil mapping and component data are maintained in SSURGO format with regular updates for classification and interpretation accuracy.`,
+      'ARDEC South': `Based on the Larimer County Soil Survey (1:24,000). Soils formed on nearly level fans, terraces and valley side slopes from mixed alluvium and some eolian sediments weathered from nearby sandstones and shales. Most are very deep and well-drained, though areas such as MU 5 and 76 can have a seasonally high water table. Near-neutral sandy loams/loams/clay loams at the surface trend to higher clay and pH with depth.`,
+    };
+
+    // ---------- Numeric fields ----------
+    const NUM_FIELDS = ['Sand','Silt','Clay','pH','OM','BD','CaCO3','EC'];
+
+    // Sidebar build
+    const listEl = document.getElementById('stationList');
+    STATIONS.forEach(group=>{
+      const h = document.createElement('div');
+      h.className = "text-xs uppercase tracking-wide text-gray-500";
+      h.textContent = group.group;
+      listEl.appendChild(h);
+
+      group.items.forEach(item=>{
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = "w-full text-left py-1.5 text-[#1E4D2B] hover:text-[#006144] underline";
+        btn.textContent = item.name;
+        btn.addEventListener('click', ()=> showStation(item));
+        listEl.appendChild(btn);
+      });
+
+      listEl.appendChild(document.createElement('div')).className = "h-2";
+    });
+
+    // ---------- Utilities ----------
+    async function fetchJSON(url){
+      const r = await fetch(url, { mode: 'cors' });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    }
+    const toNum = v => {
+      if (typeof v === 'number') return Number.isFinite(v) ? v : NaN;
+      const n = parseFloat(String(v ?? '').replace(/[^0-9.\-]/g,''));
+      return Number.isFinite(n) ? n : NaN;
+    };
+
+    // Detect the area field (shape_Area / Shape__Area / etc.)
+    async function detectAreaField(layerUrl){
+      try{
+        const meta = await fetchJSON(`${layerUrl}?f=json`);
+        const names = (meta.fields || []).map(f=>f.name);
+        const preferred = ['shape_Area','Shape_Area','Shape__Area','SHAPE_Area','SHAPE__Area','SHAPE_Area_'];
+        for (const p of preferred){ if (names.includes(p)) return p; }
+        const guess = names.find(n => /shape.*area/i.test(n));
+        if (guess) return guess;
+      }catch(e){}
+      return 'shape_Area'; // fallback
+    }
+
+    // Pull rows for weighting (numeric fields + area only)
+    async function fetchLayerRows(url, areaField){
+      const rows = [];
+      let offset = 0, page = 2000;
+      const outFields = encodeURIComponent([...NUM_FIELDS, areaField].join(','));
+      while (true) {
+        const qs = `where=1%3D1&outFields=${outFields}&returnGeometry=false&f=json&resultOffset=${offset}&resultRecordCount=${page}`;
+        const j = await fetchJSON(`${url}/query?${qs}`);
+        if (Array.isArray(j.features)) rows.push(...j.features.map(f => f.attributes || {}));
+        if (!j.exceededTransferLimit) break;
+        offset += page;
+      }
+      return rows;
+    }
+
+    function computeWeightedFromRows(rows, areaField){
+      const out = {};
+      NUM_FIELDS.forEach(f=>{
+        let numSum = 0, denSum = 0;
+        let min = Infinity, max = -Infinity, count = 0;
+        for (const r of rows){
+          const a = toNum(r[areaField]);
+          const v = toNum(r[f]);
+          if (!(a>0) || !Number.isFinite(v)) continue;
+          numSum += v * a;
+          denSum += a;
+          min = Math.min(min, v);
+          max = Math.max(max, v);
+          count++;
+        }
+        out[f] = { avg: denSum>0 ? numSum/denSum : NaN, min: count?min:NaN, max: count?max:NaN, count };
+      });
+      return out;
+    }
+
+    async function fetchStationStatsWeighted(url){
+      const areaField = await detectAreaField(url);
+      const rows = await fetchLayerRows(url, areaField);
+      return computeWeightedFromRows(rows, areaField);
+    }
+
+    // ---------- ArcGIS Interactive Mini Map ----------
+    let currentMiniView = null;
+
+    require([
+      "esri/Map",
+      "esri/views/MapView", 
+      "esri/layers/FeatureLayer"
+    ], function(Map, MapView, FeatureLayer) {
+      async function generateUniqueValueRenderer(layer) {
+        // Define a color palette - you can customize these colors
+        const colorPalette = [
+          [255, 99, 71, 0.72],     // Tomato red
+          [255, 215, 0, 0.72],     // Gold
+          [50, 205, 50, 0.72],     // Lime green
+          [0, 191, 255, 0.72],     // Deep sky blue
+          [255, 20, 147, 0.72],    // Deep pink
+          [255, 165, 0, 0.72],     // Orange
+          [138, 43, 226, 0.72],    // Blue violet
+          [0, 255, 255, 0.72],     // Cyan
+          [255, 105, 180, 0.72],   // Hot pink
+          [173, 255, 47, 0.72],    // Green yellow
+          [255, 69, 0, 0.72],      // Orange red
+          [147, 112, 219, 0.72],   // Medium purple
+          [255, 228, 181, 0.72],   // Moccasin
+          [255, 182, 193, 0.72],   // Light pink
+          [135, 206, 250, 0.72],   // Light sky blue
+          [240, 230, 140, 0.72],   // Khaki
+          [255, 160, 122, 0.72],   // Light salmon
+          [218, 112, 214, 0.72],   // Orchid
+          [175, 238, 238, 0.72],   // Pale turquoise
+          [255, 218, 185, 0.72],   // Peach puff
+          [255, 250, 205, 0.72],   // Lemon chiffon
+          [152, 251, 152, 0.72],   // Pale green
+          [221, 160, 221, 0.72],   // Plum
+          [255, 239, 213, 0.72]    // Papaya whip
+        ];
+
+        
+        // Query for unique MUSYM values
+        const query = layer.createQuery();
+        query.where = "1=1";
+        query.outFields = ["musym"];
+        query.returnDistinctValues = true;
+        query.orderByFields = ["musym"];
+        
+        const results = await layer.queryFeatures(query);
+        const uniqueValues = results.features.map(f => f.attributes.musym).filter(v => v);
+        
+        // Assign colors from palette (cycle through if more values than colors)
+        const uniqueValueInfos = uniqueValues.map((musym, index) => {
+          const color = colorPalette[index % colorPalette.length];
+          return {
+            value: musym,
+            symbol: {
+              type: "simple-fill",
+              color: color,
+              outline: {
+                color: [16, 24, 32, 0.5],    // CSU Black
+                width: 1.25
+              }
+            }
+          };
+        });
+        
+        return {
+          type: "unique-value",
+          field: "musym",
+          uniqueValueInfos: uniqueValueInfos,
+          defaultSymbol: {
+            type: "simple-fill",
+            color: [200, 200, 200, 0.8],
+            outline: {
+              color: [16, 24, 32, 0.5],
+              width: 0
+            }
+          }
+        };
+      }
+
+      async function createStationMiniMap(containerEl, layerUrl, stationName) {
+        // Clean up previous map
+        if (window.currentMiniView) {
+          window.currentMiniView.destroy();
+          window.currentMiniView = null;
+        }
+
+        try {
+          // Clear any existing content in the container
+          containerEl.innerHTML = '';
+          // Create map with satellite basemap
+          const miniMap = new Map({ basemap: "satellite" });
+          
+          // Create feature layer WITHOUT renderer initially
+          const layer = new FeatureLayer({
+            url: layerUrl,
+            title: stationName,
+            popupTemplate: {
+              title: "{musym} - {muname}",
+              content: [{
+                type: "fields",
+                fieldInfos: [
+                  { fieldName: "muname", label: "Map Unit Name" },
+                  { fieldName: "SurfTex", label: "Surface Texture" },
+                  { fieldName: "Sand", label: "Sand %" },
+                  { fieldName: "Silt", label: "Silt %" },
+                  { fieldName: "Clay", label: "Clay %" },
+                  { fieldName: "pH", label: "pH" },
+                  { fieldName: "OM", label: "Organic Matter %" },
+                  { fieldName: "TaxCl", label: "Taxonomic Classification" },
+                  { fieldName: "TaxOrder", label: "Taxonomic Order" },
+                  { fieldName: "ParMat", label: "Parent Material" },
+                ]
+              }]
+            },
+            outFields: ["*"]
+          });
+          
+          // Apply unique value renderer
+          const renderer = await generateUniqueValueRenderer(layer);
+          layer.renderer = renderer;
+
+          // Wait for layer to be ready with the new renderer
+          await layer.when();
+          
+          miniMap.add(layer);
+
+          // Create map view with no zoom/pan controls
+          window.currentMiniView = new MapView({
+            container: containerEl,
+            map: miniMap,
+            ui: { 
+              components: ["zoom", "attribution"]
+            },
+            navigation: {
+              mouseWheelZoomEnabled: true,
+              browserTouchPanEnabled: true
+            },
+            constraints: {
+              minScale: 100000
+            },
+            popup: {
+              dockEnabled: true,
+              dockOptions: {
+                position: "top-right",
+                breakpoint: false,
+                buttonEnabled: false
+              },
+              collapseEnabled: false,
+              visibleElements: {
+                closeButton: true,
+                featureNavigation: false
+              }
+            }
+          });
+          // Wait for view to fully initialize
+          await window.currentMiniView.when();
+
+          // Auto-zoom to layer extent (like Arc's zoom to extent)
+          const { extent } = await layer.queryExtent();
+          if (extent && window.currentMiniView) {
+            // Special handling for stations that need more zoom out
+            let expandFactor = 1.0;
+            if (stationName === 'Eastern Colorado RC') expandFactor = 1.5;
+            if (stationName === 'Southwest Colorado RC') expandFactor = 1.5;
+            if (stationName === 'Arkansas Valley RC') expandFactor = 1.5;
+            if (stationName === 'San Luis Valley RC') expandFactor = 1.5;
+            if (stationName === 'ARDEC South') expandFactor = 1.5;
+            
+            await window.currentMiniView.goTo(extent.expand(expandFactor), { animate: false });
+          }
+
+          // Generate legend after layer loads
+          await layer.when();
+          await generateCustomLegend(layer, layerUrl);
+
+          return window.currentMiniView;
+
+        } catch (error) {
+          console.error('Failed to create mini map:', error);
+          containerEl.innerHTML = `
+            <div class="flex items-center justify-center h-full text-gray-500">
+              <div class="text-center">
+                <p>Unable to load interactive map</p>
+                <p class="text-xs mt-1">Service may be temporarily unavailable</p>
+              </div>
+            </div>`;
+          document.getElementById('legendContent').innerHTML = 'Legend unavailable';
+          return null;
+        }
+      }
+
+      // Generate custom legend showing unique MUSYM values with colors from renderer
+      async function generateCustomLegend(layer, layerUrl) {
+        try {
+          const legendContent = document.getElementById('legendContent');
+          legendContent.innerHTML = 'Loading legend...';
+      
+          // Get the renderer from the layer (which has the color assignments)
+          const renderer = layer.renderer;
+          
+          if (renderer && renderer.uniqueValueInfos) {
+            // Query to get muname for each unique musym
+            const query = layer.createQuery();
+            query.where = "1=1";
+            query.outFields = ["musym", "muname"];
+            query.returnDistinctValues = true;
+            query.orderByFields = ["musym"];
+            
+            const results = await layer.queryFeatures(query);
+            
+            // Create a map of musym -> muname
+            const munameMap = {};
+            results.features.forEach(feature => {
+              const musym = feature.attributes.musym;
+              const muname = feature.attributes.muname;
+              if (musym && !munameMap[musym]) {
+                munameMap[musym] = muname || 'No description';
+              }
+            });
+            
+            // Track which MUSYMs we've already added to prevent duplicates
+            // Process in REVERSE order to keep the last (active) color assignment
+            const addedMUSYMs = new Set();
+            
+            // Generate legend items from renderer (one per unique MUSYM, keeping last occurrence)
+            const legendItems = renderer.uniqueValueInfos
+              .slice()
+              .reverse() // Process from end to start
+              .filter(info => {
+                const musym = info.value;
+                if (!musym || addedMUSYMs.has(musym)) {
+                  return false; // Skip if already added or no value
+                }
+                addedMUSYMs.add(musym);
+                return true;
+              })
+              .reverse() // Reverse back to original order for display
+              .map(info => {
+                const musym = info.value || 'Unknown';
+                const muname = munameMap[musym] || 'No description';
+                const color = info.symbol.color;
+                const bgColor = Array.isArray(color) 
+                  ? `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${color[3] || 0.7})`
+                  : color;
+                const borderColor = info.symbol.outline?.color 
+                  ? (Array.isArray(info.symbol.outline.color) 
+                      ? `rgba(${info.symbol.outline.color[0]}, ${info.symbol.outline.color[1]}, ${info.symbol.outline.color[2]}, ${info.symbol.outline.color[3] || 1})`
+                      : info.symbol.outline.color)
+                  : 'rgba(16, 24, 32, 0.5)';
+                
+                return `
+                  <div class="mb-2 p-2 rounded hover:opacity-90 transition-opacity" style="background-color: ${bgColor}; border: 1.5px solid ${borderColor};">
+                    <div class="font-semibold text-gray-900">${musym}</div>
+                    <div class="text-xs text-gray-700">${muname}</div>
+                  </div>
+                `;
+              }).join('');
+            
+            legendContent.innerHTML = legendItems || '<div class="text-gray-500">No map units found</div>';
+          } else {
+            legendContent.innerHTML = '<div class="text-gray-500">Legend unavailable</div>';
+          }
+        } catch (error) {
+          console.error('Failed to generate legend:', error);
+          document.getElementById('legendContent').innerHTML = '<div class="text-red-500">Legend unavailable</div>';
+        }
+      }
+
+      // Make function globally available
+      window.createStationMiniMap = createStationMiniMap;
+    });
+
+    // ---------- Dropdown UI ----------
+    const btnMore   = document.getElementById('btnMore');
+    const moreBox   = document.getElementById('moreBox');
+    const moreInner = document.getElementById('moreInner');
+    const moreArrow = document.getElementById('moreArrow');
+    let moreOpen = false;
+    function openMore(){
+      moreOpen = true;
+      moreBox.style.maxHeight = moreInner.scrollHeight + 'px';
+      moreArrow.classList.add('rotate-180');
+      const onEnd = () => { moreBox.style.maxHeight = 'none'; moreBox.removeEventListener('transitionend', onEnd); };
+      moreBox.addEventListener('transitionend', onEnd);
+    }
+    function closeMore(){
+      moreOpen = false;
+      if (moreBox.style.maxHeight === 'none') {
+        moreBox.style.maxHeight = moreInner.scrollHeight + 'px';
+        void moreBox.offsetHeight;
+      }
+      moreBox.style.maxHeight = '0px';
+      moreArrow.classList.remove('rotate-180');
+    }
+    function refreshMoreHeight(){
+      if (moreOpen && moreBox.style.maxHeight !== 'none') {
+        moreBox.style.maxHeight = moreInner.scrollHeight + 'px';
+      }
+    }
+    btnMore.addEventListener('click', ()=> (moreOpen ? closeMore() : openMore()));
+    window.addEventListener('resize', refreshMoreHeight);
+    document.fonts?.ready?.then(refreshMoreHeight);
+    new MutationObserver(refreshMoreHeight).observe(moreInner, { childList:true, subtree:true });
+
+    // ---------- Interactive map generation ----------
+    const mapContainer = document.getElementById('miniMapContainer');
+    const mapStationName = document.getElementById('mapStationName');
+    const writeupHost = document.getElementById('writeupHost');
+
+    async function renderInteractiveMap(stationName, layerUrl){
+      // Clear the container completely and ensure previous view is destroyed
+      if (window.currentMiniView) {
+        try {
+          window.currentMiniView.destroy();
+          window.currentMiniView = null;
+        } catch(e) {
+          console.warn('Error destroying previous view:', e);
+        }
+      }
+      
+      mapContainer.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">Loading map...</div>';
+      mapStationName.textContent = stationName;
+      
+      // Small delay to ensure cleanup completes
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Wait for ArcGIS API to be ready
+      if (typeof window.createStationMiniMap === 'function') {
+        await window.createStationMiniMap(mapContainer, layerUrl, stationName);
+      } else {
+        // Retry after a short delay if API isn't ready
+        setTimeout(async () => {
+          if (typeof window.createStationMiniMap === 'function') {
+            await window.createStationMiniMap(mapContainer, layerUrl, stationName);
+          } else {
+            mapContainer.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">Unable to load map - API not available</div>';
+          }
+        }, 1000);
+      }
+    }
+
+    function renderWriteup(stationName){
+      writeupHost.textContent = WRITEUPS[stationName] || 'Write-up coming soon.';
+      refreshMoreHeight();
+    }
+
+    // ---------- KPIs & Charts ----------
+    const kpiRow = document.getElementById('kpiRow');
+    function setKPIs(stats){
+      const order = ['Sand','Silt','Clay','pH','OM'];
+      kpiRow.innerHTML = order.map(f=>{
+        const v = stats?.[f]?.avg;
+        const val = Number.isFinite(v) ? v.toFixed(2) : '—';
+        const units = (f==='pH') ? '' : '%';
+        return `
+          <div class="kpi p-4">
+            <div class="text-xs text-gray-500">${f}</div>
+            <div class="text-2xl font-semibold text-gray-800 mt-1">${val}<span class="text-sm ml-1">${units}</span></div>
+          </div>`;
+      }).join('');
+    }
+
+    let chTexture=null, chChem=null, chPhysChem=null;
+    function destroyChart(c){ c && c.destroy && c.destroy(); }
+
+    function renderStationCharts(stats){
+      destroyChart(chTexture);
+      chTexture = new Chart(document.getElementById('chartStationTexture').getContext('2d'), {
+        type:'doughnut',
+        data:{ labels:['Sand %','Silt %','Clay %'],
+          datasets:[{ data:[
+            Number.isFinite(stats?.Sand?.avg)?stats.Sand.avg:0,
+            Number.isFinite(stats?.Silt?.avg)?stats.Silt.avg:0,
+            Number.isFinite(stats?.Clay?.avg)?stats.Clay.avg:0
+          ], backgroundColor:['#C8C372','#D9782D','#1E4D2B'] }]},
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' } } }
+      });
+
+      destroyChart(chChem);
+      chChem = new Chart(document.getElementById('chartStationChem').getContext('2d'), {
+        type:'bar',
+        data:{ labels:['pH','Organic Matter %'],
+          datasets:[{ label:'Average',
+            data:[
+              Number.isFinite(stats?.pH?.avg)?stats.pH.avg:0,
+              Number.isFinite(stats?.OM?.avg)?stats.OM.avg:0
+            ],
+            backgroundColor:['rgba(89, 166, 168, 0.85)', 'rgba(229, 106, 84, 0.85)']  // Teal and Salmon
+          }]},
+        options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true } } }
+      });
+
+      destroyChart(chPhysChem);
+      chPhysChem = new Chart(document.getElementById('chartStationPhysChem').getContext('2d'), {
+        type:'bar',
+        data:{ labels:['Bulk Density','CaCO₃ (<2mm)','EC'],
+          datasets:[{ label:'Average',
+            data:[
+              Number.isFinite(stats?.BD?.avg)?stats.BD.avg:0,
+              Number.isFinite(stats?.CaCO3?.avg)?stats.CaCO3.avg:0,
+              Number.isFinite(stats?.EC?.avg)?stats.EC.avg:0
+            ],
+            backgroundColor:['rgba(30, 77, 43, 0.85)', 'rgba(120, 190, 32, 0.85)', 'rgba(151, 27, 47, 0.85)']  // Citron, Lime, Oval
+          }]},
+        options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true } } }
+      });
+    }
+
+    // ---------- Show station ----------
+    const pageTitle = document.getElementById('pageTitle');
+    const pageSub   = document.getElementById('pageSub');
+
+    async function showStation(item){
+      try{
+        [...document.querySelectorAll('#stationList button')].forEach(b => {
+          if (b.textContent.trim() === item.name) b.classList.add('active-station');
+          else b.classList.remove('active-station');
+        });
+
+        pageTitle.textContent = `${item.name} — Site Stats`;
+        pageSub.textContent   = 'Station-level averages with interactive map and description below.';
+
+        // Fetch stats and render (parallel operations)
+        const statsPromise = fetchStationStatsWeighted(item.url);
+        const mapPromise = renderInteractiveMap(item.name, item.url);
+        
+        const stats = await statsPromise;
+        setKPIs(stats);
+        renderStationCharts(stats);
+        
+        await mapPromise;
+        renderWriteup(item.name);
+        
+        openMore();
+        feather.replace();
+      } catch(err){
+        console.error('Failed to load station:', err);
+        kpiRow.innerHTML = `<div class="text-sm text-red-600">Unable to load data for this station.</div>`;
+      }
+    }
+
+    // Default selection (ARDEC)
+    const defaultStation = STATIONS[0].items[0];
+    showStation(defaultStation);
+
+    // ---- SSURGO provenance metadata ----
+    const SSURGO_META_Washington = {
+      Title: "Soil Survey Geographic (SSURGO) database for Colorado AES Research Centers",
+      Originator: "U.S. Department of Agriculture, Natural Resources Conservation Service",
+      Publication_Date: "20240829",
+      Time_Period_of_Content: "Time_Period_Information:",
+      Currentness_Reference: "publication date",
+      Progress: "Complete",
+      Update_Frequency: "",
+      Access_Constraints: "None",
+      Use_Constraints: "The U.S. Department of Agriculture, Natural Resources Conservation Service should be acknowledged as the data source in products derived from these data.",
+      Abstract: "This data set is a digital soil survey and generally is the most detailed level of soil geographic data developed by the National Cooperative Soil Survey. The information was prepared by digitizing maps, by compiling information onto a planimetric correct base and digitizing, or by revising digitized maps using remotely sensed and other information."
+    };
+    
+    function fmtPubDate(yyyymmdd) {
+      if (!/^\d{8}$/.test(yyyymmdd)) return yyyymmdd || "";
+      const y = yyyymmdd.slice(0,4), m = yyyymmdd.slice(4,6), d = yyyymmdd.slice(6,8);
+      const dt = new Date(`${y}-${m}-${d}T00:00:00Z`);
+      return dt.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+    
+    (function renderMeta(meta){
+      const host = document.getElementById('sourceMeta');
+      if (!host) return;
+      const map = {
+        Title: meta.Title,
+        Originator: meta.Originator,
+        PubDateFmt: fmtPubDate(meta.Publication_Date),
+        Currentness_Reference: meta.Currentness_Reference,
+        Progress: meta.Progress,
+        Access_Constraints: meta.Access_Constraints,
+        Use_Constraints: meta.Use_Constraints,
+        Abstract: meta.Abstract
+      };
+      host.querySelectorAll('[data-meta]').forEach(el => {
+        const k = el.getAttribute('data-meta');
+        el.textContent = map[k] ?? "";
+      });
+    })(SSURGO_META_Washington);
+
+  </script>
+</body>
+</html>
