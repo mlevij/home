@@ -5,6 +5,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AES Research Center Soil Maps</title>
+  <meta name="description" content="Interactive soil maps for Colorado State University Agricultural Experiment Station research centers, featuring SSURGO soil data with detailed soil properties.">
+  <meta name="keywords" content="CSU, Colorado State University, Agricultural Experiment Station, soil maps, SSURGO, soil survey, research centers">
+  <meta name="author" content="Colorado State University Agricultural Experiment Station">
+  <meta property="og:title" content="AES Research Center Soil Maps">
+  <meta property="og:description" content="Interactive soil maps for CSU Agricultural Experiment Station research centers.">
+  <meta property="og:type" content="website">
 
   <script src="https://cdn.tailwindcss.com"></script>
 
@@ -33,40 +39,51 @@
 
     /* Fallback: in case anything re-adds default zoom, hide it */
     .esri-ui .esri-zoom { display: none !important; }
+
+    @media (max-width: 768px) {
+      #panel { width: calc(100vw - 2rem); max-width: 280px; }
+    }
   </style>
 </head>
 <body class="bg-gray-50 h-screen flex flex-col">
   <!-- Header -->
   <header class="bg-[#1E4D2B] text-white shadow-md">
-    <div class="container mx-auto px-4 py-2 flex justify-between items-center">
+    <div class="container mx-auto px-4 py-2 flex justify-between items-center relative">
       <div class="flex items-center space-x-4">
         <a href="https://www.colostate.edu/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity">
           <img
-            src="https://huggingface.co/spaces/mlevij/aes-soil-map/resolve/main/CSU-Symbol-r-357-617-RGB.png"
+            src="./CSU-Symbol-r-357-617-RGB.png"
             alt="Colorado State University"
             class="h-20 w-auto"
           />
         </a>
-        
+
         <a href="https://agsci.colostate.edu/research-and-engagement/agricultural-experiment-station/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity">
           <img
-            src="https://huggingface.co/spaces/mlevij/aes-soil-map/resolve/main/AES%20Type%20Only_White.png"
+            src="./AES%20Only_White.png"
             alt="Agricultural Experiment Station"
             class="h-9 w-auto"
           />
         </a>
       </div>
-      
+
       <div class="hidden md:flex items-center space-x-6">
         <h1 class="text-xl font-normal">AES Research Center Soil Map</h1>
         <span class="text-white/40">|</span>
         <a href="./" class="hover:text-green-200">Map</a>
-        <a href="./AES Data.html" class="hover:text-green-200">More Info</a>
+        <a href="./aes-data.html" class="hover:text-green-200">More Info</a>
       </div>
-  
-      <button class="md:hidden" id="mobile-menu-button">
+
+      <button class="md:hidden" id="mobile-menu-button" aria-label="Open navigation menu">
         <i data-feather="menu" class="w-6 h-6"></i>
       </button>
+
+      <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 right-0 bg-[#1E4D2B] border-t border-green-800 shadow-lg z-50">
+        <div class="container mx-auto px-4 py-3 space-y-2">
+          <a href="./" class="block text-white hover:text-green-200 py-2">Map</a>
+          <a href="./aes-data.html" class="block text-white hover:text-green-200 py-2">More Info</a>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -80,7 +97,7 @@
       <div id="panel" class="w-[280px] bg-white/95 backdrop-blur rounded-xl shadow-xl ring-1 ring-gray-200">
         <div class="p-4 border-b border-gray-100 flex items-center justify-between">
           <h2 class="text-lg font-semibold text-gray-800">Layers</h2>
-          <button id="toggle-sidebar" class="text-gray-500 hover:text-gray-700" title="Hide panel">
+          <button id="toggle-sidebar" class="text-gray-500 hover:text-gray-700" title="Hide panel" aria-label="Hide layers panel">
             <i data-feather="x" class="w-5 h-5"></i>
           </button>
         </div>
@@ -119,7 +136,7 @@
     <!-- Tiny "show panel" button (only visible when hidden) -->
     <button id="show-sidebar"
             class="hidden absolute top-4 left-4 z-20 bg-white/95 backdrop-blur rounded-md shadow p-2 ring-1 ring-gray-200 text-gray-700 hover:text-gray-900"
-            title="Show layers">
+            title="Show layers" aria-label="Show layers panel">
       <i data-feather="chevron-right" class="w-5 h-5"></i>
     </button>
 
@@ -131,13 +148,13 @@
     <!-- custom zoom/home buttons -->
     <div class="absolute bottom-4 left-4 z-20 bg-white p-2 rounded-md shadow-md">
       <div class="flex space-x-2">
-        <button id="zoom-in" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-md">
+        <button id="zoom-in" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-md" aria-label="Zoom in">
           <i data-feather="plus" class="w-4 h-4"></i>
         </button>
-        <button id="zoom-out" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-md">
+        <button id="zoom-out" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-md" aria-label="Zoom out">
           <i data-feather="minus" class="w-4 h-4"></i>
         </button>
-        <button id="home" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-md">
+        <button id="home" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-md" aria-label="Reset map view">
           <i data-feather="home" class="w-4 h-4"></i>
         </button>
       </div>
@@ -147,6 +164,13 @@
   <script>
     feather.replace();
     AOS.init();
+
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
 
     // Ensure the map wrapper fills the viewport beneath the header
     const mapWrap = document.getElementById('mapWrap');

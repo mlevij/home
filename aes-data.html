@@ -5,6 +5,12 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AES Soil Data</title>
+  <meta name="description" content="Soil data and statistics for Colorado State University Agricultural Experiment Station research centers, with area-weighted averages and interactive maps.">
+  <meta name="keywords" content="CSU, Colorado State University, Agricultural Experiment Station, soil data, soil statistics, SSURGO, area-weighted averages">
+  <meta name="author" content="Colorado State University Agricultural Experiment Station">
+  <meta property="og:title" content="AES Soil Data">
+  <meta property="og:description" content="Soil data and statistics for CSU Agricultural Experiment Station research centers.">
+  <meta property="og:type" content="website">
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -46,40 +52,55 @@
     .esri-widget, .esri-view, .esri-popup__main-container, .esri-popup__header-title,
     .esri-legend__message, .esri-legend__layer-caption, .esri-legend__service-label,
     .esri-legend__layer-cell { font-family: var(--font-sans); }
+
+    @media (max-width: 768px) {
+      .sidebar { width: 100%; }
+      .mini-map { height: clamp(300px, 50vh, 700px); }
+      main .flex.gap-6 { flex-direction: column; }
+      #mediaHost .flex { flex-direction: column; }
+      #mapLegend { max-height: 300px; width: 100% !important; border-left: none !important; border-top: 1px solid #e5e7eb; }
+    }
   </style>
 </head>
 <body class="min-h-screen bg-gray-50">
   <!-- Header -->
   <header class="bg-[#1E4D2B] text-white shadow-md">
-    <div class="container mx-auto px-4 py-2 flex justify-between items-center">
+    <div class="container mx-auto px-4 py-2 flex justify-between items-center relative">
       <div class="flex items-center space-x-4">
         <a href="https://www.colostate.edu/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity">
           <img
-            src="https://huggingface.co/spaces/mlevij/aes-soil-map/resolve/main/CSU-Symbol-r-357-617-RGB.png"
+            src="./CSU-Symbol-r-357-617-RGB.png"
             alt="Colorado State University"
             class="h-20 w-auto"
           />
         </a>
-        
+
         <a href="https://agsci.colostate.edu/research-and-engagement/agricultural-experiment-station/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity">
           <img
-            src="https://huggingface.co/spaces/mlevij/aes-soil-map/resolve/main/AES%20Type%20Only_White.png"
+            src="./AES%20Only_White.png"
             alt="Agricultural Experiment Station"
             class="h-9 w-auto"
           />
         </a>
       </div>
-      
+
       <div class="hidden md:flex items-center space-x-6">
         <h1 class="text-xl font-normal">AES Research Center More Info</h1>
         <span class="text-white/40">|</span>
         <a href="./" class="hover:text-green-200">Map</a>
-        <a href="./AES Data.html" class="hover:text-green-200">More Info</a>
+        <a href="./aes-data.html" class="hover:text-green-200">More Info</a>
       </div>
-  
-      <button class="md:hidden" id="mobile-menu-button">
+
+      <button class="md:hidden" id="mobile-menu-button" aria-label="Open navigation menu">
         <i data-feather="menu" class="w-6 h-6"></i>
       </button>
+
+      <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 right-0 bg-[#1E4D2B] border-t border-green-800 shadow-lg z-50">
+        <div class="container mx-auto px-4 py-3 space-y-2">
+          <a href="./" class="block text-white hover:text-green-200 py-2">Map</a>
+          <a href="./aes-data.html" class="block text-white hover:text-green-200 py-2">More Info</a>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -215,6 +236,14 @@
     });
     
     feather.replace();
+
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
     Chart.defaults.font.family = '"Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial';
 
     // ---------- Stations - UPDATED TO EPSG:26913 URLs ----------
