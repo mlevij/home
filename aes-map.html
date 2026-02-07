@@ -410,7 +410,15 @@
           title: displayTitle,
           popupTemplate: makeSoilsPopup(displayTitle),
           outFields: ["*"],
-          minScale: SCALE_BREAK
+          minScale: SCALE_BREAK,
+          renderer: {
+            type: "simple",
+            symbol: {
+              type: "simple-fill",
+              color: [0, 0, 0, 0],
+              outline: { color: [255, 0, 0, 1], width: 2 }
+            }
+          }
         });
         map.add(fl);
         layerByServiceTitle[info.title] = fl;
