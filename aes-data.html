@@ -122,7 +122,7 @@
             <div>
               <h2 id="pageTitle" class="text-2xl font-bold text-gray-900">Select a station</h2>
               <p id="pageSub" class="text-gray-500 text-sm mt-1">
-                Station-level <span class="font-medium">area-weighted</span> averages (Sand, Silt, Clay, pH, OM, BD, CaCO₃, EC). See "Maps & description" for sources/methods.
+                Station-level <span class="font-medium">area-weighted</span> averages (Sand, Silt, Clay, pH, OM, BD, CaCO₃, EC) for surface (0-6") and all depths. See "Maps & description" for sources/methods.
               </p>
             </div>
             <div class="text-xs text-gray-300">live from ArcGIS services</div>
@@ -187,21 +187,41 @@
           </div>
         </div>
 
-        <!-- Charts -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Charts: Surface (0-6") -->
+        <h2 class="text-md font-semibold text-gray-500 uppercase tracking-wide mt-2">Surface (0-6")</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="card p-5" data-aos="fade-up">
-            <h3 class="text-lg font-semibold mb-3">Soil texture (area-weighted avg %)</h3>
+            <h3 class="text-lg font-semibold mb-3">Soil Texture %</h3>
             <div class="h-72"><canvas id="chartStationTexture"></canvas></div>
           </div>
 
           <div class="card p-5" data-aos="fade-up">
-            <h3 class="text-lg font-semibold mb-3">pH and OM (area-weighted avg)</h3>
+            <h3 class="text-lg font-semibold mb-3">pH and OM %</h3>
             <div class="h-72"><canvas id="chartStationChem"></canvas></div>
           </div>
 
           <div class="card p-5" data-aos="fade-up">
-            <h3 class="text-lg font-semibold mb-3">BD (g/cm³), CaCO₃ (%), EC (dS/m) — area-weighted avg</h3>
+            <h3 class="text-lg font-semibold mb-3">BD (g/cm³), CaCO₃ (%), EC (dS/m)</h3>
             <div class="h-72"><canvas id="chartStationPhysChem"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Charts: All Depths -->
+        <h2 class="text-md font-semibold text-gray-500 uppercase tracking-wide mt-6">All Depths (Full Profile)</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="card p-5" data-aos="fade-up">
+            <h3 class="text-lg font-semibold mb-3">Soil Texture %</h3>
+            <div class="h-72"><canvas id="chartADTexture"></canvas></div>
+          </div>
+
+          <div class="card p-5" data-aos="fade-up">
+            <h3 class="text-lg font-semibold mb-3">pH (min) and OM %</h3>
+            <div class="h-72"><canvas id="chartADChem"></canvas></div>
+          </div>
+
+          <div class="card p-5" data-aos="fade-up">
+            <h3 class="text-lg font-semibold mb-3">BD (g/cm³), CaCO₃ (%), EC (max dS/m)</h3>
+            <div class="h-72"><canvas id="chartADPhysChem"></canvas></div>
           </div>
         </div>
 
@@ -282,7 +302,34 @@
     };
 
     // ---------- Numeric fields ----------
-    const NUM_FIELDS = ['Sand','Silt','Clay','pH','OM','BD','CaCO3','EC'];
+    // Map short display names → actual service field names
+    // Surface (0-6")
+    const FIELD_MAP = {
+      'Sand':   'Sand_DCP_0_6_in',
+      'Silt':   'Silt_DCP_0_6_in',
+      'Clay':   'Clay_DCP_0_6_in',
+      'pH':     'pHwater_DCP_0_6_in',
+      'OM':     'OrgMatter_DCP_0_6_in',
+      'BD':     'BdSurf_DCP_0_6_in',
+      'CaCO3':  'CaC03_DCP_0_6_in',
+      'EC':     'EC_DCP_0_6_in'
+    };
+    // All Depths
+    const ALLDEPTH_MAP = {
+      'Sand_AD':   'Sand_AllDepth',
+      'Silt_AD':   'Silt_AllDepth',
+      'Clay_AD':   'Clay_AllDepth',
+      'pH_AD':     'pH_AllDepth',
+      'OM_AD':     'OM_AllDepth',
+      'BD_AD':     'BD_AllDepth',
+      'CaCO3_AD':  'CaCO3_AllDepth',
+      'EC_AD':     'EC_AllDepth'
+    };
+    const COMBINED_MAP = { ...FIELD_MAP, ...ALLDEPTH_MAP };
+    const NUM_FIELDS = Object.keys(FIELD_MAP);
+    const AD_FIELDS  = Object.keys(ALLDEPTH_MAP);
+    const ALL_SHORT_FIELDS = Object.keys(COMBINED_MAP);
+    const SVC_FIELDS = Object.values(COMBINED_MAP);
 
     // Sidebar build
     const listEl = document.getElementById('stationList');
@@ -329,15 +376,27 @@
       return 'shape_Area'; // fallback
     }
 
-    // Pull rows for weighting (numeric fields + area only)
+    // Pull rows for weighting (service field names + area), remap to short names
     async function fetchLayerRows(url, areaField){
       const rows = [];
       let offset = 0, page = 2000;
-      const outFields = encodeURIComponent([...NUM_FIELDS, areaField].join(','));
+      const outFields = encodeURIComponent([...SVC_FIELDS, areaField].join(','));
+      // Reverse map: service name → short name
+      const rev = {};
+      for (const [short, svc] of Object.entries(COMBINED_MAP)) rev[svc] = short;
       while (true) {
         const qs = `where=1%3D1&outFields=${outFields}&returnGeometry=false&f=json&resultOffset=${offset}&resultRecordCount=${page}`;
         const j = await fetchJSON(`${url}/query?${qs}`);
-        if (Array.isArray(j.features)) rows.push(...j.features.map(f => f.attributes || {}));
+        if (Array.isArray(j.features)) {
+          for (const f of j.features) {
+            const attr = f.attributes || {};
+            const mapped = {};
+            for (const [k, v] of Object.entries(attr)) {
+              mapped[rev[k] || k] = v;
+            }
+            rows.push(mapped);
+          }
+        }
         if (!j.exceededTransferLimit) break;
         offset += page;
       }
@@ -346,7 +405,7 @@
 
     function computeWeightedFromRows(rows, areaField){
       const out = {};
-      NUM_FIELDS.forEach(f=>{
+      ALL_SHORT_FIELDS.forEach(f=>{
         let numSum = 0, denSum = 0;
         let min = Infinity, max = -Infinity, count = 0;
         for (const r of rows){
@@ -368,6 +427,17 @@
       const areaField = await detectAreaField(url);
       const rows = await fetchLayerRows(url, areaField);
       return computeWeightedFromRows(rows, areaField);
+    }
+
+    // Helper: extract soil series name from muname (e.g., "Rocky Ford silty clay loam" → "Rocky Ford")
+    function extractSeriesName(muname) {
+      if (!muname) return null;
+      const textureTerms = /\b(sand|loamy sand|sandy loam|loam|silt loam|silt|sandy clay loam|clay loam|silty clay loam|sandy clay|silty clay|clay|muck|peat|gravel|cobble|stony|bouldery|channery|flaggy|very fine|fine|coarse|eroded|variant|family|complex|association|undrained|drained|flooded|ponded|occasionally|frequently|rarely)\b/i;
+      const parts = muname.split(textureTerms);
+      if (parts.length > 0 && parts[0].trim()) {
+        return parts[0].trim();
+      }
+      return muname.split(' ').slice(0, 2).join(' ');
     }
 
     // ---------- ArcGIS Interactive Mini Map ----------
@@ -468,83 +538,77 @@
             title: stationName,
             popupTemplate: {
               title: "{musym} - {muname}",
-              content: function(feature) {
-                const container = document.createElement("div");
-                container.style.cssText = "position: relative; overflow: hidden; min-height: 400px;";
-                
-                const musym = feature.graphic.attributes.musym;
-                const areasymbol = feature.graphic.attributes.areasymbol;
-                
-                // Panel 1: Basic fields
-                const panel1 = document.createElement("div");
-                panel1.className = "popup-panel";
-                panel1.style.cssText = "position: absolute; width: 100%; transition: transform 0.3s ease; transform: translateX(0);";
-                
-                const fieldInfos = [
-                  { fieldName: "muname", label: "Map Unit Name" },
-                  { fieldName: "SurfTex", label: "Surface Texture" },
-                  { fieldName: "Sand", label: "Sand %" },
-                  { fieldName: "Silt", label: "Silt %" },
-                  { fieldName: "Clay", label: "Clay %" },
-                  { fieldName: "pH", label: "pH" },
-                  { fieldName: "OM", label: "Organic Matter %" },
-                  { fieldName: "TaxCl", label: "Taxonomic Classification" },
-                  { fieldName: "TaxOrder", label: "Taxonomic Order" },
-                  { fieldName: "ParMat", label: "Parent Material" }
-                ];
-                
-                const table = document.createElement("table");
-                table.className = "esri-widget__table";
-                table.style.cssText = "width: 100%; border-collapse: collapse;";
-                
-                fieldInfos.forEach(f => {
-                  const val = feature.graphic.attributes[f.fieldName];
-                  if (val !== null && val !== undefined && val !== '') {
-                    const tr = document.createElement("tr");
-                    tr.innerHTML = `
-                      <th style="text-align: left; padding: 4px 8px; background: #f3f4f6; font-weight: 600;">${f.label}</th>
-                      <td style="padding: 4px 8px;">${val}</td>
+              content: [
+                {
+                  type: "fields",
+                  fieldInfos: [
+                    { fieldName: "muname", label: "Map Unit Name" },
+                    { fieldName: "SurfText_DCP_SL", label: "Surface Texture" },
+                    { fieldName: "Sand_DCP_0_6_in", label: "Sand % (0-6\")" },
+                    { fieldName: "Silt_DCP_0_6_in", label: "Silt % (0-6\")" },
+                    { fieldName: "Clay_DCP_0_6_in", label: "Clay % (0-6\")" },
+                    { fieldName: "pHwater_DCP_0_6_in", label: "pH (0-6\")" },
+                    { fieldName: "OrgMatter_DCP_0_6_in", label: "OM % (0-6\")" },
+                    { fieldName: "BdSurf_DCP_0_6_in", label: "Bulk Density g/cm³ (0-6\")" },
+                    { fieldName: "CaC03_DCP_0_6_in", label: "CaCO₃ % (0-6\")" },
+                    { fieldName: "EC_DCP_0_6_in", label: "EC dS/m (0-6\")" },
+                    { fieldName: "Sand_AllDepth", label: "Sand % (All Depths)" },
+                    { fieldName: "Silt_AllDepth", label: "Silt % (All Depths)" },
+                    { fieldName: "Clay_AllDepth", label: "Clay % (All Depths)" },
+                    { fieldName: "pH_AllDepth", label: "Min pH (All Depths)" },
+                    { fieldName: "OM_AllDepth", label: "OM % (All Depths)" },
+                    { fieldName: "BD_AllDepth", label: "Bulk Density g/cm³ (All Depths)" },
+                    { fieldName: "CaCO3_AllDepth", label: "CaCO₃ % (All Depths)" },
+                    { fieldName: "EC_AllDepth", label: "Max EC dS/m (All Depths)" },
+                    { fieldName: "TaxClName_DCP", label: "Taxonomic Classification" },
+                    { fieldName: "TaxOrder_DCP", label: "Taxonomic Order" },
+                    { fieldName: "ParMatNm_DCP", label: "Parent Material" },
+                    { fieldName: "DrainageCl", label: "Drainage Class" },
+                    { fieldName: "MoistRegim_DCP", label: "Soil Moisture Regime" },
+                    { fieldName: "TempRegime_DCP", label: "Soil Temperature Regime" },
+                    { fieldName: "EcoSiteNm_DCP", label: "Ecological Site Name" }
+                  ]
+                },
+                {
+                  type: "custom",
+                  creator: function(event) {
+                    const feature = event.graphic;
+                    const muname = feature.attributes?.muname || '';
+                    const series = extractSeriesName(muname);
+
+                    let lon = -105.5, lat = 40.0;
+                    if (feature.geometry) {
+                      const geom = feature.geometry;
+                      if (geom.centroid) {
+                        lon = geom.centroid.longitude;
+                        lat = geom.centroid.latitude;
+                      } else if (geom.extent) {
+                        lon = geom.extent.center.longitude;
+                        lat = geom.extent.center.latitude;
+                      }
+                    }
+
+                    const div = document.createElement('div');
+                    div.style.cssText = 'margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;';
+                    div.innerHTML = `
+                      <div style="font-weight: 600; font-size: 13px; margin-bottom: 8px; color: #374151;">More Data</div>
+                      <div style="display: flex; flex-direction: column; gap: 6px;">
+                        ${series ? `<a href="https://casoilresource.lawr.ucdavis.edu/sde/?series=${encodeURIComponent(series)}"
+                           target="_blank" rel="noopener noreferrer"
+                           style="color: #1E4D2B; text-decoration: underline; font-size: 13px;">
+                           View Soil Profile (${series}) →
+                        </a>` : ''}
+                        <a href="https://websoilsurvey.nrcs.usda.gov/app/WebSoilSurvey.aspx?location=(${lon.toFixed(5)}%20${lat.toFixed(5)},${lon.toFixed(5)}%20${lat.toFixed(5)})"
+                           target="_blank" rel="noopener noreferrer"
+                           style="color: #1E4D2B; text-decoration: underline; font-size: 13px;">
+                           Official NRCS Data →
+                        </a>
+                      </div>
                     `;
-                    table.appendChild(tr);
+                    return div;
                   }
-                });
-                panel1.appendChild(table);
-                
-                const btn1 = document.createElement("button");
-                btn1.className = "more-data-btn";
-                btn1.style.cssText = "width: 100%; margin-top: 12px; background: transparent; color: #4b5563; font-style: italic; border: none; padding: 4px; cursor: pointer; font-size: 0.875rem;";
-                btn1.innerHTML = '&raquo; More Data';
-                btn1.onclick = () => {
-                  panel1.style.transform = "translateX(-100%)";
-                  panel2.style.transform = "translateX(0)";
-                };
-                panel1.appendChild(btn1);
-                
-                // Panel 2: SoilWeb iframe
-                const panel2 = document.createElement("div");
-                panel2.className = "popup-panel";
-                panel2.style.cssText = "position: absolute; width: 100%; transition: transform 0.3s ease; transform: translateX(100%); top: 0;";
-                
-                const backBtn = document.createElement("button");
-                backBtn.className = "back-btn";
-                backBtn.style.cssText = "width: 100%; margin-bottom: 12px; background: #3a3a3a; color: white; font-style: italic; border: none; padding: 8px; cursor: pointer; border-radius: 4px;";
-                backBtn.innerHTML = '&laquo; Back';
-                backBtn.onclick = () => {
-                  panel1.style.transform = "translateX(0)";
-                  panel2.style.transform = "translateX(100%)";
-                };
-                panel2.appendChild(backBtn);
-                
-                const iframe = document.createElement("iframe");
-                iframe.style.cssText = "width: 100%; height: 550px; border: none; border-radius: 4px;";
-                iframe.src = `https://websoilsurvey.sc.egov.usda.gov/App/WebSoilSurvey.aspx`;
-                panel2.appendChild(iframe);
-                
-                container.appendChild(panel1);
-                container.appendChild(panel2);
-                
-                return container;
-              }
+                }
+              ]
             },
             outFields: ["*"]
           });
@@ -781,45 +845,49 @@
     // ---------- KPIs & Charts ----------
     const kpiRow = document.getElementById('kpiRow');
     function setKPIs(stats){
-      const order = ['Sand','Silt','Clay','pH','OM'];
-      kpiRow.innerHTML = order.map(f=>{
-        const v = stats?.[f]?.avg;
+      const order = [
+        { key:'Sand', label:'Sand (0-6")' },
+        { key:'Silt', label:'Silt (0-6")' },
+        { key:'Clay', label:'Clay (0-6")' },
+        { key:'pH',   label:'pH (0-6")' },
+        { key:'OM',   label:'OM (0-6")' }
+      ];
+      kpiRow.innerHTML = order.map(({key,label})=>{
+        const v = stats?.[key]?.avg;
         const val = Number.isFinite(v) ? v.toFixed(2) : '—';
-        const units = (f==='pH') ? '' : '%';
+        const units = (key==='pH') ? '' : '%';
         return `
           <div class="kpi p-4">
-            <div class="text-xs text-gray-500">${f}</div>
+            <div class="text-xs text-gray-500">${label}</div>
             <div class="text-2xl font-semibold text-gray-800 mt-1">${val}<span class="text-sm ml-1">${units}</span></div>
           </div>`;
       }).join('');
     }
 
     let chTexture=null, chChem=null, chPhysChem=null;
+    let chADTexture=null, chADChem=null, chADPhysChem=null;
     function destroyChart(c){ c && c.destroy && c.destroy(); }
 
+    const val = (stats, key) => Number.isFinite(stats?.[key]?.avg) ? stats[key].avg : 0;
+
     function renderStationCharts(stats){
+      // --- Surface (0-6") ---
       destroyChart(chTexture);
       chTexture = new Chart(document.getElementById('chartStationTexture').getContext('2d'), {
         type:'doughnut',
         data:{ labels:['Sand %','Silt %','Clay %'],
-          datasets:[{ data:[
-            Number.isFinite(stats?.Sand?.avg)?stats.Sand.avg:0,
-            Number.isFinite(stats?.Silt?.avg)?stats.Silt.avg:0,
-            Number.isFinite(stats?.Clay?.avg)?stats.Clay.avg:0
-          ], backgroundColor:['#C8C372','#D9782D','#1E4D2B'] }]},
+          datasets:[{ data:[val(stats,'Sand'), val(stats,'Silt'), val(stats,'Clay')],
+            backgroundColor:['#C8C372','#D9782D','#1E4D2B'] }]},
         options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' } } }
       });
 
       destroyChart(chChem);
       chChem = new Chart(document.getElementById('chartStationChem').getContext('2d'), {
         type:'bar',
-        data:{ labels:['pH','Organic Matter %'],
-          datasets:[{ label:'Average',
-            data:[
-              Number.isFinite(stats?.pH?.avg)?stats.pH.avg:0,
-              Number.isFinite(stats?.OM?.avg)?stats.OM.avg:0
-            ],
-            backgroundColor:['rgba(89, 166, 168, 0.85)', 'rgba(229, 106, 84, 0.85)']  // Teal and Salmon
+        data:{ labels:['pH','OM %'],
+          datasets:[{ label:'Avg (0-6")',
+            data:[val(stats,'pH'), val(stats,'OM')],
+            backgroundColor:['rgba(89, 166, 168, 0.85)', 'rgba(229, 106, 84, 0.85)']
           }]},
         options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true } } }
       });
@@ -827,14 +895,42 @@
       destroyChart(chPhysChem);
       chPhysChem = new Chart(document.getElementById('chartStationPhysChem').getContext('2d'), {
         type:'bar',
-        data:{ labels:['Bulk Density','CaCO₃ (<2mm)','EC'],
-          datasets:[{ label:'Average',
-            data:[
-              Number.isFinite(stats?.BD?.avg)?stats.BD.avg:0,
-              Number.isFinite(stats?.CaCO3?.avg)?stats.CaCO3.avg:0,
-              Number.isFinite(stats?.EC?.avg)?stats.EC.avg:0
-            ],
-            backgroundColor:['rgba(30, 77, 43, 0.85)', 'rgba(120, 190, 32, 0.85)', 'rgba(151, 27, 47, 0.85)']  // Citron, Lime, Oval
+        data:{ labels:['BD (g/cm³)','CaCO₃ (%)','EC (dS/m)'],
+          datasets:[{ label:'Avg (0-6")',
+            data:[val(stats,'BD'), val(stats,'CaCO3'), val(stats,'EC')],
+            backgroundColor:['rgba(30, 77, 43, 0.85)', 'rgba(120, 190, 32, 0.85)', 'rgba(151, 27, 47, 0.85)']
+          }]},
+        options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true } } }
+      });
+
+      // --- All Depths ---
+      destroyChart(chADTexture);
+      chADTexture = new Chart(document.getElementById('chartADTexture').getContext('2d'), {
+        type:'doughnut',
+        data:{ labels:['Sand %','Silt %','Clay %'],
+          datasets:[{ data:[val(stats,'Sand_AD'), val(stats,'Silt_AD'), val(stats,'Clay_AD')],
+            backgroundColor:['#C8C372','#D9782D','#1E4D2B'] }]},
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' } } }
+      });
+
+      destroyChart(chADChem);
+      chADChem = new Chart(document.getElementById('chartADChem').getContext('2d'), {
+        type:'bar',
+        data:{ labels:['pH (min)','OM %'],
+          datasets:[{ label:'Avg (All Depths)',
+            data:[val(stats,'pH_AD'), val(stats,'OM_AD')],
+            backgroundColor:['rgba(89, 166, 168, 0.85)', 'rgba(229, 106, 84, 0.85)']
+          }]},
+        options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true } } }
+      });
+
+      destroyChart(chADPhysChem);
+      chADPhysChem = new Chart(document.getElementById('chartADPhysChem').getContext('2d'), {
+        type:'bar',
+        data:{ labels:['BD (g/cm³)','CaCO₃ (%)','EC (max dS/m)'],
+          datasets:[{ label:'Avg (All Depths)',
+            data:[val(stats,'BD_AD'), val(stats,'CaCO3_AD'), val(stats,'EC_AD')],
+            backgroundColor:['rgba(30, 77, 43, 0.85)', 'rgba(120, 190, 32, 0.85)', 'rgba(151, 27, 47, 0.85)']
           }]},
         options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true } } }
       });

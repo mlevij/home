@@ -19,7 +19,6 @@
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-  <script src="https://unpkg.com/feather-icons"></script>
 
   <!-- ArcGIS API for JavaScript (4.28) -->
   <link rel="stylesheet" href="https://js.arcgis.com/4.28/esri/themes/light/main.css">
@@ -255,27 +254,16 @@
         "AVRC Soils": 12000,
       };
 
-      // Shared field popup
-      const soilsFieldsContent = [{
-        type: "fields",
-        fieldInfos: [
-          { fieldName: "areasymbol", label: "Area Symbol" },
-          { fieldName: "musym", label: "Map Unit Symbol" },
-          { fieldName: "muname", label: "Map Unit Name" },
-          { fieldName: "SurfTex", label: "Surface Texture" },
-          { fieldName: "Sand", label: "Sand %" },
-          { fieldName: "Silt", label: "Silt %" },
-          { fieldName: "Clay", label: "Clay %" },
-          { fieldName: "pH", label: "pH" },
-          { fieldName: "OM", label: "Organic Matter %" },
-          { fieldName: "TaxCl", label: "Taxonomic Classification" },
-          { fieldName: "TaxOrder", label: "Taxonomic Order" },
-          { fieldName: "ParMat", label: "Parent Material" },
-          { fieldName: "MoiReg", label: "Soil Moisture Regime" },
-          { fieldName: "Temp", label: "Soil Temperature Regime" },
-          { fieldName: "EcoName", label: "Ecological Site Name" }
-        ]
-      }];
+      // Helper: extract soil series name from muname (e.g., "Rocky Ford silty clay loam" → "Rocky Ford")
+      function extractSeriesName(muname) {
+        if (!muname) return null;
+        const textureTerms = /\b(sand|loamy sand|sandy loam|loam|silt loam|silt|sandy clay loam|clay loam|silty clay loam|sandy clay|silty clay|clay|muck|peat|gravel|cobble|stony|bouldery|channery|flaggy|very fine|fine|coarse|eroded|variant|family|complex|association|undrained|drained|flooded|ponded|occasionally|frequently|rarely)\b/i;
+        const parts = muname.split(textureTerms);
+        if (parts.length > 0 && parts[0].trim()) {
+          return parts[0].trim();
+        }
+        return muname.split(' ').slice(0, 2).join(' ');
+      }
 
       function makeSoilsPopup(stationDisplayName) {
         const stationEsc = stationDisplayName.replace(/'/g, "\\'");
@@ -284,26 +272,79 @@
           expressionInfos: [
             { name: "title", expression: `'${stationEsc}' + TextFormatting.NewLine + $feature.muname` }
           ],
-          content: [{
-            type: "fields",
-            fieldInfos: [
-              { fieldName: "areasymbol", label: "Area Symbol" },
-              { fieldName: "musym", label: "Map Unit Symbol" },
-              { fieldName: "muname", label: "Map Unit Name" },
-              { fieldName: "SurfTex", label: "Surface Texture" },
-              { fieldName: "Sand", label: "Sand %" },
-              { fieldName: "Silt", label: "Silt %" },
-              { fieldName: "Clay", label: "Clay %" },
-              { fieldName: "pH", label: "pH" },
-              { fieldName: "OM", label: "Organic Matter %" },
-              { fieldName: "TaxCl", label: "Taxonomic Classification" },
-              { fieldName: "TaxOrder", label: "Taxonomic Order" },
-              { fieldName: "ParMat", label: "Parent Material" },
-              { fieldName: "MoiReg", label: "Soil Moisture Regime" },
-              { fieldName: "Temp", label: "Soil Temperature Regime" },
-              { fieldName: "EcoName", label: "Ecological Site Name" }
-            ]
-          }]
+          content: [
+            {
+              type: "fields",
+              fieldInfos: [
+                { fieldName: "areasymbol", label: "Area Symbol" },
+                { fieldName: "musym", label: "Map Unit Symbol" },
+                { fieldName: "muname", label: "Map Unit Name" },
+                { fieldName: "SurfText_DCP_SL", label: "Surface Texture" },
+                { fieldName: "Sand_DCP_0_6_in", label: "Sand % (0-6\")" },
+                { fieldName: "Silt_DCP_0_6_in", label: "Silt % (0-6\")" },
+                { fieldName: "Clay_DCP_0_6_in", label: "Clay % (0-6\")" },
+                { fieldName: "pHwater_DCP_0_6_in", label: "pH (0-6\")" },
+                { fieldName: "OrgMatter_DCP_0_6_in", label: "OM % (0-6\")" },
+                { fieldName: "BdSurf_DCP_0_6_in", label: "Bulk Density g/cm³ (0-6\")" },
+                { fieldName: "CaC03_DCP_0_6_in", label: "CaCO₃ % (0-6\")" },
+                { fieldName: "EC_DCP_0_6_in", label: "EC dS/m (0-6\")" },
+                { fieldName: "Sand_AllDepth", label: "Sand % (All Depths)" },
+                { fieldName: "Silt_AllDepth", label: "Silt % (All Depths)" },
+                { fieldName: "Clay_AllDepth", label: "Clay % (All Depths)" },
+                { fieldName: "pH_AllDepth", label: "Min pH (All Depths)" },
+                { fieldName: "OM_AllDepth", label: "OM % (All Depths)" },
+                { fieldName: "BD_AllDepth", label: "Bulk Density g/cm³ (All Depths)" },
+                { fieldName: "CaCO3_AllDepth", label: "CaCO₃ % (All Depths)" },
+                { fieldName: "EC_AllDepth", label: "Max EC dS/m (All Depths)" },
+                { fieldName: "TaxClName_DCP", label: "Taxonomic Classification" },
+                { fieldName: "TaxOrder_DCP", label: "Taxonomic Order" },
+                { fieldName: "ParMatNm_DCP", label: "Parent Material" },
+                { fieldName: "DrainageCl", label: "Drainage Class" },
+                { fieldName: "MoistRegim_DCP", label: "Soil Moisture Regime" },
+                { fieldName: "TempRegime_DCP", label: "Soil Temperature Regime" },
+                { fieldName: "EcoSiteNm_DCP", label: "Ecological Site Name" }
+              ]
+            },
+            {
+              type: "custom",
+              creator: function(event) {
+                const feature = event.graphic;
+                const muname = feature.attributes?.muname || '';
+                const series = extractSeriesName(muname);
+
+                let lon = -105.5, lat = 40.0;
+                if (feature.geometry) {
+                  const geom = feature.geometry;
+                  if (geom.centroid) {
+                    lon = geom.centroid.longitude;
+                    lat = geom.centroid.latitude;
+                  } else if (geom.extent) {
+                    lon = geom.extent.center.longitude;
+                    lat = geom.extent.center.latitude;
+                  }
+                }
+
+                const div = document.createElement('div');
+                div.style.cssText = 'margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;';
+                div.innerHTML = `
+                  <div style="font-weight: 600; font-size: 13px; margin-bottom: 8px; color: #374151;">More Data</div>
+                  <div style="display: flex; flex-direction: column; gap: 6px;">
+                    ${series ? `<a href="https://casoilresource.lawr.ucdavis.edu/sde/?series=${encodeURIComponent(series)}"
+                       target="_blank" rel="noopener noreferrer"
+                       style="color: #1E4D2B; text-decoration: underline; font-size: 13px;">
+                       View Soil Profile (${series}) →
+                    </a>` : ''}
+                    <a href="https://websoilsurvey.nrcs.usda.gov/app/WebSoilSurvey.aspx?location=(${lon.toFixed(5)}%20${lat.toFixed(5)},${lon.toFixed(5)}%20${lat.toFixed(5)})"
+                       target="_blank" rel="noopener noreferrer"
+                       style="color: #1E4D2B; text-decoration: underline; font-size: 13px;">
+                       Official NRCS Data →
+                    </a>
+                  </div>
+                `;
+                return div;
+              }
+            }
+          ]
         };
       }
       
@@ -311,16 +352,16 @@
       const baseURL = "https://services1.arcgis.com/KNdRU5cN6ENqCTjk/arcgis/rest/services/CSU_AES_Soils/FeatureServer";
       
       const operationalLayers = [
-        { url: `${baseURL}/0`,  title: "RMRC Soils"  },
-        { url: `${baseURL}/1`,  title: "OMRC Soils"  },
-        { url: `${baseURL}/2`,  title: "GVRC Soils"  },
-        { url: `${baseURL}/3`,  title: "SWCRC Soils" },
-        { url: `${baseURL}/4`,  title: "SLVRC Soils" },
-        { url: `${baseURL}/5`,  title: "PRC Soils"   },
-        { url: `${baseURL}/6`,  title: "ECRC Soils"  },
-        { url: `${baseURL}/7`,  title: "AVRC Soils"  },
-        { url: `${baseURL}/8`,  title: "ARDEC South Soils" },
-        { url: `${baseURL}/9`,  title: "ARDEC Soils" }
+        { url: `${baseURL}/30`, title: "RMRC Soils"  },
+        { url: `${baseURL}/28`, title: "OMRC Soils"  },
+        { url: `${baseURL}/27`, title: "GVRC Soils"  },
+        { url: `${baseURL}/32`, title: "SWCRC Soils" },
+        { url: `${baseURL}/31`, title: "SLVRC Soils" },
+        { url: `${baseURL}/29`, title: "PRC Soils"   },
+        { url: `${baseURL}/26`, title: "ECRC Soils"  },
+        { url: `${baseURL}/25`, title: "AVRC Soils"  },
+        { url: `${baseURL}/24`, title: "ARDEC South Soils" },
+        { url: `${baseURL}/23`, title: "ARDEC Soils" }
       ];
 
       const nameToTitle = {
@@ -339,7 +380,7 @@
 
       // Add Colorado Border as reference layer (non-selectable)
       const coBorder = new FeatureLayer({
-        url: `${URL}/10`,
+        url: `${baseURL}/10`,
         title: "Colorado Border",
         popupEnabled: false,
         listMode: "hide",
