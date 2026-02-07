@@ -1,0 +1,564 @@
+<!-- AES Soil Map -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AES Research Center Soil Maps</title>
+  <meta name="description" content="Interactive soil maps for Colorado State University Agricultural Experiment Station research centers, featuring SSURGO soil data with detailed soil properties.">
+  <meta name="keywords" content="CSU, Colorado State University, Agricultural Experiment Station, soil maps, SSURGO, soil survey, research centers">
+  <meta name="author" content="Colorado State University Agricultural Experiment Station">
+  <meta property="og:title" content="AES Research Center Soil Maps">
+  <meta property="og:description" content="Interactive soil maps for CSU Agricultural Experiment Station research centers.">
+  <meta property="og:type" content="website">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+  <!-- ArcGIS API for JavaScript (4.28) -->
+  <link rel="stylesheet" href="https://js.arcgis.com/4.28/esri/themes/light/main.css">
+  <script src="https://js.arcgis.com/4.28/"></script>
+
+  <style>
+    #viewDiv { padding:0; margin:0; height:100%; width:100%; }
+    :root {
+      --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+                   Roboto, "Helvetica Neue", Arial, "Apple Color Emoji",
+                   "Segoe UI Emoji", "Segoe UI Symbol";
+    }
+    html, body, button, input, select, textarea { font-family: var(--font-sans); }
+    .esri-widget, .esri-view, .esri-popup__main-container, .esri-popup__header-title,
+    .esri-legend__message, .esri-legend__layer-caption, .esri-legend__service-label,
+    .esri-legend__layer-cell { font-family: var(--font-sans); }
+
+    /* Fallback: in case anything re-adds default zoom, hide it */
+    .esri-ui .esri-zoom { display: none !important; }
+
+    @media (max-width: 768px) {
+      #panel { width: calc(100vw - 2rem); max-width: 280px; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 h-screen flex flex-col">
+  <!-- Header -->
+  <header class="bg-[#1E4D2B] text-white shadow-md">
+    <div class="container mx-auto px-4 py-2 flex justify-between items-center relative">
+      <div class="flex items-center space-x-4">
+        <a href="https://www.colostate.edu/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity">
+          <img
+            src="./CSU-Symbol-r-357-617-RGB.png"
+            alt="Colorado State University"
+            class="h-20 w-auto"
+          />
+        </a>
+
+        <a href="https://agsci.colostate.edu/research-and-engagement/agricultural-experiment-station/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity">
+          <img
+            src="./AES%20Only_White.png"
+            alt="Agricultural Experiment Station"
+            class="h-9 w-auto"
+          />
+        </a>
+      </div>
+
+      <div class="hidden md:flex items-center space-x-6">
+        <h1 class="text-xl font-normal">AES Research Center Soil Map</h1>
+        <span class="text-white/40">|</span>
+        <a href="./" class="hover:text-green-200">Map</a>
+        <a href="./aes-data.html" class="hover:text-green-200">More Info</a>
+      </div>
+
+      <button class="md:hidden" id="mobile-menu-button" aria-label="Open navigation menu">
+        <i data-feather="menu" class="w-6 h-6"></i>
+      </button>
+
+      <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 right-0 bg-[#1E4D2B] border-t border-green-800 shadow-lg z-50">
+        <div class="container mx-auto px-4 py-3 space-y-2">
+          <a href="./" class="block text-white hover:text-green-200 py-2">Map</a>
+          <a href="./aes-data.html" class="block text-white hover:text-green-200 py-2">More Info</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content (fills viewport below header) -->
+  <div id="mapWrap" class="relative w-full">
+    <!-- Map -->
+    <div id="viewDiv" class="absolute inset-0"></div>
+
+    <!-- Floating Layers Card -->
+    <div id="panelWrapper" class="absolute top-4 left-4 z-20">
+      <div id="panel" class="w-[280px] bg-white/95 backdrop-blur rounded-xl shadow-xl ring-1 ring-gray-200">
+        <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+          <h2 class="text-lg font-semibold text-gray-800">Layers</h2>
+          <button id="toggle-sidebar" class="text-gray-500 hover:text-gray-700" title="Hide panel" aria-label="Hide layers panel">
+            <i data-feather="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <div class="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <h3 class="font-medium text-gray-700 mb-2"> Maps</h3>
+            <div class="space-y-2">
+              <label class="flex items-center space-x-2">
+                <input type="radio" name="basemap" value="topo-vector" checked class="accent-[#1E4D2B]">
+                <span>World Topographic</span>
+              </label>
+              <label class="flex items-center space-x-2">
+                <input type="radio" name="basemap" value="terrain" class="accent-[#1E4D2B]">
+                <span>World Hillshade</span>
+              </label>
+              <label class="flex items-center space-x-2">
+                <input type="radio" name="basemap" value="streets-vector" class="accent-[#1E4D2B]">
+                <span>Roads</span>
+              </label>
+              <label class="flex items-center space-x-2">
+                <input type="radio" name="basemap" value="hybrid" class="accent-[#1E4D2B]">
+                <span>Satellite</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 p-3 rounded-lg">
+            <h3 class="font-medium text-gray-700 mb-2">Stations</h3>
+            <div id="layerToggles" class="space-y-2"><!-- generated below --></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tiny "show panel" button (only visible when hidden) -->
+    <button id="show-sidebar"
+            class="hidden absolute top-4 left-4 z-20 bg-white/95 backdrop-blur rounded-md shadow p-2 ring-1 ring-gray-200 text-gray-700 hover:text-gray-900"
+            title="Show layers" aria-label="Show layers panel">
+      <i data-feather="chevron-right" class="w-5 h-5"></i>
+    </button>
+
+    <!-- numeric scale readout -->
+    <div id="scaleReadout" class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 bg-white/95 text-gray-800 text-xs px-3 py-1 rounded shadow">
+      1:—
+    </div>
+
+    <!-- custom zoom/home buttons -->
+    <div class="absolute bottom-4 left-4 z-20 bg-white p-2 rounded-md shadow-md">
+      <div class="flex space-x-2">
+        <button id="zoom-in" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-md" aria-label="Zoom in">
+          <i data-feather="plus" class="w-4 h-4"></i>
+        </button>
+        <button id="zoom-out" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-md" aria-label="Zoom out">
+          <i data-feather="minus" class="w-4 h-4"></i>
+        </button>
+        <button id="home" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-md" aria-label="Reset map view">
+          <i data-feather="home" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    feather.replace();
+    AOS.init();
+
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Ensure the map wrapper fills the viewport beneath the header
+    const mapWrap = document.getElementById('mapWrap');
+    function sizeMapWrap(){
+      const header = document.querySelector('header');
+      const headerH = header ? header.getBoundingClientRect().height : 0;
+      mapWrap.style.height = `calc(100vh - ${headerH}px)`;
+    }
+    sizeMapWrap();
+    window.addEventListener('resize', sizeMapWrap);
+
+    // Floating panel show/hide (no layout gap)
+    const panelWrapper = document.getElementById('panelWrapper');
+    const hideBtn = document.getElementById('toggle-sidebar');
+    const showBtn = document.getElementById('show-sidebar');
+
+    hideBtn.addEventListener('click', () => {
+      panelWrapper.classList.add('hidden');
+      showBtn.classList.remove('hidden');
+      feather.replace();
+    });
+    showBtn.addEventListener('click', () => {
+      panelWrapper.classList.remove('hidden');
+      showBtn.classList.add('hidden');
+      feather.replace();
+    });
+
+    // ArcGIS Map
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/layers/FeatureLayer",
+      "esri/layers/GraphicsLayer",
+      "esri/Graphic",
+      "esri/widgets/Legend",
+      "esri/widgets/Expand",
+      "esri/widgets/ScaleBar"
+    ], function (Map, MapView, FeatureLayer, GraphicsLayer, Graphic, Legend, Expand, ScaleBar) {
+
+      const map = new Map({ basemap: "topo-vector" });
+
+      const view = new MapView({
+        container: "viewDiv",
+        map,
+        center: [-105.534445, 38.960389],
+        zoom: 7,
+        // Hide Esri's default zoom/compass UI; we'll add what we want manually
+        ui: { components: ["attribution"] }
+      });
+      view.ui.components = ["attribution"]; // extra safety
+
+      // Remember the initial viewpoint (for the Home button)
+      let homeViewpoint;
+      view.when(() => { homeViewpoint = view.viewpoint.clone(); });
+
+      // --- Scale widgets ---
+      const scaleEl = document.getElementById('scaleReadout');
+      const fmtScale = (n) => n.toLocaleString(undefined, { maximumFractionDigits: 0 });
+      view.watch("scale", (s) => { scaleEl.textContent = `1:${fmtScale(Math.round(s))}`; });
+
+      // Distance scale bar (bottom-right)
+      const scaleBar = new ScaleBar({ view, unit: "dual", style: "line" });
+      view.ui.add(scaleBar, "bottom-right");
+
+      // Keep popup off the map content
+      view.popup.dockEnabled = true;
+      view.popup.dockOptions = { position: "top-right", breakpoint: false };
+      view.popup.collapseEnabled = true;
+      view.popup.visibleElements = { featureNavigation: false };
+
+      // Basemap radios
+      document.querySelectorAll('input[name="basemap"]').forEach(r => {
+        r.addEventListener('change', (e) => map.basemap = e.target.value);
+      });
+
+      // ------ Handoff between polygons and icons ------
+      const SCALE_BREAK = 150000;     // polygons visible when scale <= 150k
+      const EXTENT_PADDING = 1.10;
+      const ENSURE_VISIBLE_SCALE = SCALE_BREAK - 2000; // ~1:148k
+      const MIN_CLOSE_SCALE_DEFAULT = 12000;
+      const MIN_CLOSE_SCALE_BY_SERVICE = {
+        "AVRC Soils": 12000,
+      };
+
+      // Helper: extract soil series name from muname (e.g., "Rocky Ford silty clay loam" → "Rocky Ford")
+      function extractSeriesName(muname) {
+        if (!muname) return null;
+        const textureTerms = /\b(sand|loamy sand|sandy loam|loam|silt loam|silt|sandy clay loam|clay loam|silty clay loam|sandy clay|silty clay|clay|muck|peat|gravel|cobble|stony|bouldery|channery|flaggy|very fine|fine|coarse|eroded|variant|family|complex|association|undrained|drained|flooded|ponded|occasionally|frequently|rarely)\b/i;
+        const parts = muname.split(textureTerms);
+        if (parts.length > 0 && parts[0].trim()) {
+          return parts[0].trim();
+        }
+        return muname.split(' ').slice(0, 2).join(' ');
+      }
+
+      function makeSoilsPopup(stationDisplayName) {
+        const stationEsc = stationDisplayName.replace(/'/g, "\\'");
+        return {
+          title: "{expression/title}",
+          expressionInfos: [
+            { name: "title", expression: `'${stationEsc}' + TextFormatting.NewLine + $feature.muname` }
+          ],
+          content: [
+            {
+              type: "fields",
+              fieldInfos: [
+                { fieldName: "areasymbol", label: "Area Symbol" },
+                { fieldName: "musym", label: "Map Unit Symbol" },
+                { fieldName: "muname", label: "Map Unit Name" },
+                { fieldName: "SurfText_DCP_SL", label: "Surface Texture" },
+                { fieldName: "Sand_DCP_0_6_in", label: "Sand % (0-6\")" },
+                { fieldName: "Silt_DCP_0_6_in", label: "Silt % (0-6\")" },
+                { fieldName: "Clay_DCP_0_6_in", label: "Clay % (0-6\")" },
+                { fieldName: "pHwater_DCP_0_6_in", label: "pH (0-6\")" },
+                { fieldName: "OrgMatter_DCP_0_6_in", label: "OM % (0-6\")" },
+                { fieldName: "BdSurf_DCP_0_6_in", label: "Bulk Density g/cm³ (0-6\")" },
+                { fieldName: "CaC03_DCP_0_6_in", label: "CaCO₃ % (0-6\")" },
+                { fieldName: "EC_DCP_0_6_in", label: "EC dS/m (0-6\")" },
+                { fieldName: "Sand_AllDepth", label: "Sand % (All Depths)" },
+                { fieldName: "Silt_AllDepth", label: "Silt % (All Depths)" },
+                { fieldName: "Clay_AllDepth", label: "Clay % (All Depths)" },
+                { fieldName: "pH_AllDepth", label: "Min pH (All Depths)" },
+                { fieldName: "OM_AllDepth", label: "OM % (All Depths)" },
+                { fieldName: "BD_AllDepth", label: "Bulk Density g/cm³ (All Depths)" },
+                { fieldName: "CaCO3_AllDepth", label: "CaCO₃ % (All Depths)" },
+                { fieldName: "EC_AllDepth", label: "Max EC dS/m (All Depths)" },
+                { fieldName: "TaxClName_DCP", label: "Taxonomic Classification" },
+                { fieldName: "TaxOrder_DCP", label: "Taxonomic Order" },
+                { fieldName: "ParMatNm_DCP", label: "Parent Material" },
+                { fieldName: "DrainageCl", label: "Drainage Class" },
+                { fieldName: "MoistRegim_DCP", label: "Soil Moisture Regime" },
+                { fieldName: "TempRegime_DCP", label: "Soil Temperature Regime" },
+                { fieldName: "EcoSiteNm_DCP", label: "Ecological Site Name" }
+              ]
+            },
+            {
+              type: "custom",
+              creator: function(event) {
+                const feature = event.graphic;
+                const muname = feature.attributes?.muname || '';
+                const series = extractSeriesName(muname);
+
+                let lon = -105.5, lat = 40.0;
+                if (feature.geometry) {
+                  const geom = feature.geometry;
+                  if (geom.centroid) {
+                    lon = geom.centroid.longitude;
+                    lat = geom.centroid.latitude;
+                  } else if (geom.extent) {
+                    lon = geom.extent.center.longitude;
+                    lat = geom.extent.center.latitude;
+                  }
+                }
+
+                const div = document.createElement('div');
+                div.style.cssText = 'margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;';
+                div.innerHTML = `
+                  <div style="font-weight: 600; font-size: 13px; margin-bottom: 8px; color: #374151;">More Data</div>
+                  <div style="display: flex; flex-direction: column; gap: 6px;">
+                    ${series ? `<a href="https://casoilresource.lawr.ucdavis.edu/sde/?series=${encodeURIComponent(series)}"
+                       target="_blank" rel="noopener noreferrer"
+                       style="color: #1E4D2B; text-decoration: underline; font-size: 13px;">
+                       View Soil Profile (${series}) →
+                    </a>` : ''}
+                    <a href="https://websoilsurvey.nrcs.usda.gov/app/WebSoilSurvey.aspx?location=(${lon.toFixed(5)}%20${lat.toFixed(5)},${lon.toFixed(5)}%20${lat.toFixed(5)})"
+                       target="_blank" rel="noopener noreferrer"
+                       style="color: #1E4D2B; text-decoration: underline; font-size: 13px;">
+                       Official NRCS Data →
+                    </a>
+                  </div>
+                `;
+                return div;
+              }
+            }
+          ]
+        };
+      }
+      
+      // --- Services (Updated to EPSG:26913 URLs) ---
+      const baseURL = "https://services1.arcgis.com/KNdRU5cN6ENqCTjk/arcgis/rest/services/CSU_AES_Soils/FeatureServer";
+      
+      const operationalLayers = [
+        { url: `${baseURL}/30`, title: "RMRC Soils"  },
+        { url: `${baseURL}/28`, title: "OMRC Soils"  },
+        { url: `${baseURL}/27`, title: "GVRC Soils"  },
+        { url: `${baseURL}/32`, title: "SWCRC Soils" },
+        { url: `${baseURL}/31`, title: "SLVRC Soils" },
+        { url: `${baseURL}/29`, title: "PRC Soils"   },
+        { url: `${baseURL}/26`, title: "ECRC Soils"  },
+        { url: `${baseURL}/25`, title: "AVRC Soils"  },
+        { url: `${baseURL}/24`, title: "ARDEC South Soils" },
+        { url: `${baseURL}/23`, title: "ARDEC Soils" }
+      ];
+
+      const nameToTitle = {
+        "Rogers Mesa RC":        "RMRC Soils",
+        "Orchard Mesa RC":       "OMRC Soils",
+        "Grand Valley RC":       "GVRC Soils",
+        "Southwest Colorado RC": "SWCRC Soils",
+        "San Luis Valley RC":    "SLVRC Soils",
+        "Plainsman RC":          "PRC Soils",
+        "Eastern Colorado RC":   "ECRC Soils",
+        "Arkansas Valley RC":    "AVRC Soils",
+        "ARDEC South":           "ARDEC South Soils",
+        "ARDEC":                 "ARDEC Soils"
+      };
+      const titleToName = Object.fromEntries(Object.entries(nameToTitle).map(([nice, svc]) => [svc, nice]));
+
+      // Add Colorado Border as reference layer (non-selectable)
+      const coBorder = new FeatureLayer({
+        url: `${baseURL}/10`,
+        title: "Colorado Border",
+        popupEnabled: false,
+        listMode: "hide",
+        renderer: {
+          type: "simple",
+          symbol: {
+            type: "simple-fill",
+            color: [0, 0, 0, 0],
+            outline: {
+              color: [80, 80, 80, 0.8],
+              width: 2
+            }
+          }
+        }
+      });
+      map.add(coBorder);
+
+      const layerByServiceTitle = {};
+      const iconLayerByServiceTitle = {};
+
+      operationalLayers.forEach(info => {
+        const displayTitle = titleToName[info.title] || info.title;
+
+        // Polygons (visible when zoomed in)
+        const fl = new FeatureLayer({
+          url: info.url,
+          title: displayTitle,
+          popupTemplate: makeSoilsPopup(displayTitle),
+          outFields: ["*"],
+          minScale: SCALE_BREAK,
+          renderer: {
+            type: "simple",
+            symbol: {
+              type: "simple-fill",
+              color: [0, 0, 0, 0],
+              outline: { color: [255, 0, 0, 1], width: 2 }
+            }
+          }
+        });
+        map.add(fl);
+        layerByServiceTitle[info.title] = fl;
+
+        // One icon per station (visible when zoomed out)
+        const gl = new GraphicsLayer({
+          title: displayTitle + " (icons)",
+          maxScale: SCALE_BREAK
+        });
+        map.add(gl);
+        iconLayerByServiceTitle[info.title] = gl;
+
+        fl.queryExtent().then(({ extent }) => {
+          if (!extent) return;
+          const g = new Graphic({
+            geometry: extent.center,
+            attributes: { stationTitle: displayTitle, serviceTitle: info.title },
+            symbol: {
+              type: "simple-marker",
+              style: "circle",
+              size: 11,
+              outline: { color: [0,0,0,0.9], width: 0.7 },
+              color: [229, 106, 84, 0.9]
+            },
+            popupTemplate: { title: "{stationTitle}", content: "Click to zoom to this station." }
+          });
+          gl.add(g);
+        });
+      });
+
+      // Helper: zoom to a station extent and ensure polygons are visible — without the "jump"
+      async function goToStationExtentEnsuringVisibility(serviceTitle){
+        const lyr = layerByServiceTitle[serviceTitle];
+        if (!lyr) return;
+        const { extent } = await lyr.queryExtent();
+        if (!extent) return;
+
+        // Station-specific "too-close" floor (must be finer than SCALE_BREAK)
+        const minClose = Math.min(
+          MIN_CLOSE_SCALE_BY_SERVICE[serviceTitle] ?? MIN_CLOSE_SCALE_DEFAULT,
+          SCALE_BREAK - 1
+        );
+
+        // 1) Fit the extent instantly (no animation) to measure the resulting scale.
+        await view.goTo(extent.expand(EXTENT_PADDING), { animate: false });
+
+        // 2) Clamp to final target scale in a single animated step.
+        let targetScale = view.scale;
+        if (targetScale > SCALE_BREAK) targetScale = ENSURE_VISIBLE_SCALE; // too far out → nudge in
+        if (targetScale < minClose)    targetScale = minClose;             // too close   → back out
+
+        // Only animate if the target differs from current.
+        if (Math.abs(targetScale - view.scale) > 1) {
+          await view.goTo(
+            { center: extent.center, scale: targetScale },
+            { duration: 450, easing: "ease-in-out" }
+          );
+        }
+      }
+
+      // Clicking an icon → zoom to extent
+      view.on("click", (event) => {
+        view.hitTest(event).then((hit) => {
+          const r = hit.results.find(x => x.graphic?.attributes?.serviceTitle);
+          if (!r) return;
+          const serviceTitle = r.graphic.attributes.serviceTitle;
+          goToStationExtentEnsuringVisibility(serviceTitle);
+        });
+      });
+
+      // Build sidebar groups
+      const groups = {
+        "AGRICULTURAL RESEARCH, DEVELOPMENT AND EDUCATION CENTER": [
+          "ARDEC", "ARDEC South"
+        ],
+        "WESTERN COLORADO RESEARCH CENTER": [
+          "Grand Valley RC", "Orchard Mesa RC", "Rogers Mesa RC"
+        ],
+        "OTHER STATIONS": [
+          "Eastern Colorado RC", "Southwest Colorado RC", "San Luis Valley RC", "Arkansas Valley RC", "Plainsman RC"
+        ]
+      };
+
+      const layerToggles = document.getElementById("layerToggles");
+      layerToggles.innerHTML = "";
+
+      for (const [heading, stations] of Object.entries(groups)) {
+        const h = document.createElement("div");
+        h.className = "mt-4 mb-2 text-xs uppercase tracking-wide text-gray-500";
+        h.textContent = heading;
+        layerToggles.appendChild(h);
+
+        stations.forEach(niceName => {
+          const serviceTitle = nameToTitle[niceName];
+
+          const row = document.createElement("div");
+          row.className = "flex items-center justify-between";
+
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "text-left w-full py-1 text-[#1E4D2B] hover:text-[#006144] underline";
+          btn.textContent = niceName;
+          btn.dataset.layer = serviceTitle;
+
+          btn.addEventListener("click", async (e) => {
+            const svc = e.currentTarget.dataset.layer;
+            await goToStationExtentEnsuringVisibility(svc);
+          });
+
+          row.appendChild(btn);
+          layerToggles.appendChild(row);
+        });
+      }
+
+      // Legend
+      view.when(() => {
+        const legend = new Legend({ view });
+        const legendExpand = new Expand({
+          view,
+          content: legend,
+          expandIcon: "legend",
+          expandTooltip: "Legend"
+        });
+        view.ui.add(legendExpand, "bottom-left");
+      });
+
+      // Custom Zoom controls
+      document.getElementById("zoom-in").addEventListener("click", (e) => {
+        e.stopPropagation();
+        view.goTo({ zoom: view.zoom + 1 });
+      });
+      document.getElementById("zoom-out").addEventListener("click", (e) => {
+        e.stopPropagation();
+        view.goTo({ zoom: view.zoom - 1 });
+      });
+      document.getElementById("home").addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (homeViewpoint) view.goTo(homeViewpoint.clone(), { duration: 500, easing: "ease-in-out" });
+      });
+    }); // require(...)
+  </script>
+</body>
+</html>
