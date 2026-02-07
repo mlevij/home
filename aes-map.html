@@ -104,7 +104,7 @@
 
         <div class="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
           <div class="bg-gray-50 p-3 rounded-lg">
-            <h3 class="font-medium text-gray-700 mb-2">Base Maps</h3>
+            <h3 class="font-medium text-gray-700 mb-2"> Maps</h3>
             <div class="space-y-2">
               <label class="flex items-center space-x-2">
                 <input type="radio" name="basemap" value="topo-vector" checked class="accent-[#1E4D2B]">
@@ -308,7 +308,7 @@
       }
       
       // --- Services (Updated to EPSG:26913 URLs) ---
-      const baseURL = "https://services1.arcgis.com/KNdRU5cN6ENqCTjk/arcgis/rest/services/CSU_Agricultural_Experiment_Station_WFL1/FeatureServer";
+      const baseURL = "https://services1.arcgis.com/KNdRU5cN6ENqCTjk/arcgis/rest/services/CSU_AES_Soils/FeatureServer";
       
       const operationalLayers = [
         { url: `${baseURL}/0`,  title: "RMRC Soils"  },
@@ -339,7 +339,7 @@
 
       // Add Colorado Border as reference layer (non-selectable)
       const coBorder = new FeatureLayer({
-        url: `${baseURL}/10`,
+        url: `${URL}/10`,
         title: "Colorado Border",
         popupEnabled: false,
         listMode: "hide",
