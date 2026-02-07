@@ -284,10 +284,91 @@
           expressionInfos: [
             { name: "title", expression: `'${stationEsc}' + TextFormatting.NewLine + $feature.muname` }
           ],
-          content: soilsFieldsContent
+          content: [
+            {
+              type: "custom",
+              creator: function(feature) {
+                const container = document.createElement("div");
+                container.style.cssText = "position: relative; overflow: hidden; min-height: 400px;";
+                
+                const musym = feature.graphic.attributes.musym;
+                const areasymbol = feature.graphic.attributes.areasymbol;
+                
+                // Panel 1: Basic fields
+                const panel1 = document.createElement("div");
+                panel1.className = "popup-panel";
+                panel1.style.cssText = "position: absolute; width: 100%; transition: transform 0.3s ease; transform: translateX(0);";
+                
+                const fields = [
+                  { field: "areasymbol", label: "Area Symbol" },
+                  { field: "musym", label: "Map Unit Symbol" },
+                  { field: "muname", label: "Map Unit Name" },
+                  { field: "SurfTex", label: "Surface Texture" },
+                  { field: "Sand", label: "Sand %" },
+                  { field: "Silt", label: "Silt %" },
+                  { field: "Clay", label: "Clay %" },
+                  { field: "pH", label: "pH" },
+                  { field: "OM", label: "Organic Matter %" },
+                  { field: "TaxCl", label: "Taxonomic Classification" },
+                  { field: "TaxOrder", label: "Taxonomic Order" },
+                  { field: "ParMat", label: "Parent Material" },
+                  { field: "MoiReg", label: "Soil Moisture Regime" },
+                  { field: "Temp", label: "Soil Temperature Regime" },
+                  { field: "EcoName", label: "Ecological Site Name" }
+                ];
+                
+                const table = document.createElement("table");
+                table.className = "esri-widget__table";
+                fields.forEach(f => {
+                  const val = feature.graphic.attributes[f.field];
+                  if (val !== null && val !== undefined) {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `<th>${f.label}</th><td>${val}</td>`;
+                    table.appendChild(tr);
+                  }
+                });
+                panel1.appendChild(table);
+                
+                const btn1 = document.createElement("button");
+                btn1.className = "esri-button esri-button--secondary";
+                btn1.style.cssText = "width: 100%; margin-top: 12px; background: #3a3a3a; color: white; font-style: italic; border: none; padding: 8px; cursor: pointer;";
+                btn1.innerHTML = '&raquo; More Data';
+                btn1.onclick = () => {
+                  panel1.style.transform = "translateX(-100%)";
+                  panel2.style.transform = "translateX(0)";
+                };
+                panel1.appendChild(btn1);
+                
+                // Panel 2: SoilWeb iframe
+                const panel2 = document.createElement("div");
+                panel2.className = "popup-panel";
+                panel2.style.cssText = "position: absolute; width: 100%; transition: transform 0.3s ease; transform: translateX(100%);";
+                
+                const backBtn = document.createElement("button");
+                backBtn.className = "esri-button esri-button--secondary";
+                backBtn.style.cssText = "width: 100%; margin-bottom: 12px; background: #3a3a3a; color: white; font-style: italic; border: none; padding: 8px; cursor: pointer;";
+                backBtn.innerHTML = '&laquo; Back';
+                backBtn.onclick = () => {
+                  panel1.style.transform = "translateX(0)";
+                  panel2.style.transform = "translateX(100%)";
+                };
+                panel2.appendChild(backBtn);
+                
+                const iframe = document.createElement("iframe");
+                iframe.style.cssText = "width: 100%; height: 600px; border: none;";
+                iframe.src = `https://casoilresource.lawr.ucdavis.edu/sde/?series=${musym}`;
+                panel2.appendChild(iframe);
+                
+                container.appendChild(panel1);
+                container.appendChild(panel2);
+                
+                return container;
+              }
+            }
+          ]
         };
       }
-
+      
       // --- Services (Updated to EPSG:26913 URLs) ---
       const baseURL = "https://services1.arcgis.com/KNdRU5cN6ENqCTjk/arcgis/rest/services/CSU_Agricultural_Experiment_Station_WFL1/FeatureServer";
       
