@@ -467,86 +467,86 @@
           const layer = new FeatureLayer({
             url: layerUrl,
             title: stationName,
-          popupTemplate: {
-            title: "{musym} - {muname}",
-            content: function(feature) {
-              const container = document.createElement("div");
-              container.style.cssText = "position: relative; overflow: hidden; min-height: 400px;";
-              
-              const musym = feature.graphic.attributes.musym;
-              const areasymbol = feature.graphic.attributes.areasymbol;
-              
-              // Panel 1: Basic fields
-              const panel1 = document.createElement("div");
-              panel1.className = "popup-panel";
-              panel1.style.cssText = "position: absolute; width: 100%; transition: transform 0.3s ease; transform: translateX(0);";
-              
-              const fieldInfos = [
-                { fieldName: "muname", label: "Map Unit Name" },
-                { fieldName: "SurfTex", label: "Surface Texture" },
-                { fieldName: "Sand", label: "Sand %" },
-                { fieldName: "Silt", label: "Silt %" },
-                { fieldName: "Clay", label: "Clay %" },
-                { fieldName: "pH", label: "pH" },
-                { fieldName: "OM", label: "Organic Matter %" },
-                { fieldName: "TaxCl", label: "Taxonomic Classification" },
-                { fieldName: "TaxOrder", label: "Taxonomic Order" },
-                { fieldName: "ParMat", label: "Parent Material" }
-              ];
-              
-              const table = document.createElement("table");
-              table.className = "esri-widget__table";
-              table.style.cssText = "width: 100%; border-collapse: collapse;";
-              
-              fieldInfos.forEach(f => {
-                const val = feature.graphic.attributes[f.fieldName];
-                if (val !== null && val !== undefined && val !== '') {
-                  const tr = document.createElement("tr");
-                  tr.innerHTML = `
-                    <th style="text-align: left; padding: 4px 8px; background: #f3f4f6; font-weight: 600;">${f.label}</th>
-                    <td style="padding: 4px 8px;">${val}</td>
-                  `;
-                  table.appendChild(tr);
-                }
-              });
-              panel1.appendChild(table);
-              
-              const btn1 = document.createElement("button");
-              btn1.className = "more-data-btn";
-              btn1.style.cssText = "width: 100%; margin-top: 12px; background: #3a3a3a; color: white; font-style: italic; border: none; padding: 8px; cursor: pointer; border-radius: 4px;";
-              btn1.innerHTML = '&raquo; More Data';
-              btn1.onclick = () => {
-                panel1.style.transform = "translateX(-100%)";
-                panel2.style.transform = "translateX(0)";
-              };
-              panel1.appendChild(btn1);
-              
-              // Panel 2: SoilWeb iframe
-              const panel2 = document.createElement("div");
-              panel2.className = "popup-panel";
-              panel2.style.cssText = "position: absolute; width: 100%; transition: transform 0.3s ease; transform: translateX(100%); top: 0;";
-              
-              const backBtn = document.createElement("button");
-              backBtn.className = "back-btn";
-              backBtn.style.cssText = "width: 100%; margin-bottom: 12px; background: #3a3a3a; color: white; font-style: italic; border: none; padding: 8px; cursor: pointer; border-radius: 4px;";
-              backBtn.innerHTML = '&laquo; Back';
-              backBtn.onclick = () => {
-                panel1.style.transform = "translateX(0)";
-                panel2.style.transform = "translateX(100%)";
-              };
-              panel2.appendChild(backBtn);
-              
-              const iframe = document.createElement("iframe");
-              iframe.style.cssText = "width: 100%; height: 550px; border: none; border-radius: 4px;";
-              iframe.src = `https://casoilresource.lawr.ucdavis.edu/sde/?series=${musym}`;
-              panel2.appendChild(iframe);
-              
-              container.appendChild(panel1);
-              container.appendChild(panel2);
-              
-              return container;
-            }
-          }
+            popupTemplate: {
+              title: "{musym} - {muname}",
+              content: function(feature) {
+                const container = document.createElement("div");
+                container.style.cssText = "position: relative; overflow: hidden; min-height: 400px;";
+                
+                const musym = feature.graphic.attributes.musym;
+                const areasymbol = feature.graphic.attributes.areasymbol;
+                
+                // Panel 1: Basic fields
+                const panel1 = document.createElement("div");
+                panel1.className = "popup-panel";
+                panel1.style.cssText = "position: absolute; width: 100%; transition: transform 0.3s ease; transform: translateX(0);";
+                
+                const fieldInfos = [
+                  { fieldName: "muname", label: "Map Unit Name" },
+                  { fieldName: "SurfTex", label: "Surface Texture" },
+                  { fieldName: "Sand", label: "Sand %" },
+                  { fieldName: "Silt", label: "Silt %" },
+                  { fieldName: "Clay", label: "Clay %" },
+                  { fieldName: "pH", label: "pH" },
+                  { fieldName: "OM", label: "Organic Matter %" },
+                  { fieldName: "TaxCl", label: "Taxonomic Classification" },
+                  { fieldName: "TaxOrder", label: "Taxonomic Order" },
+                  { fieldName: "ParMat", label: "Parent Material" }
+                ];
+                
+                const table = document.createElement("table");
+                table.className = "esri-widget__table";
+                table.style.cssText = "width: 100%; border-collapse: collapse;";
+                
+                fieldInfos.forEach(f => {
+                  const val = feature.graphic.attributes[f.fieldName];
+                  if (val !== null && val !== undefined && val !== '') {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                      <th style="text-align: left; padding: 4px 8px; background: #f3f4f6; font-weight: 600;">${f.label}</th>
+                      <td style="padding: 4px 8px;">${val}</td>
+                    `;
+                    table.appendChild(tr);
+                  }
+                });
+                panel1.appendChild(table);
+                
+                const btn1 = document.createElement("button");
+                btn1.className = "more-data-btn";
+                btn1.style.cssText = "width: 100%; margin-top: 12px; background: #3a3a3a; color: white; font-style: italic; border: none; padding: 8px; cursor: pointer; border-radius: 4px;";
+                btn1.innerHTML = '&raquo; More Data';
+                btn1.onclick = () => {
+                  panel1.style.transform = "translateX(-100%)";
+                  panel2.style.transform = "translateX(0)";
+                };
+                panel1.appendChild(btn1);
+                
+                // Panel 2: SoilWeb iframe
+                const panel2 = document.createElement("div");
+                panel2.className = "popup-panel";
+                panel2.style.cssText = "position: absolute; width: 100%; transition: transform 0.3s ease; transform: translateX(100%); top: 0;";
+                
+                const backBtn = document.createElement("button");
+                backBtn.className = "back-btn";
+                backBtn.style.cssText = "width: 100%; margin-bottom: 12px; background: #3a3a3a; color: white; font-style: italic; border: none; padding: 8px; cursor: pointer; border-radius: 4px;";
+                backBtn.innerHTML = '&laquo; Back';
+                backBtn.onclick = () => {
+                  panel1.style.transform = "translateX(0)";
+                  panel2.style.transform = "translateX(100%)";
+                };
+                panel2.appendChild(backBtn);
+                
+                const iframe = document.createElement("iframe");
+                iframe.style.cssText = "width: 100%; height: 550px; border: none; border-radius: 4px;";
+                iframe.src = `https://casoilresource.lawr.ucdavis.edu/sde/?series=${musym}`;
+                panel2.appendChild(iframe);
+                
+                container.appendChild(panel1);
+                container.appendChild(panel2);
+                
+                return container;
+              }
+            },
             outFields: ["*"]
           });
           
