@@ -38,7 +38,8 @@
     .mini-map { height: 700px; width: 100%; border-radius: 0rem; overflow: hidden; }
     .esri-popup__main-container {
       max-width: 300px !important;
-      max-height: 700px !important;
+      max-height: calc(100% - 40px) !important;
+      overflow-y: auto !important;
     }
 
     :root {
@@ -95,6 +96,7 @@
 
     /* ── OM gauge ── */
     .om-gauge { position: relative; width: 220px; height: 130px; margin: 0 auto; }
+    .om-gauge-wrap { align-self: flex-end; }
     .om-gauge svg { overflow: visible; }
     .om-gauge-value {
       position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
@@ -203,7 +205,10 @@
                   <div class="flex">
                     <div id="miniMapContainer" class="mini-map flex-1"></div>
                     <div id="mapLegend" class="w-72 border-l bg-gray-50 p-3 overflow-y-auto max-h-[700px]">
-                      <h4 class="text-sm font-semibold text-gray-700 mb-2">Map Unit Symbols</h4>
+                      <button id="btnLegendToggle" type="button" class="w-full flex items-center justify-between text-sm font-semibold text-gray-700 mb-2 hover:text-gray-900">
+                        Map Unit Symbols
+                        <svg id="legendArrow" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                      </button>
                       <div id="legendContent" class="text-xs text-gray-600">Loading...</div>
                     </div>
                   </div>
@@ -866,6 +871,15 @@
       }
     }
     btnMore.addEventListener('click', ()=> (moreOpen ? closeMore() : openMore()));
+
+    // Legend collapse toggle
+    document.getElementById('btnLegendToggle').addEventListener('click', ()=>{
+      const content = document.getElementById('legendContent');
+      const arrow = document.getElementById('legendArrow');
+      const hidden = content.style.display === 'none';
+      content.style.display = hidden ? '' : 'none';
+      arrow.style.transform = hidden ? '' : 'rotate(-90deg)';
+    });
     window.addEventListener('resize', refreshMoreHeight);
     document.fonts?.ready?.then(refreshMoreHeight);
     new MutationObserver(refreshMoreHeight).observe(moreInner, { childList:true, subtree:true });
@@ -977,9 +991,9 @@
       function arc(a){ return [cx + r*Math.cos(a), cy + r*Math.sin(a)]; }
       const [sx,sy]=arc(startAng), [ex,ey]=arc(endAng);
 
-      // Gradient stops: red(0) → yellow(mid) → green(4-5+)
-      const greenStart = Math.min(4 / ceil * 100, 80);
-      const yellowMid  = greenStart / 2;
+      // Gradient stops: beige(low) → orange → green → black(high)
+      const orangeStop = Math.min(2 / ceil * 100, 40);
+      const greenStop  = Math.min(4 / ceil * 100, 70);
 
       // Needle angle: -90° (left) to +90° (right)
       const ratio  = Math.min(val / ceil, 1);
@@ -1003,10 +1017,10 @@
           <svg viewBox="0 0 220 130" width="220" height="130">
             <defs>
               <linearGradient id="${gradId}" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#ef4444"/>
-                <stop offset="${yellowMid}%" stop-color="#eab308"/>
-                <stop offset="${greenStart}%" stop-color="#22c55e"/>
-                <stop offset="100%" stop-color="#16a34a"/>
+                <stop offset="0%" stop-color="#C8C372"/>
+                <stop offset="${orangeStop}%" stop-color="#D9782D"/>
+                <stop offset="${greenStop}%" stop-color="#1E4D2B"/>
+                <stop offset="100%" stop-color="#000000"/>
               </linearGradient>
             </defs>
             <path d="M ${sx} ${sy} A ${r} ${r} 0 0 1 ${ex} ${ey}"
