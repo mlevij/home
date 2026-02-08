@@ -114,6 +114,24 @@
     }
     .om-gauge-labels { display: flex; justify-content: space-between; font-size: 0.65rem; color: #9ca3af; width: 220px; margin: 0 auto; }
 
+    /* ── Legend slide ── */
+    .map-and-legend { position: relative; display: flex; overflow: hidden; }
+    #mapLegend { transition: width 0.3s ease, padding 0.3s ease, opacity 0.3s ease; }
+    #mapLegend.collapsed { width: 0 !important; padding: 0 !important; opacity: 0; overflow: hidden; }
+    .legend-toggle {
+      position: absolute; right: 0; top: 50%; transform: translateY(-50%); z-index: 10;
+      background: rgba(255,255,255,0.9); border: 1px solid #e5e7eb; border-right: none;
+      border-radius: 4px 0 0 4px; padding: 8px 3px; cursor: pointer;
+      transition: right 0.3s ease;
+    }
+    .legend-toggle svg { width: 14px; height: 14px; stroke: #6b7280; transition: transform 0.3s ease; }
+    #mapLegend.collapsed ~ .legend-toggle { right: 0; }
+
+    /* ── Collapsible sections ── */
+    .section-toggle { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    .section-toggle svg { width: 14px; height: 14px; transition: transform 0.2s ease; }
+    .section-body { overflow: hidden; transition: max-height 0.3s ease; }
+
     @media (max-width: 768px) {
       .sidebar { width: 100%; }
       .mini-map { height: clamp(300px, 50vh, 700px); }
@@ -202,15 +220,15 @@
               <div>
                 <h3 class="text-sm font-semibold text-gray-700 mb-2">Interactive station map</h3>
                 <div id="mediaHost" class="border rounded-lg overflow-hidden bg-white">
-                  <div class="flex">
+                  <div class="map-and-legend">
                     <div id="miniMapContainer" class="mini-map flex-1"></div>
                     <div id="mapLegend" class="w-72 border-l bg-gray-50 p-3 overflow-y-auto max-h-[700px]">
-                      <button id="btnLegendToggle" type="button" class="w-full flex items-center justify-between text-sm font-semibold text-gray-700 mb-2 hover:text-gray-900">
-                        Map Unit Symbols
-                        <svg id="legendArrow" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                      </button>
+                      <h4 class="text-sm font-semibold text-gray-700 mb-2">Map Unit Symbols</h4>
                       <div id="legendContent" class="text-xs text-gray-600">Loading...</div>
                     </div>
+                    <button id="btnLegendToggle" type="button" class="legend-toggle" title="Toggle legend">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </button>
                   </div>
                   <div class="px-3 py-2 text-xs text-gray-600 border-t">
                     Map showing <span id="mapStationName">station</span> soil boundaries with Map Unit Symbols.
@@ -220,13 +238,22 @@
 
               <!-- Write-up -->
               <div>
-                <h3 class="text-sm font-semibold text-gray-700 mb-2">Station description</h3>
-                <div id="writeupHost" class="text-sm text-gray-700 leading-6"></div>
+                <h3 class="section-toggle text-sm font-semibold text-gray-700 mb-2" data-target="writeupBody">
+                  Station description
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                </h3>
+                <div id="writeupBody" class="section-body">
+                  <div id="writeupHost" class="text-sm text-gray-700 leading-6"></div>
+                </div>
               </div>
 
               <!-- Source & methods -->
               <div class="border rounded-lg">
-                <div class="bg-gray-50 px-4 py-2 text-sm font-medium">Data source & averaging method</div>
+                <div class="section-toggle bg-gray-50 px-4 py-2 text-sm font-medium" data-target="sourceBody">
+                  Data source & averaging method
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                </div>
+                <div id="sourceBody" class="section-body">
                 <div class="px-4 py-3 text-sm text-gray-700">
                   <ul class="list-disc pl-5 space-y-1">
                     <li><span class="font-medium">Source:</span> Values are read from CSU AES soils Feature Layers (ArcGIS FeatureServer). Layers on this map are built from USDA-NRCS SSURGO geopackage data, sampled at 0-6" depth. Citation: Soil Survey Staff, Natural Resources Conservation Service, United States Department of Agriculture. Web Soil Survey. Available online at <a href="http://websoilsurvey.nrcs.usda.gov/" target="_blank" class="text-[#1E4D2B] underline hover:text-[#006144]">http://websoilsurvey.nrcs.usda.gov/</a>. Accessed 7/15/2025.</li>
@@ -236,6 +263,7 @@
                     <li><span class="font-medium">Projection:</span> Data uses EPSG:26913 (NAD83 / UTM Zone 13N) for accurate area calculations in Colorado.</li>
                     <li><span class="font-medium">Maps:</span> Interactive maps show real-time data with MUSYM labels and can be configured with custom symbology.</li>
                   </ul>
+                </div>
                 </div>
               </div>
             </div>
@@ -872,14 +900,31 @@
     }
     btnMore.addEventListener('click', ()=> (moreOpen ? closeMore() : openMore()));
 
-    // Legend collapse toggle
+    // Legend slide toggle
     document.getElementById('btnLegendToggle').addEventListener('click', ()=>{
-      const content = document.getElementById('legendContent');
-      const arrow = document.getElementById('legendArrow');
-      const hidden = content.style.display === 'none';
-      content.style.display = hidden ? '' : 'none';
-      arrow.style.transform = hidden ? '' : 'rotate(-90deg)';
+      const legend = document.getElementById('mapLegend');
+      const btn = document.querySelector('#btnLegendToggle svg');
+      legend.classList.toggle('collapsed');
+      // Arrow: > when collapsed (click to open), < when open (click to close)
+      btn.style.transform = legend.classList.contains('collapsed') ? 'rotate(180deg)' : '';
     });
+
+    // Section collapse toggles (Station description, Data source)
+    document.querySelectorAll('.section-toggle').forEach(toggle => {
+      toggle.addEventListener('click', ()=>{
+        const body = document.getElementById(toggle.dataset.target);
+        const arrow = toggle.querySelector('svg');
+        if (body.style.maxHeight && body.style.maxHeight !== '0px') {
+          body.style.maxHeight = '0px';
+          arrow.style.transform = 'rotate(180deg)';
+        } else {
+          body.style.maxHeight = body.scrollHeight + 'px';
+          arrow.style.transform = '';
+        }
+      });
+    });
+    // Initialize section bodies to open
+    document.querySelectorAll('.section-body').forEach(b => { b.style.maxHeight = b.scrollHeight + 'px'; });
     window.addEventListener('resize', refreshMoreHeight);
     document.fonts?.ready?.then(refreshMoreHeight);
     new MutationObserver(refreshMoreHeight).observe(moreInner, { childList:true, subtree:true });
