@@ -121,10 +121,12 @@
     #mapLegend.collapsed #legendInner { opacity: 0; pointer-events: none; }
     #legendInner { transition: opacity 0.2s ease; }
     .legend-toggle {
-      position: absolute; left: 0; top: 50%; transform: translateY(-50%); z-index: 10;
+      position: absolute; left: 0; top: 0; bottom: 0; z-index: 10;
+      display: flex; align-items: center;
       background: rgba(249,250,251,0.9); border: none; border-right: 1px solid #e5e7eb;
-      padding: 12px 4px; cursor: pointer;
+      padding: 0 4px; cursor: pointer; width: 22px;
     }
+    .legend-toggle:hover { background: rgba(229,231,235,0.9); }
     .legend-toggle svg { width: 14px; height: 14px; stroke: #6b7280; transition: transform 0.3s ease; }
 
     /* ── Collapsible sections ── */
