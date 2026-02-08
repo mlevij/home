@@ -246,15 +246,16 @@
           </div>
         </div>
 
-        <!-- Charts -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Charts: Surface (0-6") -->
+        <h2 class="text-md font-semibold text-gray-500 uppercase tracking-wide mt-2">Surface (0-6")</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="card p-5" data-aos="fade-up">
-            <h3 class="text-lg font-semibold mb-3">Soil texture (area-weighted avg %)</h3>
+            <h3 class="text-lg font-semibold mb-3">Soil Texture %</h3>
             <div class="h-72"><canvas id="chartStationTexture"></canvas></div>
           </div>
 
           <div class="card p-5" data-aos="fade-up">
-            <h3 class="text-lg font-semibold mb-3">pH & Organic Matter (area-weighted avg)</h3>
+            <h3 class="text-lg font-semibold mb-3">pH and OM %</h3>
             <div class="flex flex-col sm:flex-row items-center justify-around gap-6" style="min-height:280px;">
               <div id="phScaleHost"></div>
               <div id="omGaugeHost" class="om-gauge-wrap flex flex-col items-center justify-center"></div>
@@ -262,8 +263,30 @@
           </div>
 
           <div class="card p-5" data-aos="fade-up">
-            <h3 class="text-lg font-semibold mb-3">BD, CaCO₃, EC (area-weighted avg)</h3>
+            <h3 class="text-lg font-semibold mb-3">BD (g/cm³), CaCO₃ (%), EC (dS/m)</h3>
             <div class="h-72"><canvas id="chartStationPhysChem"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Charts: All Depths -->
+        <h2 class="text-md font-semibold text-gray-500 uppercase tracking-wide mt-6">All Depths (Full Profile)</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="card p-5" data-aos="fade-up">
+            <h3 class="text-lg font-semibold mb-3">Soil Texture %</h3>
+            <div class="h-72"><canvas id="chartADTexture"></canvas></div>
+          </div>
+
+          <div class="card p-5" data-aos="fade-up">
+            <h3 class="text-lg font-semibold mb-3">pH (min) and OM %</h3>
+            <div class="flex flex-col sm:flex-row items-center justify-around gap-6" style="min-height:280px;">
+              <div id="phScaleHostAD"></div>
+              <div id="omGaugeHostAD" class="om-gauge-wrap flex flex-col items-center justify-center"></div>
+            </div>
+          </div>
+
+          <div class="card p-5" data-aos="fade-up">
+            <h3 class="text-lg font-semibold mb-3">BD (g/cm³), CaCO₃ (%), EC (max dS/m)</h3>
+            <div class="h-72"><canvas id="chartADPhysChem"></canvas></div>
           </div>
         </div>
 
@@ -345,13 +368,34 @@
     };
 
     // ---------- Numeric fields ----------
-    // Map short display names → actual service field names (CSU_AES_Soils uses _AllDepth suffix)
+    // Map short display names → actual service field names
+    // Surface (0-6")
     const FIELD_MAP = {
-      Sand:'Sand_AllDepth', Silt:'Silt_AllDepth', Clay:'Clay_AllDepth',
-      pH:'pH_AllDepth', OM:'OM_AllDepth', BD:'BD_AllDepth',
-      CaCO3:'CaCO3_AllDepth', EC:'EC_AllDepth'
+      'Sand':   'Sand_DCP_0_6_in',
+      'Silt':   'Silt_DCP_0_6_in',
+      'Clay':   'Clay_DCP_0_6_in',
+      'pH':     'pHwater_DCP_0_6_in',
+      'OM':     'OrgMatter_DCP_0_6_in',
+      'BD':     'BdSurf_DCP_0_6_in',
+      'CaCO3':  'CaC03_DCP_0_6_in',
+      'EC':     'EC_DCP_0_6_in'
     };
+    // All Depths
+    const ALLDEPTH_MAP = {
+      'Sand_AD':   'Sand_AllDepth',
+      'Silt_AD':   'Silt_AllDepth',
+      'Clay_AD':   'Clay_AllDepth',
+      'pH_AD':     'pH_AllDepth',
+      'OM_AD':     'OM_AllDepth',
+      'BD_AD':     'BD_AllDepth',
+      'CaCO3_AD':  'CaCO3_AllDepth',
+      'EC_AD':     'EC_AllDepth'
+    };
+    const COMBINED_MAP = { ...FIELD_MAP, ...ALLDEPTH_MAP };
     const NUM_FIELDS = Object.keys(FIELD_MAP);
+    const AD_FIELDS  = Object.keys(ALLDEPTH_MAP);
+    const ALL_SHORT_FIELDS = Object.keys(COMBINED_MAP);
+    const SVC_FIELDS = Object.values(COMBINED_MAP);
 
     // Sidebar build
     const listEl = document.getElementById('stationList');
@@ -398,24 +442,26 @@
       return 'shape_Area'; // fallback
     }
 
-    // Pull rows for weighting (numeric fields + area only)
+    // Pull rows for weighting (service field names + area), remap to short names
     async function fetchLayerRows(url, areaField){
       const rows = [];
       let offset = 0, page = 2000;
-      const svcFields = Object.values(FIELD_MAP);
-      const outFields = encodeURIComponent([...svcFields, areaField].join(','));
+      const outFields = encodeURIComponent([...SVC_FIELDS, areaField].join(','));
+      // Reverse map: service name → short name
+      const rev = {};
+      for (const [short, svc] of Object.entries(COMBINED_MAP)) rev[svc] = short;
       while (true) {
         const qs = `where=1%3D1&outFields=${outFields}&returnGeometry=false&f=json&resultOffset=${offset}&resultRecordCount=${page}`;
         const j = await fetchJSON(`${url}/query?${qs}`);
-        if (Array.isArray(j.features)){
-          // Remap service field names back to short display names
-          rows.push(...j.features.map(f => {
-            const a = f.attributes || {};
+        if (Array.isArray(j.features)) {
+          for (const f of j.features) {
+            const attr = f.attributes || {};
             const mapped = {};
-            for (const [short, svc] of Object.entries(FIELD_MAP)) mapped[short] = a[svc];
-            mapped[areaField] = a[areaField];
-            return mapped;
-          }));
+            for (const [k, v] of Object.entries(attr)) {
+              mapped[rev[k] || k] = v;
+            }
+            rows.push(mapped);
+          }
         }
         if (!j.exceededTransferLimit) break;
         offset += page;
@@ -425,7 +471,7 @@
 
     function computeWeightedFromRows(rows, areaField){
       const out = {};
-      NUM_FIELDS.forEach(f=>{
+      ALL_SHORT_FIELDS.forEach(f=>{
         let numSum = 0, denSum = 0;
         let min = Infinity, max = -Infinity, count = 0;
         for (const r of rows){
@@ -869,25 +915,32 @@
     // ---------- KPIs & Charts ----------
     const kpiRow = document.getElementById('kpiRow');
     function setKPIs(stats){
-      const order = ['Sand','Silt','Clay','pH','OM'];
-      kpiRow.innerHTML = order.map(f=>{
-        const v = stats?.[f]?.avg;
+      const order = [
+        { key:'Sand', label:'Sand (0-6")' },
+        { key:'Silt', label:'Silt (0-6")' },
+        { key:'Clay', label:'Clay (0-6")' },
+        { key:'pH',   label:'pH (0-6")' },
+        { key:'OM',   label:'OM (0-6")' }
+      ];
+      kpiRow.innerHTML = order.map(({key,label})=>{
+        const v = stats?.[key]?.avg;
         const val = Number.isFinite(v) ? v.toFixed(2) : '—';
-        const units = (f==='pH') ? '' : '%';
+        const units = (key==='pH') ? '' : '%';
         return `
           <div class="kpi p-4">
-            <div class="text-xs text-gray-500">${f}</div>
+            <div class="text-xs text-gray-500">${label}</div>
             <div class="text-2xl font-semibold text-gray-800 mt-1">${val}<span class="text-sm ml-1">${units}</span></div>
           </div>`;
       }).join('');
     }
 
     let chTexture=null, chPhysChem=null;
+    let chADTexture=null, chADPhysChem=null;
     function destroyChart(c){ c && c.destroy && c.destroy(); }
 
     /* ── pH vertical sliding scale ── */
-    function renderPhScale(phVal){
-      const host = document.getElementById('phScaleHost');
+    function renderPhScale(phVal, hostId='phScaleHost', markerId='phMarker'){
+      const host = document.getElementById(hostId);
       const safe = Number.isFinite(phVal) ? phVal : 0;
       // 0 = top (100%), 14 = bottom (0%) — invert so 14 is at top
       const pct  = ((14 - safe) / 14 * 100).toFixed(2);
@@ -899,7 +952,7 @@
           </div>
           <div class="ph-column-ticks">${ticks}</div>
           <div class="ph-column-bar">
-            <div class="ph-marker" id="phMarker" style="top:0%">
+            <div class="ph-marker" id="${markerId}" style="top:0%">
               <div class="ph-marker-pin"></div>
               <div class="ph-marker-label">${safe.toFixed(2)}</div>
               <div class="ph-tooltip">pH ${safe.toFixed(2)}</div>
@@ -907,13 +960,13 @@
           </div>
         </div>`;
       requestAnimationFrame(()=>requestAnimationFrame(()=>{
-        document.getElementById('phMarker').style.top = pct + '%';
+        document.getElementById(markerId).style.top = pct + '%';
       }));
     }
 
     /* ── OM gauge ── */
-    function renderOmGauge(omAvg, omMax){
-      const host = document.getElementById('omGaugeHost');
+    function renderOmGauge(omAvg, omMax, hostId='omGaugeHost', needleId='omNeedle'){
+      const host = document.getElementById(hostId);
       const val  = Number.isFinite(omAvg) ? omAvg : 0;
       const ceil = Math.max(Math.ceil(Number.isFinite(omMax) ? omMax : val * 1.5), Math.ceil(val * 1.5), 6);
       const mid  = ceil / 2;
@@ -931,6 +984,7 @@
       // Needle angle: -90° (left) to +90° (right)
       const ratio  = Math.min(val / ceil, 1);
       const needleDeg = -90 + ratio * 180;
+      const gradId = 'omGrad_' + needleId;
 
       // Tick labels
       const tickCount = Math.min(ceil, 10);
@@ -948,7 +1002,7 @@
         <div class="om-gauge">
           <svg viewBox="0 0 220 130" width="220" height="130">
             <defs>
-              <linearGradient id="omGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <linearGradient id="${gradId}" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stop-color="#ef4444"/>
                 <stop offset="${yellowMid}%" stop-color="#eab308"/>
                 <stop offset="${greenStart}%" stop-color="#22c55e"/>
@@ -956,9 +1010,9 @@
               </linearGradient>
             </defs>
             <path d="M ${sx} ${sy} A ${r} ${r} 0 0 1 ${ex} ${ey}"
-                  fill="none" stroke="url(#omGrad)" stroke-width="${thick}" stroke-linecap="round"/>
+                  fill="none" stroke="url(#${gradId})" stroke-width="${thick}" stroke-linecap="round"/>
             ${tickLabels}
-            <g class="om-needle" id="omNeedle" style="transform:rotate(-90deg)">
+            <g class="om-needle" id="${needleId}" style="transform:rotate(-90deg)">
               <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy - r + 6}" stroke="#1E4D2B" stroke-width="2.5" stroke-linecap="round"/>
               <circle cx="${cx}" cy="${cy}" r="5" fill="#1E4D2B"/>
             </g>
@@ -968,20 +1022,20 @@
         <div class="om-gauge-tooltip">OM: ${val.toFixed(2)}%</div>`;
 
       requestAnimationFrame(()=>requestAnimationFrame(()=>{
-        document.getElementById('omNeedle').style.transform = 'rotate('+needleDeg+'deg)';
+        document.getElementById(needleId).style.transform = 'rotate('+needleDeg+'deg)';
       }));
     }
 
+    const val = (stats, key) => Number.isFinite(stats?.[key]?.avg) ? stats[key].avg : 0;
+
     function renderStationCharts(stats){
+      // --- Surface (0-6") ---
       destroyChart(chTexture);
       chTexture = new Chart(document.getElementById('chartStationTexture').getContext('2d'), {
         type:'doughnut',
         data:{ labels:['Sand %','Silt %','Clay %'],
-          datasets:[{ data:[
-            Number.isFinite(stats?.Sand?.avg)?stats.Sand.avg:0,
-            Number.isFinite(stats?.Silt?.avg)?stats.Silt.avg:0,
-            Number.isFinite(stats?.Clay?.avg)?stats.Clay.avg:0
-          ], backgroundColor:['#C8C372','#D9782D','#1E4D2B'] }]},
+          datasets:[{ data:[val(stats,'Sand'), val(stats,'Silt'), val(stats,'Clay')],
+            backgroundColor:['#C8C372','#D9782D','#1E4D2B'] }]},
         options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' } } }
       });
 
@@ -991,14 +1045,34 @@
       destroyChart(chPhysChem);
       chPhysChem = new Chart(document.getElementById('chartStationPhysChem').getContext('2d'), {
         type:'bar',
-        data:{ labels:['Bulk Density','CaCO₃ (<2mm)','EC'],
-          datasets:[{ label:'Average',
-            data:[
-              Number.isFinite(stats?.BD?.avg)?stats.BD.avg:0,
-              Number.isFinite(stats?.CaCO3?.avg)?stats.CaCO3.avg:0,
-              Number.isFinite(stats?.EC?.avg)?stats.EC.avg:0
-            ],
-            backgroundColor:['rgba(30, 77, 43, 0.85)', 'rgba(120, 190, 32, 0.85)', 'rgba(151, 27, 47, 0.85)']  // Citron, Lime, Oval
+        data:{ labels:['BD (g/cm³)','CaCO₃ (%)','EC (dS/m)'],
+          datasets:[{ label:'Avg (0-6")',
+            data:[val(stats,'BD'), val(stats,'CaCO3'), val(stats,'EC')],
+            backgroundColor:['rgba(30, 77, 43, 0.85)', 'rgba(120, 190, 32, 0.85)', 'rgba(151, 27, 47, 0.85)']
+          }]},
+        options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true } } }
+      });
+
+      // --- All Depths ---
+      destroyChart(chADTexture);
+      chADTexture = new Chart(document.getElementById('chartADTexture').getContext('2d'), {
+        type:'doughnut',
+        data:{ labels:['Sand %','Silt %','Clay %'],
+          datasets:[{ data:[val(stats,'Sand_AD'), val(stats,'Silt_AD'), val(stats,'Clay_AD')],
+            backgroundColor:['#C8C372','#D9782D','#1E4D2B'] }]},
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' } } }
+      });
+
+      renderPhScale(stats?.pH_AD?.avg, 'phScaleHostAD', 'phMarkerAD');
+      renderOmGauge(stats?.OM_AD?.avg, stats?.OM_AD?.max, 'omGaugeHostAD', 'omNeedleAD');
+
+      destroyChart(chADPhysChem);
+      chADPhysChem = new Chart(document.getElementById('chartADPhysChem').getContext('2d'), {
+        type:'bar',
+        data:{ labels:['BD (g/cm³)','CaCO₃ (%)','EC (max dS/m)'],
+          datasets:[{ label:'Avg (All Depths)',
+            data:[val(stats,'BD_AD'), val(stats,'CaCO3_AD'), val(stats,'EC_AD')],
+            backgroundColor:['rgba(30, 77, 43, 0.85)', 'rgba(120, 190, 32, 0.85)', 'rgba(151, 27, 47, 0.85)']
           }]},
         options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true } } }
       });
