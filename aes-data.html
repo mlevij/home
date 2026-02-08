@@ -49,10 +49,11 @@
     }
     html, body, button, input, select, textarea { font-family: var(--font-sans); }
     
-    /* ArcGIS font override */
-    .esri-widget, .esri-view, .esri-popup__main-container, .esri-popup__header-title,
+    /* ArcGIS font override (exclude .esri-widget to preserve Calcite icon font for zoom buttons) */
+    .esri-view, .esri-popup__main-container, .esri-popup__header-title,
+    .esri-popup__content, .esri-feature__fields, .esri-feature__text,
     .esri-legend__message, .esri-legend__layer-caption, .esri-legend__service-label,
-    .esri-legend__layer-cell { font-family: var(--font-sans); }
+    .esri-legend__layer-cell, .esri-attribution__sources { font-family: var(--font-sans); }
 
     /* ── pH vertical scale ── */
     .ph-column-wrap { display: flex; align-items: stretch; gap: 6px; height: 260px; }
@@ -116,7 +117,7 @@
 
     /* ── Legend slide ── */
     .map-and-legend { display: flex; overflow: hidden; }
-    #mapLegend { transition: width 0.3s ease; overflow: hidden; }
+    #mapLegend { transition: width 0.3s ease; overflow-x: hidden; overflow-y: auto; }
     #mapLegend.collapsed { width: 24px !important; }
     #mapLegend.collapsed #legendInner { opacity: 0; pointer-events: none; }
     #legendInner { transition: opacity 0.2s ease; }
@@ -183,7 +184,7 @@
 
         <a href="https://agsci.colostate.edu/research-and-engagement/agricultural-experiment-station/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity">
           <img
-            src="./AES20Only_White.png"
+            src="./AES%20Only_White.png"
             alt="Agricultural Experiment Station"
             class="h-9 w-auto"
           />
