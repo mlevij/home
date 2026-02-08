@@ -129,6 +129,31 @@
     .legend-toggle:hover { background: rgba(229,231,235,0.9); }
     .legend-toggle svg { width: 14px; height: 14px; stroke: #6b7280; transition: transform 0.3s ease; }
 
+    /* ── Bullet bars (BD, CaCO3, EC) ── */
+    .bullet-bar-group { display: flex; flex-direction: column; gap: 24px; }
+    .bullet-bar { position: relative; }
+    .bullet-bar-label {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 4px; font-size: 0.8rem; font-weight: 600; color: #374151;
+    }
+    .bullet-bar-value { font-size: 1.1rem; font-weight: 700; color: #1f2937; }
+    .bullet-bar-unit { font-size: 0.7rem; font-weight: 400; color: #6b7280; }
+    .bullet-bar-track {
+      position: relative; height: 22px; border-radius: 4px; overflow: hidden;
+      background: #e5e7eb;
+    }
+    .bullet-bar-zones { display: flex; height: 100%; width: 100%; position: absolute; top: 0; left: 0; }
+    .bullet-bar-zones span { height: 100%; }
+    .bullet-bar-fill {
+      position: absolute; top: 3px; bottom: 3px; left: 0; width: 0;
+      background: #1f2937; border-radius: 3px;
+      transition: width 0.8s cubic-bezier(.4,0,.2,1);
+    }
+    .bullet-bar-ticks {
+      display: flex; justify-content: space-between;
+      margin-top: 2px; font-size: 0.6rem; color: #9ca3af;
+    }
+
     /* ── Collapsible sections ── */
     .section-toggle { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
     .section-toggle svg { width: 14px; height: 14px; transition: transform 0.2s ease; }
@@ -300,8 +325,8 @@
           </div>
 
           <div class="card p-5" data-aos="fade-up">
-            <h3 class="text-lg font-semibold mb-3">BD (g/cm³), CaCO₃ (%), EC (dS/m)</h3>
-            <div class="h-72"><canvas id="chartStationPhysChem"></canvas></div>
+            <h3 class="text-lg font-semibold mb-3">BD, CaCO₃, EC</h3>
+            <div id="bulletHost" class="bullet-bar-group"></div>
           </div>
         </div>
 
@@ -322,8 +347,8 @@
           </div>
 
           <div class="card p-5" data-aos="fade-up">
-            <h3 class="text-lg font-semibold mb-3">BD (g/cm³), CaCO₃ (%), EC (max dS/m)</h3>
-            <div class="h-72"><canvas id="chartADPhysChem"></canvas></div>
+            <h3 class="text-lg font-semibold mb-3">BD, CaCO₃, EC</h3>
+            <div id="bulletHostAD" class="bullet-bar-group"></div>
           </div>
         </div>
 
@@ -998,8 +1023,7 @@
       }).join('');
     }
 
-    let chTexture=null, chPhysChem=null;
-    let chADTexture=null, chADPhysChem=null;
+    let chTexture=null, chADTexture=null;
     function destroyChart(c){ c && c.destroy && c.destroy(); }
 
     /* ── pH vertical sliding scale ── */
@@ -1092,6 +1116,77 @@
 
     const val = (stats, key) => Number.isFinite(stats?.[key]?.avg) ? stats[key].avg : 0;
 
+    /* ── Bullet bars for BD, CaCO3, EC ── */
+    // Zone configs: each property gets its own scale and color zones
+    const BULLET_CONFIGS = {
+      BD: {
+        label: 'Bulk Density', unit: 'g/cm³', min: 0, max: 2.0,
+        zones: [
+          { pct: 60, color: 'rgba(30, 77, 43, 0.25)', tip: 'Ideal (<1.2)' },
+          { pct: 20, color: 'rgba(234, 179, 8, 0.3)', tip: 'Moderate' },
+          { pct: 20, color: 'rgba(220, 38, 38, 0.25)', tip: 'Compacted (>1.6)' }
+        ],
+        ticks: [0, 0.5, 1.0, 1.5, 2.0],
+        fill: 'rgba(30, 77, 43, 0.85)'
+      },
+      CaCO3: {
+        label: 'CaCO₃', unit: '%', min: 0, max: 15,
+        zones: [
+          { pct: 33, color: 'rgba(120, 190, 32, 0.25)', tip: 'Low (<5%)' },
+          { pct: 34, color: 'rgba(234, 179, 8, 0.3)', tip: 'Moderate' },
+          { pct: 33, color: 'rgba(220, 38, 38, 0.25)', tip: 'High (>10%)' }
+        ],
+        ticks: [0, 3, 6, 9, 12, 15],
+        fill: 'rgba(120, 190, 32, 0.85)'
+      },
+      EC: {
+        label: 'EC', unit: 'dS/m', min: 0, max: 4,
+        zones: [
+          { pct: 50, color: 'rgba(30, 77, 43, 0.25)', tip: 'Non-saline (<2)' },
+          { pct: 25, color: 'rgba(234, 179, 8, 0.3)', tip: 'Slightly saline' },
+          { pct: 25, color: 'rgba(220, 38, 38, 0.25)', tip: 'Saline (>3)' }
+        ],
+        ticks: [0, 1, 2, 3, 4],
+        fill: 'rgba(151, 27, 47, 0.85)'
+      }
+    };
+
+    function renderBulletBars(stats, keys, hostId, suffix=''){
+      const host = document.getElementById(hostId);
+      const bars = keys.map(k => {
+        const cfg = BULLET_CONFIGS[k.replace('_AD','')];
+        const v = val(stats, k + suffix);
+        const max = Math.max(cfg.max, v * 1.2); // extend if value exceeds default max
+        const pct = Math.min(v / max * 100, 100).toFixed(1);
+        const zones = cfg.zones.map(z => `<span style="width:${z.pct}%; background:${z.color}" title="${z.tip}"></span>`).join('');
+        const ticks = cfg.ticks.map(t => `<span>${t}</span>`).join('');
+        const fillId = `fill_${k}${suffix}_${hostId}`;
+        return `
+          <div class="bullet-bar">
+            <div class="bullet-bar-label">
+              <span>${cfg.label} <span class="bullet-bar-unit">(${cfg.unit})</span></span>
+              <span class="bullet-bar-value">${v.toFixed(2)}</span>
+            </div>
+            <div class="bullet-bar-track">
+              <div class="bullet-bar-zones">${zones}</div>
+              <div class="bullet-bar-fill" id="${fillId}" style="width:0%"></div>
+            </div>
+            <div class="bullet-bar-ticks">${ticks}</div>
+          </div>`;
+      });
+      host.innerHTML = bars.join('');
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        keys.forEach(k => {
+          const cfg = BULLET_CONFIGS[k.replace('_AD','')];
+          const v = val(stats, k + suffix);
+          const max = Math.max(cfg.max, v * 1.2);
+          const pct = Math.min(v / max * 100, 100).toFixed(1);
+          const el = document.getElementById(`fill_${k}${suffix}_${hostId}`);
+          if (el) el.style.width = pct + '%';
+        });
+      }));
+    }
+
     function renderStationCharts(stats){
       // --- Surface (0-6") ---
       destroyChart(chTexture);
@@ -1105,17 +1200,7 @@
 
       renderPhScale(stats?.pH?.avg);
       renderOmGauge(stats?.OM?.avg, stats?.OM?.max);
-
-      destroyChart(chPhysChem);
-      chPhysChem = new Chart(document.getElementById('chartStationPhysChem').getContext('2d'), {
-        type:'bar',
-        data:{ labels:['BD (g/cm³)','CaCO₃ (%)','EC (dS/m)'],
-          datasets:[{ label:'Avg (0-6")',
-            data:[val(stats,'BD'), val(stats,'CaCO3'), val(stats,'EC')],
-            backgroundColor:['rgba(30, 77, 43, 0.85)', 'rgba(120, 190, 32, 0.85)', 'rgba(151, 27, 47, 0.85)']
-          }]},
-        options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true } } }
-      });
+      renderBulletBars(stats, ['BD','CaCO3','EC'], 'bulletHost');
 
       // --- All Depths ---
       destroyChart(chADTexture);
@@ -1129,17 +1214,7 @@
 
       renderPhScale(stats?.pH_AD?.avg, 'phScaleHostAD', 'phMarkerAD');
       renderOmGauge(stats?.OM_AD?.avg, stats?.OM_AD?.max, 'omGaugeHostAD', 'omNeedleAD');
-
-      destroyChart(chADPhysChem);
-      chADPhysChem = new Chart(document.getElementById('chartADPhysChem').getContext('2d'), {
-        type:'bar',
-        data:{ labels:['BD (g/cm³)','CaCO₃ (%)','EC (max dS/m)'],
-          datasets:[{ label:'Avg (All Depths)',
-            data:[val(stats,'BD_AD'), val(stats,'CaCO3_AD'), val(stats,'EC_AD')],
-            backgroundColor:['rgba(30, 77, 43, 0.85)', 'rgba(120, 190, 32, 0.85)', 'rgba(151, 27, 47, 0.85)']
-          }]},
-        options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true } } }
-      });
+      renderBulletBars(stats, ['BD','CaCO3','EC'], 'bulletHostAD', '_AD');
     }
 
     // ---------- Show station ----------
