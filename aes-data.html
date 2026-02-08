@@ -345,7 +345,13 @@
     };
 
     // ---------- Numeric fields ----------
-    const NUM_FIELDS = ['Sand','Silt','Clay','pH','OM','BD','CaCO3','EC'];
+    // Map short display names → actual service field names (CSU_AES_Soils uses _AllDepth suffix)
+    const FIELD_MAP = {
+      Sand:'Sand_AllDepth', Silt:'Silt_AllDepth', Clay:'Clay_AllDepth',
+      pH:'pH_AllDepth', OM:'OM_AllDepth', BD:'BD_AllDepth',
+      CaCO3:'CaCO3_AllDepth', EC:'EC_AllDepth'
+    };
+    const NUM_FIELDS = Object.keys(FIELD_MAP);
 
     // Sidebar build
     const listEl = document.getElementById('stationList');
@@ -396,11 +402,21 @@
     async function fetchLayerRows(url, areaField){
       const rows = [];
       let offset = 0, page = 2000;
-      const outFields = encodeURIComponent([...NUM_FIELDS, areaField].join(','));
+      const svcFields = Object.values(FIELD_MAP);
+      const outFields = encodeURIComponent([...svcFields, areaField].join(','));
       while (true) {
         const qs = `where=1%3D1&outFields=${outFields}&returnGeometry=false&f=json&resultOffset=${offset}&resultRecordCount=${page}`;
         const j = await fetchJSON(`${url}/query?${qs}`);
-        if (Array.isArray(j.features)) rows.push(...j.features.map(f => f.attributes || {}));
+        if (Array.isArray(j.features)){
+          // Remap service field names back to short display names
+          rows.push(...j.features.map(f => {
+            const a = f.attributes || {};
+            const mapped = {};
+            for (const [short, svc] of Object.entries(FIELD_MAP)) mapped[short] = a[svc];
+            mapped[areaField] = a[areaField];
+            return mapped;
+          }));
+        }
         if (!j.exceededTransferLimit) break;
         offset += page;
       }
