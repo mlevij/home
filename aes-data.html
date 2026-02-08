@@ -115,13 +115,15 @@
     .om-gauge-labels { display: flex; justify-content: space-between; font-size: 0.65rem; color: #9ca3af; width: 220px; margin: 0 auto; }
 
     /* ── Legend slide ── */
-    .map-and-legend { position: relative; display: flex; overflow: hidden; }
-    #mapLegend { transition: width 0.3s ease, padding 0.3s ease, opacity 0.3s ease; }
-    #mapLegend.collapsed { width: 0 !important; padding: 0 !important; opacity: 0; overflow: hidden; }
+    .map-and-legend { display: flex; overflow: hidden; }
+    #mapLegend { transition: width 0.3s ease; overflow: hidden; }
+    #mapLegend.collapsed { width: 24px !important; }
+    #mapLegend.collapsed #legendInner { opacity: 0; pointer-events: none; }
+    #legendInner { transition: opacity 0.2s ease; }
     .legend-toggle {
-      position: absolute; top: 50%; transform: translateY(-50%); z-index: 10;
-      background: rgba(255,255,255,0.9); border: 1px solid #e5e7eb; border-left: none;
-      border-radius: 0 4px 4px 0; padding: 8px 3px; cursor: pointer;
+      position: absolute; left: 0; top: 50%; transform: translateY(-50%); z-index: 10;
+      background: rgba(249,250,251,0.9); border: none; border-right: 1px solid #e5e7eb;
+      padding: 12px 4px; cursor: pointer;
     }
     .legend-toggle svg { width: 14px; height: 14px; stroke: #6b7280; transition: transform 0.3s ease; }
 
@@ -220,12 +222,14 @@
                 <div id="mediaHost" class="border rounded-lg overflow-hidden bg-white">
                   <div class="map-and-legend">
                     <div id="miniMapContainer" class="mini-map flex-1"></div>
-                    <button id="btnLegendToggle" type="button" class="legend-toggle" title="Toggle legend">
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </button>
-                    <div id="mapLegend" class="w-72 border-l bg-gray-50 p-3 overflow-y-auto max-h-[700px]">
-                      <h4 class="text-sm font-semibold text-gray-700 mb-2">Map Unit Symbols</h4>
-                      <div id="legendContent" class="text-xs text-gray-600">Loading...</div>
+                    <div id="mapLegend" class="border-l bg-gray-50 overflow-y-auto max-h-[700px]" style="width:288px; position:relative;">
+                      <button id="btnLegendToggle" type="button" class="legend-toggle" title="Toggle legend">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                      </button>
+                      <div id="legendInner" class="p-3" style="margin-left:20px;">
+                        <h4 class="text-sm font-semibold text-gray-700 mb-2">Map Unit Symbols</h4>
+                        <div id="legendContent" class="text-xs text-gray-600">Loading...</div>
+                      </div>
                     </div>
                   </div>
                   <div class="px-3 py-2 text-xs text-gray-600 border-t">
@@ -922,9 +926,8 @@
         }
       });
     });
-    // Initialize section bodies to open (arrow up)
-    document.querySelectorAll('.section-body').forEach(b => { b.style.maxHeight = b.scrollHeight + 'px'; });
-    document.querySelectorAll('.section-toggle svg').forEach(a => { a.style.transform = 'rotate(180deg)'; });
+    // Initialize section bodies to collapsed (arrow down)
+    document.querySelectorAll('.section-body').forEach(b => { b.style.maxHeight = '0px'; });
     window.addEventListener('resize', refreshMoreHeight);
     document.fonts?.ready?.then(refreshMoreHeight);
     new MutationObserver(refreshMoreHeight).observe(moreInner, { childList:true, subtree:true });
