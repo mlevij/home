@@ -224,7 +224,7 @@
                 <div class="bg-gray-50 px-4 py-2 text-sm font-medium">Data source & averaging method</div>
                 <div class="px-4 py-3 text-sm text-gray-700">
                   <ul class="list-disc pl-5 space-y-1">
-                    <li><span class="font-medium">Source:</span> Values are read from CSU AES soils Feature Layers (ArcGIS FeatureServer). Layers are built from USDA-NRCS SSURGO geopackage data, sampled at 0-6" depth. Citation: Soil Survey Staff, Natural Resources Conservation Service, United States Department of Agriculture. Web Soil Survey. Available online at http://websoilsurvey.nrcs.usda.gov/. Accessed 7/15/2025.</li>
+                    <li><span class="font-medium">Source:</span> Values are read from CSU AES soils Feature Layers (ArcGIS FeatureServer). Layers on this map are built from USDA-NRCS SSURGO geopackage data, sampled at 0-6" depth. Citation: Soil Survey Staff, Natural Resources Conservation Service, United States Department of Agriculture. Web Soil Survey. Available online at http://websoilsurvey.nrcs.usda.gov/. Accessed 7/15/2025.</li>
                     <li><span class="font-medium">Scope:</span> Features within the station boundary only.</li>
                     <li><span class="font-medium">Averaging:</span> <u>Area-weighted</u> by each feature's area field (e.g., <code>shape_Area</code>, <strong>EPSG:26913 / UTM Zone 13N m²</strong>). For every attribute we compute ∑(value × area) ÷ ∑(area) using only features with a value for that attribute.</li>
                     <li><span class="font-medium">Units:</span> Sand/Silt/Clay/OM and CaCO₃ are %, pH is unitless, EC is dS/m (if populated), BD is g/cm³ (if populated).</li>
