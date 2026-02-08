@@ -118,7 +118,7 @@
     /* ── Legend slide ── */
     .map-and-legend { display: flex; overflow: hidden; }
     #mapLegend { transition: width 0.3s ease; overflow-x: hidden; overflow-y: auto; }
-    #mapLegend.collapsed { width: 24px !important; }
+    #mapLegend.collapsed { width: 24px !important; overflow: hidden; }
     #mapLegend.collapsed #legendInner { opacity: 0; pointer-events: none; }
     #legendInner { transition: opacity 0.2s ease; }
     .legend-toggle {
