@@ -309,24 +309,24 @@
     Chart.defaults.font.family = '"Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial';
 
     // ---------- Stations - UPDATED TO EPSG:26913 URLs ----------
-    const BASE_URL = 'https://services1.arcgis.com/KNdRU5cN6ENqCTjk/arcgis/rest/services/CSU_Agricultural_Experiment_Station_WFL1/FeatureServer';
-    
+    const BASE_URL = 'https://services1.arcgis.com/KNdRU5cN6ENqCTjk/arcgis/rest/services/CSU_AES_Soils/FeatureServer';
+
     const STATIONS = [
       { group:'AGRICULTURAL RESEARCH, DEVELOPMENT AND EDUCATION CENTER', items:[
-        { name:'ARDEC',        svc:'ARDEC Soils',        url:`${BASE_URL}/9` },
-        { name:'ARDEC South',  svc:'ARDEC South Soils',  url:`${BASE_URL}/8` },
+        { name:'ARDEC',        svc:'ARDEC Soils',        url:`${BASE_URL}/23` },
+        { name:'ARDEC South',  svc:'ARDEC South Soils',  url:`${BASE_URL}/24` },
       ]},
       { group:'WESTERN COLORADO RC', items:[
-        { name:'Grand Valley RC',  svc:'GVRC Soils', url:`${BASE_URL}/2` },
-        { name:'Orchard Mesa RC',  svc:'OMRC Soils', url:`${BASE_URL}/1` },
-        { name:'Rogers Mesa RC',   svc:'RMRC Soils', url:`${BASE_URL}/0` },
+        { name:'Grand Valley RC',  svc:'GVRC Soils', url:`${BASE_URL}/27` },
+        { name:'Orchard Mesa RC',  svc:'OMRC Soils', url:`${BASE_URL}/28` },
+        { name:'Rogers Mesa RC',   svc:'RMRC Soils', url:`${BASE_URL}/30` },
       ]},
       { group:'OTHER RCs', items:[
-        { name:'Eastern Colorado RC',  svc:'ECRC Soils', url:`${BASE_URL}/6` },
-        { name:'Southwest Colorado RC',svc:'SWCRC Soils',url:`${BASE_URL}/3` },
-        { name:'San Luis Valley RC',   svc:'SLVRC Soils',url:`${BASE_URL}/4` },
-        { name:'Arkansas Valley RC',   svc:'AVRC Soils', url:`${BASE_URL}/7` },
-        { name:'Plainsman RC',         svc:'PRC Soils',  url:`${BASE_URL}/5` },
+        { name:'Eastern Colorado RC',  svc:'ECRC Soils', url:`${BASE_URL}/26` },
+        { name:'Southwest Colorado RC',svc:'SWCRC Soils',url:`${BASE_URL}/32` },
+        { name:'San Luis Valley RC',   svc:'SLVRC Soils',url:`${BASE_URL}/31` },
+        { name:'Arkansas Valley RC',   svc:'AVRC Soils', url:`${BASE_URL}/25` },
+        { name:'Plainsman RC',         svc:'PRC Soils',  url:`${BASE_URL}/29` },
       ]},
     ];
 
@@ -899,9 +899,9 @@
       const greenStart = Math.min(4 / ceil * 100, 80);
       const yellowMid  = greenStart / 2;
 
-      // Needle angle: 180° (left) to 360° (right)
+      // Needle angle: -90° (left) to +90° (right)
       const ratio  = Math.min(val / ceil, 1);
-      const needleDeg = -180 + ratio * 180; // CSS rotate: -180 = left, 0 = right
+      const needleDeg = -90 + ratio * 180;
 
       // Tick labels
       const tickCount = Math.min(ceil, 10);
@@ -929,7 +929,7 @@
             <path d="M ${sx} ${sy} A ${r} ${r} 0 0 1 ${ex} ${ey}"
                   fill="none" stroke="url(#omGrad)" stroke-width="${thick}" stroke-linecap="round"/>
             ${tickLabels}
-            <g class="om-needle" id="omNeedle" style="transform:rotate(-180deg)">
+            <g class="om-needle" id="omNeedle" style="transform:rotate(-90deg)">
               <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy - r + 6}" stroke="#1E4D2B" stroke-width="2.5" stroke-linecap="round"/>
               <circle cx="${cx}" cy="${cy}" r="5" fill="#1E4D2B"/>
             </g>
@@ -999,8 +999,6 @@
         
         await mapPromise;
         renderWriteup(item.name);
-        
-        openMore();
         feather.replace();
       } catch(err){
         console.error('Failed to load station:', err);
