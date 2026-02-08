@@ -53,36 +53,41 @@
     .esri-legend__message, .esri-legend__layer-caption, .esri-legend__service-label,
     .esri-legend__layer-cell { font-family: var(--font-sans); }
 
-    /* ── pH sliding scale ── */
-    .ph-scale-wrap { position: relative; padding: 38px 0 32px; }
-    .ph-scale-bar {
-      height: 18px; border-radius: 9px; width: 100%;
-      background: linear-gradient(to right,
-        #ff0000 0%, #ff6600 14%, #ffcc00 28%, #66cc33 43%,
-        #33aa88 57%, #3366cc 71%, #6633cc 85%, #660099 100%);
+    /* ── pH vertical scale ── */
+    .ph-column-wrap { display: flex; align-items: stretch; gap: 6px; height: 260px; }
+    .ph-column-bar {
+      width: 38px; border-radius: 6px; flex-shrink: 0; position: relative;
+      background: linear-gradient(to bottom,
+        #d32f2f 0%, #e65100 12%, #f9a825 25%, #cddc39 36%,
+        #4caf50 43%, #2e7d32 50%, #4caf50 57%,
+        #cddc39 64%, #f9a825 75%, #e65100 88%, #d32f2f 100%);
     }
-    .ph-ticks { display: flex; justify-content: space-between; margin-top: 4px; }
-    .ph-ticks span { font-size: 0.65rem; color: #6b7280; width: 0; text-align: center; }
-    .ph-zones { display: flex; justify-content: space-between; margin-top: 2px; font-size: 0.7rem; color: #9ca3af; }
+    .ph-column-ticks {
+      display: flex; flex-direction: column; justify-content: space-between;
+      font-size: 0.65rem; color: #6b7280; padding: 0;
+    }
+    .ph-column-zones {
+      display: flex; flex-direction: column; justify-content: space-between;
+      font-size: 0.7rem; color: #9ca3af; text-align: right; padding: 2px 0;
+    }
     .ph-marker {
-      position: absolute; top: 18px; transform: translateX(-50%);
-      transition: left 0.8s cubic-bezier(.4,0,.2,1);
-      left: 0%;
+      position: absolute; left: 100%; top: 100%;
+      transform: translateY(-50%);
+      transition: top 0.8s cubic-bezier(.4,0,.2,1);
+      display: flex; align-items: center; margin-left: 4px;
     }
     .ph-marker-pin {
       width: 0; height: 0;
-      border-left: 8px solid transparent; border-right: 8px solid transparent;
-      border-top: 12px solid #1E4D2B;
-      margin: 0 auto;
+      border-top: 7px solid transparent; border-bottom: 7px solid transparent;
+      border-right: 10px solid #1E4D2B;
     }
     .ph-marker-label {
       background: #1E4D2B; color: #fff; font-size: 0.75rem; font-weight: 600;
-      padding: 2px 8px; border-radius: 4px; text-align: center; white-space: nowrap;
-      margin-bottom: 2px;
+      padding: 2px 8px; border-radius: 4px; white-space: nowrap; margin-left: 2px;
     }
     .ph-marker:hover .ph-tooltip { opacity: 1; }
     .ph-tooltip {
-      position: absolute; bottom: -28px; left: 50%; transform: translateX(-50%);
+      position: absolute; left: calc(100% + 6px); top: 50%; transform: translateY(-50%);
       background: #1f2937; color: #fff; font-size: 0.7rem; padding: 3px 8px;
       border-radius: 4px; white-space: nowrap; opacity: 0;
       transition: opacity 0.2s; pointer-events: none;
@@ -249,13 +254,11 @@
           </div>
 
           <div class="card p-5" data-aos="fade-up">
-            <h3 class="text-lg font-semibold mb-3">Soil pH (area-weighted avg)</h3>
-            <div id="phScaleHost" class="flex items-center justify-center" style="min-height:140px;"></div>
-          </div>
-
-          <div class="card p-5" data-aos="fade-up">
-            <h3 class="text-lg font-semibold mb-3">Organic Matter % (area-weighted avg)</h3>
-            <div id="omGaugeHost" class="om-gauge-wrap flex flex-col items-center justify-center" style="min-height:200px;"></div>
+            <h3 class="text-lg font-semibold mb-3">pH & Organic Matter (area-weighted avg)</h3>
+            <div class="flex flex-col sm:flex-row items-center justify-around gap-6" style="min-height:280px;">
+              <div id="phScaleHost"></div>
+              <div id="omGaugeHost" class="om-gauge-wrap flex flex-col items-center justify-center"></div>
+            </div>
           </div>
 
           <div class="card p-5" data-aos="fade-up">
@@ -853,27 +856,29 @@
     let chTexture=null, chPhysChem=null;
     function destroyChart(c){ c && c.destroy && c.destroy(); }
 
-    /* ── pH sliding scale ── */
+    /* ── pH vertical sliding scale ── */
     function renderPhScale(phVal){
       const host = document.getElementById('phScaleHost');
       const safe = Number.isFinite(phVal) ? phVal : 0;
-      const pct  = (safe / 14 * 100).toFixed(2);
-      const ticks = Array.from({length:15},(_,i)=>`<span>${i}</span>`).join('');
+      // 0 = top (100%), 14 = bottom (0%) — invert so 14 is at top
+      const pct  = ((14 - safe) / 14 * 100).toFixed(2);
+      const ticks = Array.from({length:15},(_,i)=>`<span>${14 - i}</span>`).join('');
       host.innerHTML = `
-        <div class="ph-scale-wrap" style="width:100%">
-          <div class="ph-marker" id="phMarker" style="left:0%">
-            <div class="ph-marker-label">${safe.toFixed(2)}</div>
-            <div class="ph-marker-pin"></div>
-            <div class="ph-tooltip">pH ${safe.toFixed(2)}</div>
+        <div class="ph-column-wrap">
+          <div class="ph-column-zones">
+            <span>Alkaline</span><span>Neutral</span><span>Acidic</span>
           </div>
-          <div class="ph-scale-bar"></div>
-          <div class="ph-ticks">${ticks}</div>
-          <div class="ph-zones">
-            <span>Acidic</span><span>Neutral</span><span>Alkaline</span>
+          <div class="ph-column-ticks">${ticks}</div>
+          <div class="ph-column-bar">
+            <div class="ph-marker" id="phMarker" style="top:0%">
+              <div class="ph-marker-pin"></div>
+              <div class="ph-marker-label">${safe.toFixed(2)}</div>
+              <div class="ph-tooltip">pH ${safe.toFixed(2)}</div>
+            </div>
           </div>
         </div>`;
       requestAnimationFrame(()=>requestAnimationFrame(()=>{
-        document.getElementById('phMarker').style.left = pct + '%';
+        document.getElementById('phMarker').style.top = pct + '%';
       }));
     }
 
