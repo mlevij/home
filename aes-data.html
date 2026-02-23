@@ -55,49 +55,45 @@
     .esri-legend__message, .esri-legend__layer-caption, .esri-legend__service-label,
     .esri-legend__layer-cell, .esri-attribution__sources { font-family: var(--font-sans); }
 
-    /* ── pH vertical scale ── */
-    .ph-column-wrap { display: flex; align-items: stretch; gap: 6px; height: 260px; }
-    .ph-column-bar {
-      width: 38px; border-radius: 6px; flex-shrink: 0; position: relative;
-      background: linear-gradient(to bottom,
-        #d32f2f 0%, #e65100 12%, #f9a825 25%, #cddc39 36%,
-        #4caf50 43%, #2e7d32 50%, #4caf50 57%,
-        #cddc39 64%, #f9a825 75%, #e65100 88%, #d32f2f 100%);
+    /* ── pH horizontal scale ── */
+    .ph-horiz-wrap { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+    .ph-horiz-zones {
+      display: flex; justify-content: space-between;
+      font-size: 0.7rem; color: #9ca3af; padding: 0;
     }
-    .ph-column-ticks {
-      display: flex; flex-direction: column; justify-content: space-between;
+    .ph-horiz-bar {
+      height: 28px; border-radius: 6px; position: relative; width: 100%;
+      background: linear-gradient(to right,
+        #d32f2f 0%, #e65100 14.3%, #f9a825 28.6%, #cddc39 35.7%,
+        #2e7d32 50%,
+        #cddc39 64.3%, #f9a825 71.4%, #e65100 85.7%, #d32f2f 100%);
+    }
+    .ph-horiz-ticks {
+      display: flex;
       font-size: 0.65rem; color: #6b7280; padding: 0;
     }
-    .ph-column-zones {
-      display: flex; flex-direction: column; justify-content: space-between;
-      font-size: 0.7rem; color: #9ca3af; text-align: right; padding: 2px 0;
+    .ph-horiz-ticks span {
+      flex: 1; text-align: center;
     }
     .ph-marker {
-      position: absolute; left: 100%; top: 100%;
-      transform: translateY(-50%);
-      transition: top 0.8s cubic-bezier(.4,0,.2,1);
-      display: flex; align-items: center; margin-left: 4px;
+      position: absolute; left: 0%; bottom: -55px;
+      transform: translateX(-50%);
+      transition: left 0.8s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column; align-items: center;
     }
     .ph-marker-pin {
       width: 0; height: 0;
-      border-top: 7px solid transparent; border-bottom: 7px solid transparent;
-      border-right: 10px solid #1f2937;
+      border-left: 7px solid transparent; border-right: 7px solid transparent;
+      border-bottom: 10px solid #1f2937;
     }
     .ph-marker-label {
       background: #1f2937; color: #fff; font-size: 0.75rem; font-weight: 600;
-      padding: 2px 8px; border-radius: 4px; white-space: nowrap; margin-left: 2px;
-    }
-    .ph-marker:hover .ph-tooltip { opacity: 0; }
-    .ph-tooltip {
-      position: absolute; left: calc(100% + 6px); top: 50%; transform: translateY(-50%);
-      background: #1f2937; color: #fff; font-size: 0.7rem; padding: 3px 8px;
-      border-radius: 4px; white-space: nowrap; opacity: 0;
-      transition: opacity 0.2s; pointer-events: none;
+      padding: 2px 8px; border-radius: 4px; white-space: nowrap; margin-top: 2px;
     }
 
     /* ── OM gauge ── */
     .om-gauge { position: relative; width: 220px; height: 130px; margin: 0 auto; }
-    .om-gauge-wrap { align-self: flex-end; }
+    .om-gauge-wrap { align-self: center; }
     .om-gauge svg { overflow: visible; }
     .om-gauge-value {
       position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
@@ -129,6 +125,8 @@
     }
     .legend-toggle:hover { background: rgba(229,231,235,0.9); }
     .legend-toggle svg { width: 14px; height: 14px; stroke: #6b7280; transition: transform 0.3s ease; }
+    .legend-mu-item { cursor: pointer; }
+    .legend-mu-item:active { transform: scale(0.97); }
 
     /* ── Bullet bars (BD, CaCO3, EC) ── */
     .bullet-bar-group { display: flex; flex-direction: column; gap: 24px; }
@@ -318,10 +316,15 @@
           </div>
 
           <div class="card p-5" data-aos="fade-up">
-            <h3 class="text-lg font-semibold mb-3">pH and OM %</h3>
-            <div class="flex flex-col sm:flex-row items-center justify-around gap-6" style="min-height:280px;">
-              <div id="phScaleHost"></div>
-              <div id="omGaugeHost" class="om-gauge-wrap flex flex-col items-center justify-center"></div>
+            <div class="flex flex-col gap-4">
+              <div class="flex flex-col items-center">
+                <span class="text-xl font-semibold text-gray-600 mb-1">OM %</span>
+                <div id="omGaugeHost" class="om-gauge-wrap flex flex-col items-center justify-center"></div>
+              </div>
+              <div>
+                <span class="text-sm font-semibold text-gray-600 mb-1 block">pH (0-6")</span>
+                <div id="phScaleHost"></div>
+              </div>
             </div>
           </div>
 
@@ -340,10 +343,15 @@
           </div>
 
           <div class="card p-5" data-aos="fade-up">
-            <h3 class="text-lg font-semibold mb-3">pH (min) and OM %</h3>
-            <div class="flex flex-col sm:flex-row items-center justify-around gap-6" style="min-height:280px;">
-              <div id="phScaleHostAD"></div>
-              <div id="omGaugeHostAD" class="om-gauge-wrap flex flex-col items-center justify-center"></div>
+            <div class="flex flex-col gap-4">
+              <div class="flex flex-col items-center">
+                <span class="text-xl font-semibold text-gray-600 mb-1">OM %</span>
+                <div id="omGaugeHostAD" class="om-gauge-wrap flex flex-col items-center justify-center"></div>
+              </div>
+              <div>
+                <span class="text-sm font-semibold text-gray-600 mb-1 block">Min pH (All Depths)</span>
+                <div id="phScaleHostAD"></div>
+              </div>
             </div>
           </div>
 
@@ -655,6 +663,7 @@
           window.currentMiniView.destroy();
           window.currentMiniView = null;
         }
+        window.currentMiniLayer = null;
 
         try {
           // Clear any existing content in the container
@@ -754,16 +763,17 @@
           await layer.when();
           
           miniMap.add(layer);
+          window.currentMiniLayer = layer;
 
-          // Create map view with no zoom/pan controls
+          // Create map view (zoom disabled, drag enabled)
           window.currentMiniView = new MapView({
             container: containerEl,
             map: miniMap,
-            ui: { 
-              components: ["zoom", "attribution"]
+            ui: {
+              components: ["attribution"]
             },
             navigation: {
-              mouseWheelZoomEnabled: true,
+              mouseWheelZoomEnabled: false,
               browserTouchPanEnabled: true
             },
             constraints: {
@@ -785,6 +795,18 @@
           });
           // Wait for view to fully initialize
           await window.currentMiniView.when();
+
+          // Disable double-click zoom
+          window.currentMiniView.on("double-click", function(event) {
+            event.stopPropagation();
+          });
+
+          // Disable keyboard +/- zoom
+          window.currentMiniView.on("key-down", function(event) {
+            if (["+", "-", "_", "="].includes(event.key)) {
+              event.stopPropagation();
+            }
+          });
 
           // Auto-zoom to layer extent (like Arc's zoom to extent)
           const { extent } = await layer.queryExtent();
@@ -880,7 +902,9 @@
                   : 'rgba(16, 24, 32, 0.5)';
                 
                 return `
-                  <div class="mb-2 p-2 rounded hover:opacity-90 transition-opacity" style="background-color: ${bgColor}; border: 1.5px solid ${borderColor};">
+                  <div class="mb-2 p-2 rounded hover:opacity-80 transition-opacity legend-mu-item"
+                       data-musym="${musym}"
+                       style="background-color: ${bgColor}; border: 1.5px solid ${borderColor};">
                     <div class="font-semibold text-gray-900">${musym}</div>
                     <div class="text-xs text-gray-700">${muname}</div>
                   </div>
@@ -888,6 +912,51 @@
               }).join('');
             
             legendContent.innerHTML = legendItems || '<div class="text-gray-500">No map units found</div>';
+
+            // Attach click handlers to legend items
+            legendContent.querySelectorAll('.legend-mu-item').forEach(item => {
+              item.addEventListener('click', async function() {
+                const clickedMusym = this.dataset.musym;
+                if (!clickedMusym) return;
+
+                const view = window.currentMiniView;
+                if (!view) return;
+
+                try {
+                  const query = layer.createQuery();
+                  query.where = `musym = '${clickedMusym.replace(/'/g, "''")}'`;
+                  query.outFields = ["*"];
+                  query.returnGeometry = true;
+
+                  const results = await layer.queryFeatures(query);
+                  if (!results.features.length) return;
+                  if (!window.currentMiniView) return;
+
+                  // Pick the largest feature by bounding extent
+                  let targetFeature = results.features[0];
+                  if (results.features.length > 1) {
+                    targetFeature = results.features.reduce((largest, current) => {
+                      const la = largest.geometry?.extent;
+                      const ca = current.geometry?.extent;
+                      const largestArea = la ? la.width * la.height : 0;
+                      const currentArea = ca ? ca.width * ca.height : 0;
+                      return currentArea > largestArea ? current : largest;
+                    });
+                  }
+
+                  const geom = targetFeature.geometry;
+                  const location = geom.centroid || (geom.extent && geom.extent.center);
+                  if (!location) return;
+
+                  view.popup.open({
+                    features: [targetFeature],
+                    location: location
+                  });
+                } catch (err) {
+                  console.error('Legend click query failed:', err);
+                }
+              });
+            });
           } else {
             legendContent.innerHTML = '<div class="text-gray-500">Legend unavailable</div>';
           }
@@ -975,6 +1044,7 @@
           console.warn('Error destroying previous view:', e);
         }
       }
+      window.currentMiniLayer = null;
       
       mapContainer.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">Loading map...</div>';
       mapStationName.textContent = stationName;
@@ -1027,29 +1097,27 @@
     let chTexture=null, chADTexture=null;
     function destroyChart(c){ c && c.destroy && c.destroy(); }
 
-    /* ── pH vertical sliding scale ── */
+    /* ── pH horizontal sliding scale ── */
     function renderPhScale(phVal, hostId='phScaleHost', markerId='phMarker'){
       const host = document.getElementById(hostId);
       const safe = Number.isFinite(phVal) ? phVal : 0;
-      // 0 = top (100%), 14 = bottom (0%) — invert so 14 is at top
-      const pct  = ((14 - safe) / 14 * 100).toFixed(2);
-      const ticks = Array.from({length:15},(_,i)=>`<span>${14 - i}</span>`).join('');
+      const pct  = (safe / 14 * 100).toFixed(2);
+      const ticks = Array.from({length:15},(_,i)=>`<span>${i}</span>`).join('');
       host.innerHTML = `
-        <div class="ph-column-wrap">
-          <div class="ph-column-zones">
-            <span>Alkaline</span><span>Neutral</span><span>Acidic</span>
+        <div class="ph-horiz-wrap">
+          <div class="ph-horiz-zones">
+            <span>Acidic</span><span>Neutral</span><span>Alkaline</span>
           </div>
-          <div class="ph-column-ticks">${ticks}</div>
-          <div class="ph-column-bar">
-            <div class="ph-marker" id="${markerId}" style="top:0%">
+          <div class="ph-horiz-bar">
+            <div class="ph-marker" id="${markerId}" style="left:0%">
               <div class="ph-marker-pin"></div>
               <div class="ph-marker-label">${safe.toFixed(2)}</div>
-              <div class="ph-tooltip">pH ${safe.toFixed(2)}</div>
             </div>
           </div>
+          <div class="ph-horiz-ticks">${ticks}</div>
         </div>`;
       requestAnimationFrame(()=>requestAnimationFrame(()=>{
-        document.getElementById(markerId).style.top = pct + '%';
+        document.getElementById(markerId).style.left = pct + '%';
       }));
     }
 
