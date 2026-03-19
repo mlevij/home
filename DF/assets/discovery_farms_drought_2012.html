@@ -136,8 +136,29 @@
         
     
             tile_layer_ef7f0d1da72295a5f18a65a222e23f2b.addTo(map_aabcf28f446e61d6e93e7496ef2fcba7);
-        
-    
+
+            // Disable all zoom interactions
+            map_aabcf28f446e61d6e93e7496ef2fcba7.scrollWheelZoom.disable();
+            map_aabcf28f446e61d6e93e7496ef2fcba7.doubleClickZoom.disable();
+            map_aabcf28f446e61d6e93e7496ef2fcba7.touchZoom.disable();
+            map_aabcf28f446e61d6e93e7496ef2fcba7.boxZoom.disable();
+            map_aabcf28f446e61d6e93e7496ef2fcba7.keyboard.disable();
+            map_aabcf28f446e61d6e93e7496ef2fcba7.zoomControl.remove();
+
+            // Scale bar
+            L.control.scale({position: 'bottomleft', imperial: true, metric: false}).addTo(map_aabcf28f446e61d6e93e7496ef2fcba7);
+
+            // North arrow
+            var northArrow = L.control({position: 'topleft'});
+            northArrow.onAdd = function() {
+                var div = L.DomUtil.create('div');
+                div.style.cssText = 'background:white;padding:5px 8px;border:2px solid rgba(0,0,0,0.2);border-radius:4px;font-size:16px;font-weight:bold;text-align:center;line-height:1.2;cursor:default;user-select:none;';
+                div.innerHTML = '&#8593;<br><span style="font-size:10px;font-weight:normal;">N</span>';
+                return div;
+            };
+            northArrow.addTo(map_aabcf28f446e61d6e93e7496ef2fcba7);
+
+
             var layer_control_b48b3a09094d47ecf0bfe667f72ff14a_layers = {
                 base_layers : {
                     "https://server.arcgisonline.com/arcgis/rest/services/world_topo_map/mapserver/tile/{z}/{y}/{x}" : tile_layer_9bf10a45d3d48538b331e276c92fe7d1,
