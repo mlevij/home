@@ -363,18 +363,28 @@
       <h2 class="section-title">Seeing Change from Space</h2>
       <p class="section-body">
         Annual peak-season satellite imagery reveals how the landscape has responded
-        to drought cycles over four decades. False color composites highlight
-        vegetation health and moisture stress — green indicates healthy vegetation,
-        brown indicates stress or bare soil.
+        to drought cycles over four decades. False color and natural color composites
+        are shown side by side — false color uses SWIR/NIR/Red to emphasize vegetation
+        health and moisture stress, while natural color provides a familiar reference view.
+        Below, a higher-resolution Sentinel-2 closeup shows Grand Valley in detail.
       </p>
 
       <div class="gif-grid">
         <div class="gif-item">
           <img src="assets/landsat_swco_timeseries.gif"
                alt="Landsat false color time series — SW Colorado 1984–present">
-          <p>SW Colorado region — Landsat false color, 1984–present.
-             SWIR/NIR/Red composite, annual peak-season (June–October) median.</p>
+          <p>False color (SWIR/NIR/Red) — highlights vegetation health and moisture stress.
+             Green indicates healthy vegetation; brown indicates stress or bare soil.</p>
         </div>
+        <div class="gif-item">
+          <img src="assets/landsat_swco_naturalcolor.gif"
+               alt="Landsat natural color time series — SW Colorado 1984–present">
+          <p>Natural color (Red/Green/Blue) — true-color view of the same region and time period
+             for comparison.</p>
+        </div>
+      </div>
+
+      <div class="gif-grid" style="grid-template-columns: 1fr 1fr; margin-top: 1.5rem;">
         <div class="gif-item">
           <img src="assets/grandvalley_sentinel2.gif"
                alt="Sentinel-2 false color time series — Grand Valley 2017–present">
@@ -423,7 +433,7 @@
         <ul>
           <li>USDM drought maps — weekly classifications, D0–D4, 2000–present (NDMC/NOAA/USDA)</li>
           <li>TerraClimate PDSI — monthly Palmer Drought Severity Index, 1958–present (~4km)</li>
-          <li>Landsat 5/7/8/9 — harmonized false color composites, June–October, 1984–present (30m)</li>
+          <li>Landsat 5/7/8/9 — harmonized false color and natural color composites, June–October, 1984–present (30m)</li>
           <li>Sentinel-2 SR — false color composites, July–August, 2017–present (10m)</li>
           <li>Region: Delta, Dolores, Gunnison, La Plata, Mesa, Montezuma, Montrose, Ouray, San Miguel Counties</li>
           <li>Cloud masking via per-pixel QA band; gap fill using 25th percentile fallback</li>
