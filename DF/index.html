@@ -327,36 +327,9 @@
       </p>
     </header>
 
-    <!-- ── 1. Peak Drought Maps ── -->
+    <!-- ── Drought Slider ── -->
     <section class="story-section">
-      <p class="section-label">01 — Drought Maps</p>
-      <h2 class="section-title">Peak Drought Conditions</h2>
-      <p class="section-body">
-        US Drought Monitor (USDM) classifications for SW Colorado's worst recent
-        drought years — 2012 and 2020. Drought categories range from D0 (Abnormally Dry)
-        to D4 (Exceptional Drought). County boundaries shown for reference.
-      </p>
-
-      <div id="map-2012" class="map-embed"></div>
-      <p class="map-caption">August 2012 — USDM peak drought classification</p>
-
-      <div class="usdm-legend-row" style="margin-top:1.25rem">
-        <span class="usdm-item"><span class="usdm-swatch" style="background:#ffff00"></span>D0 Abnormally Dry</span>
-        <span class="usdm-item"><span class="usdm-swatch" style="background:#fcd37f"></span>D1 Moderate</span>
-        <span class="usdm-item"><span class="usdm-swatch" style="background:#ffaa00"></span>D2 Severe</span>
-        <span class="usdm-item"><span class="usdm-swatch" style="background:#e60000"></span>D3 Extreme</span>
-        <span class="usdm-item"><span class="usdm-swatch" style="background:#730000"></span>D4 Exceptional</span>
-      </div>
-
-      <br>
-
-      <div id="map-2020" class="map-embed"></div>
-      <p class="map-caption">August 2020 — USDM peak drought classification</p>
-    </section>
-
-    <!-- ── 1b. Year-by-Year Drought Slider ── -->
-    <section class="story-section">
-      <p class="section-label">01b — Annual Slider</p>
+      <p class="section-label">Drought Conditions</p>
       <h2 class="section-title">Year-by-Year Drought Conditions</h2>
       <p class="section-body">
         Step through peak-summer (August) drought conditions across SW Colorado
@@ -384,34 +357,9 @@
       </div>
     </section>
 
-    <!-- ── 2. Drought Charts ── -->
+    <!-- ── Landscape Change GIFs ── -->
     <section class="story-section">
-      <p class="section-label">02 — Drought Trends</p>
-      <h2 class="section-title">How Has Drought Changed Over Time?</h2>
-      <p class="section-body">
-        Two complementary views of drought history across the SW Colorado region —
-        a long-term moisture index spanning nearly seven decades, and a modern
-        record of severe drought frequency since 2000.
-      </p>
-
-      <div class="chart-stack">
-        <div class="chart-item">
-          <img src="assets/pdsi_timeseries_swco.png"
-               alt="Annual Mean PDSI — SW Colorado 1958–present">
-          <p>Palmer Drought Severity Index (PDSI) — annual mean across SW Colorado, 1958–present.
-             Negative values indicate drier than average conditions.</p>
-        </div>
-        <div class="chart-item">
-          <img src="assets/usdm_drought_frequency.png"
-               alt="Severe Drought Extent — SW Colorado 2000–present">
-          <p>Percentage of SW Colorado in D2 (Severe) or worse drought each August, 2000–present.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── 3. Landscape Change GIFs ── -->
-    <section class="story-section">
-      <p class="section-label">03 — Landscape Change</p>
+      <p class="section-label">Landscape Change</p>
       <h2 class="section-title">Seeing Change from Space</h2>
       <p class="section-body">
         Annual peak-season satellite imagery reveals how the landscape has responded
@@ -436,9 +384,34 @@
       </div>
     </section>
 
-    <!-- ── 4. Methods ── -->
+    <!-- ── Drought Trends ── -->
     <section class="story-section">
-      <p class="section-label">04 — Methods</p>
+      <p class="section-label">Drought Trends</p>
+      <h2 class="section-title">How Has Drought Changed Over Time?</h2>
+      <p class="section-body">
+        Two complementary views of drought history across the SW Colorado region —
+        a long-term moisture index spanning nearly seven decades, and a modern
+        record of severe drought frequency since 2000.
+      </p>
+
+      <div class="chart-stack">
+        <div class="chart-item">
+          <img src="assets/pdsi_timeseries_swco.png"
+               alt="Annual Mean PDSI — SW Colorado 1958–present">
+          <p>Palmer Drought Severity Index (PDSI) — annual mean across SW Colorado, 1958–present.
+             Negative values indicate drier than average conditions.</p>
+        </div>
+        <div class="chart-item">
+          <img src="assets/usdm_drought_frequency.png"
+               alt="Severe Drought Extent — SW Colorado 2000–present">
+          <p>Percentage of SW Colorado in D2 (Severe) or worse drought each August, 2000–present.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Methods ── -->
+    <section class="story-section">
+      <p class="section-label">Methods</p>
       <h2 class="section-title">Data &amp; Approach</h2>
       <p class="section-body">
         All analysis was conducted using Google Earth Engine and Python.
@@ -467,31 +440,6 @@
   </div>
   <script>
     var swBounds = [[36.9988, -109.0602], [39.3667, -106.2453]];
-
-    function initStaticMap(id, pngPath) {
-      var m = L.map(id, {zoomSnap: 0.5, zoomControl: false}).setView([38.1, -108.0], 7.5);
-      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Esri World Topo Map'
-      }).addTo(m);
-      L.imageOverlay(pngPath, swBounds, {opacity: 0.75}).addTo(m);
-      m.scrollWheelZoom.disable();
-      m.doubleClickZoom.disable();
-      m.touchZoom.disable();
-      m.boxZoom.disable();
-      m.keyboard.disable();
-      L.control.scale({position: 'bottomleft', imperial: true, metric: false}).addTo(m);
-      var na = L.control({position: 'topleft'});
-      na.onAdd = function() {
-        var div = L.DomUtil.create('div');
-        div.style.cssText = 'background:white;padding:5px 8px;border:2px solid rgba(0,0,0,0.2);border-radius:4px;font-size:16px;font-weight:bold;text-align:center;line-height:1.2;cursor:default;user-select:none;';
-        div.innerHTML = '&#8593;<br><span style="font-size:10px;font-weight:normal;">N</span>';
-        return div;
-      };
-      na.addTo(m);
-    }
-
-    initStaticMap('map-2012', 'assets/drought_years/usdm_2012.png');
-    initStaticMap('map-2020', 'assets/drought_years/usdm_2020.png');
 
     // ── Leaflet drought map ──
     var map = L.map('drought-map', {zoomSnap: 0.5, zoomControl: false}).setView([38.1, -108.0], 7.5);
