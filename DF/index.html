@@ -482,6 +482,22 @@
       opacity: 0.75
     }).addTo(map);
 
+    // Disable scroll wheel zoom (keep drag pan for interactivity)
+    map.scrollWheelZoom.disable();
+
+    // Scale bar
+    L.control.scale({position: 'bottomleft', imperial: true, metric: false}).addTo(map);
+
+    // North arrow
+    var northArrow = L.control({position: 'topleft'});
+    northArrow.onAdd = function() {
+      var div = L.DomUtil.create('div');
+      div.style.cssText = 'background:white;padding:5px 8px;border:2px solid rgba(0,0,0,0.2);border-radius:4px;font-size:16px;font-weight:bold;text-align:center;line-height:1.2;cursor:default;user-select:none;';
+      div.innerHTML = '&#8593;<br><span style="font-size:10px;font-weight:normal;">N</span>';
+      return div;
+    };
+    northArrow.addTo(map);
+
     // ── Controls ──
     var slider  = document.getElementById('year-slider');
     var display = document.getElementById('year-display');
