@@ -6,18 +6,18 @@
   <title>Discovery Farms Drought Story Map</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:        #f5f2ec;
-      --ink:       #1a1814;
-      --muted:     #7a7468;
-      --accent:    #c85a2a;
-      --rule:      #d4cfc5;
+      --bg:        #eef3f8;
+      --ink:       #1a2a3a;
+      --muted:     #5c7a96;
+      --accent:    #2e6da4;
+      --rule:      #c5d5e5;
       --card-bg:   #fff;
-      --serif:     'Playfair Display', Georgia, serif;
+      --sans:      'DM Sans', system-ui, sans-serif;
       --mono:      'DM Mono', monospace;
     }
 
@@ -26,8 +26,8 @@
     body {
       background: var(--bg);
       color: var(--ink);
-      font-family: var(--mono);
-      font-size: 14px;
+      font-family: var(--sans);
+      font-size: 15px;
       line-height: 1.7;
     }
 
@@ -68,7 +68,7 @@
     }
 
     h1 {
-      font-family: var(--serif);
+      font-family: var(--sans);
       font-size: clamp(2rem, 5vw, 3.5rem);
       font-weight: 400;
       line-height: 1.15;
@@ -100,7 +100,7 @@
     }
 
     .section-title {
-      font-family: var(--serif);
+      font-family: var(--sans);
       font-size: 1.6rem;
       font-weight: 400;
       line-height: 1.2;
@@ -185,7 +185,7 @@
     }
 
     .methods-box h3 {
-      font-family: var(--serif);
+      font-family: var(--sans);
       font-size: 1rem;
       font-weight: 400;
       margin-bottom: 0.75rem;
@@ -234,6 +234,65 @@
     }
 
     footer a:hover { color: var(--accent); }
+
+    /* ── Year Slider ── */
+    .drought-img {
+      width: 100%;
+      border: 1px solid var(--rule);
+      display: block;
+    }
+
+    .year-slider-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+
+    .year-slider-row input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .year-bound {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .year-display {
+      text-align: center;
+      font-family: var(--sans);
+      font-size: 2.2rem;
+      font-weight: 400;
+      color: var(--accent);
+      margin-top: 0.5rem;
+      line-height: 1;
+    }
+
+    .usdm-legend-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+
+    .usdm-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .usdm-swatch {
+      width: 13px;
+      height: 13px;
+      border: 1px solid var(--rule);
+      display: inline-block;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -270,6 +329,37 @@
       <iframe class="map-embed" src="assets/discovery_farms_drought_2020.html"
               title="USDM Drought Map — September 2020"></iframe>
       <p class="map-caption">September 1, 2020 — Peak drought week, 2020 drought year</p>
+    </section>
+
+    <!-- ── 1b. Year-by-Year Drought Slider ── -->
+    <section class="story-section">
+      <p class="section-label">01b — Annual Slider</p>
+      <h2 class="section-title">Year-by-Year Drought Conditions</h2>
+      <p class="section-body">
+        Step through peak-summer (August) drought conditions across SW Colorado
+        from 2000 to present. Drag the slider or use arrow keys to explore how
+        drought severity has varied year to year.
+      </p>
+
+      <img id="drought-img" class="drought-img"
+           src="assets/drought_years/usdm_2000.png"
+           alt="USDM Drought — 2000">
+      <p class="map-caption" id="drought-caption">August 2000 — USDM peak drought classification</p>
+
+      <div class="year-slider-row">
+        <span class="year-bound">2000</span>
+        <input type="range" id="year-slider" min="2000" max="2025" value="2000" step="1">
+        <span class="year-bound">2025</span>
+      </div>
+      <p class="year-display" id="year-display">2000</p>
+
+      <div class="usdm-legend-row">
+        <span class="usdm-item"><span class="usdm-swatch" style="background:#ffff00"></span>D0 Abnormally Dry</span>
+        <span class="usdm-item"><span class="usdm-swatch" style="background:#fcd37f"></span>D1 Moderate</span>
+        <span class="usdm-item"><span class="usdm-swatch" style="background:#ffaa00"></span>D2 Severe</span>
+        <span class="usdm-item"><span class="usdm-swatch" style="background:#e60000"></span>D3 Extreme</span>
+        <span class="usdm-item"><span class="usdm-swatch" style="background:#730000"></span>D4 Exceptional</span>
+      </div>
     </section>
 
     <!-- ── 2. Drought Charts ── -->
@@ -353,5 +443,19 @@
     </footer>
 
   </div>
+  <script>
+    const slider  = document.getElementById('year-slider');
+    const img     = document.getElementById('drought-img');
+    const display = document.getElementById('year-display');
+    const caption = document.getElementById('drought-caption');
+
+    slider.addEventListener('input', () => {
+      const yr = slider.value;
+      img.src        = `assets/drought_years/usdm_${yr}.png`;
+      img.alt        = `USDM Drought — ${yr}`;
+      display.textContent = yr;
+      caption.textContent = `August ${yr} — USDM peak drought classification`;
+    });
+  </script>
 </body>
 </html>
