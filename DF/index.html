@@ -7,6 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -236,10 +238,10 @@
     footer a:hover { color: var(--accent); }
 
     /* ── Year Slider ── */
-    .drought-img {
+    #drought-map {
       width: 100%;
+      height: 500px;
       border: 1px solid var(--rule);
-      display: block;
     }
 
     .year-slider-row {
@@ -261,14 +263,28 @@
       white-space: nowrap;
     }
 
-    .year-display {
-      text-align: center;
+    .play-btn {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      padding: 0.35rem 0.9rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+
+    .play-btn:hover { opacity: 0.85; }
+
+    .year-display-inline {
       font-family: var(--sans);
-      font-size: 2.2rem;
-      font-weight: 400;
+      font-size: 1.4rem;
+      font-weight: 500;
       color: var(--accent);
-      margin-top: 0.5rem;
-      line-height: 1;
+      min-width: 3.5rem;
+      text-align: right;
     }
 
     .usdm-legend-row {
@@ -341,17 +357,16 @@
         drought severity has varied year to year.
       </p>
 
-      <img id="drought-img" class="drought-img"
-           src="assets/drought_years/usdm_2000.png"
-           alt="USDM Drought — 2000">
+      <div id="drought-map"></div>
       <p class="map-caption" id="drought-caption">August 2000 — USDM peak drought classification</p>
 
       <div class="year-slider-row">
+        <button class="play-btn" id="play-btn">▶ Play</button>
         <span class="year-bound">2000</span>
         <input type="range" id="year-slider" min="2000" max="2025" value="2000" step="1">
         <span class="year-bound">2025</span>
+        <span class="year-display-inline" id="year-display">2000</span>
       </div>
-      <p class="year-display" id="year-display">2000</p>
 
       <div class="usdm-legend-row">
         <span class="usdm-item"><span class="usdm-swatch" style="background:#ffff00"></span>D0 Abnormally Dry</span>
@@ -444,17 +459,49 @@
 
   </div>
   <script>
-    const slider  = document.getElementById('year-slider');
-    const img     = document.getElementById('drought-img');
-    const display = document.getElementById('year-display');
-    const caption = document.getElementById('drought-caption');
+    // ── Leaflet drought map ──
+    var map = L.map('drought-map').setView([38.1, -108.0], 8);
 
-    slider.addEventListener('input', () => {
-      const yr = slider.value;
-      img.src        = `assets/drought_years/usdm_${yr}.png`;
-      img.alt        = `USDM Drought — ${yr}`;
-      display.textContent = yr;
-      caption.textContent = `August ${yr} — USDM peak drought classification`;
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Esri World Topo Map'
+    }).addTo(map);
+
+    // Bounding box will be updated after running Cell 14 — approximate SW Colorado bounds
+    var swBounds = [[36.9988, -109.0602], [39.3667, -106.2453]];
+
+    var droughtOverlay = L.imageOverlay('assets/drought_years/usdm_2000.png', swBounds, {
+      opacity: 0.75
+    }).addTo(map);
+
+    // ── Controls ──
+    var slider  = document.getElementById('year-slider');
+    var display = document.getElementById('year-display');
+    var caption = document.getElementById('drought-caption');
+    var playBtn = document.getElementById('play-btn');
+    var playInterval = null;
+
+    function setYear(yr) {
+      droughtOverlay.setUrl('assets/drought_years/usdm_' + yr + '.png');
+      slider.value         = yr;
+      display.textContent  = yr;
+      caption.textContent  = 'August ' + yr + ' — USDM peak drought classification';
+    }
+
+    slider.addEventListener('input', () => setYear(slider.value));
+
+    playBtn.addEventListener('click', () => {
+      if (playInterval) {
+        clearInterval(playInterval);
+        playInterval = null;
+        playBtn.textContent = '▶ Play';
+      } else {
+        playBtn.textContent = '⏸ Pause';
+        playInterval = setInterval(() => {
+          var next = parseInt(slider.value) + 1;
+          if (next > parseInt(slider.max)) next = parseInt(slider.min);
+          setYear(next);
+        }, 1500);
+      }
     });
   </script>
 </body>
