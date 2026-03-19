@@ -337,9 +337,8 @@
         to D4 (Exceptional Drought). County boundaries shown for reference.
       </p>
 
-      <iframe class="map-embed" src="assets/discovery_farms_drought_2012.html"
-              title="USDM Drought Map — July 2012"></iframe>
-      <p class="map-caption">July 17, 2012 — Peak drought week, 2012 drought year</p>
+      <div id="map-2012" class="map-embed"></div>
+      <p class="map-caption">August 2012 — USDM peak drought classification</p>
 
       <div class="usdm-legend-row" style="margin-top:1.25rem">
         <span class="usdm-item"><span class="usdm-swatch" style="background:#ffff00"></span>D0 Abnormally Dry</span>
@@ -351,9 +350,8 @@
 
       <br>
 
-      <iframe class="map-embed" src="assets/discovery_farms_drought_2020.html"
-              title="USDM Drought Map — September 2020"></iframe>
-      <p class="map-caption">September 1, 2020 — Peak drought week, 2020 drought year</p>
+      <div id="map-2020" class="map-embed"></div>
+      <p class="map-caption">August 2020 — USDM peak drought classification</p>
     </section>
 
     <!-- ── 1b. Year-by-Year Drought Slider ── -->
@@ -468,15 +466,39 @@
 
   </div>
   <script>
+    var swBounds = [[36.9988, -109.0602], [39.3667, -106.2453]];
+
+    function initStaticMap(id, pngPath) {
+      var m = L.map(id, {zoomSnap: 0.5, zoomControl: false}).setView([38.1, -108.0], 7.5);
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Esri World Topo Map'
+      }).addTo(m);
+      L.imageOverlay(pngPath, swBounds, {opacity: 0.75}).addTo(m);
+      m.scrollWheelZoom.disable();
+      m.doubleClickZoom.disable();
+      m.touchZoom.disable();
+      m.boxZoom.disable();
+      m.keyboard.disable();
+      L.control.scale({position: 'bottomleft', imperial: true, metric: false}).addTo(m);
+      var na = L.control({position: 'topleft'});
+      na.onAdd = function() {
+        var div = L.DomUtil.create('div');
+        div.style.cssText = 'background:white;padding:5px 8px;border:2px solid rgba(0,0,0,0.2);border-radius:4px;font-size:16px;font-weight:bold;text-align:center;line-height:1.2;cursor:default;user-select:none;';
+        div.innerHTML = '&#8593;<br><span style="font-size:10px;font-weight:normal;">N</span>';
+        return div;
+      };
+      na.addTo(m);
+    }
+
+    initStaticMap('map-2012', 'assets/drought_years/usdm_2012.png');
+    initStaticMap('map-2020', 'assets/drought_years/usdm_2020.png');
+
     // ── Leaflet drought map ──
     var map = L.map('drought-map', {zoomSnap: 0.5, zoomControl: false}).setView([38.1, -108.0], 7.5);
 
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
       attribution: 'Esri World Topo Map'
     }).addTo(map);
-
-    // Bounding box will be updated after running Cell 14 — approximate SW Colorado bounds
-    var swBounds = [[36.9988, -109.0602], [39.3667, -106.2453]];
 
     var droughtOverlay = L.imageOverlay('assets/drought_years/usdm_2000.png', swBounds, {
       opacity: 0.75
