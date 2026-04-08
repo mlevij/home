@@ -580,6 +580,149 @@
       return muname.split(' ').slice(0, 2).join(' ');
     }
 
+    // Builds the two-column popup DOM element for a given feature graphic.
+    // Called from both the popup creator (map click) and legend card click.
+    function buildSoilPopupContent(feature) {
+      const attrs = feature.attributes || {};
+      const mukey = attrs.mukey;
+      const muname = attrs.muname || '';
+      const series = extractSeriesName(muname);
+
+      let lon = -105.5, lat = 40.0;
+      if (feature.geometry) {
+        const geom = feature.geometry;
+        if (geom.centroid) { lon = geom.centroid.longitude; lat = geom.centroid.latitude; }
+        else if (geom.extent) { lon = geom.extent.center.longitude; lat = geom.extent.center.latitude; }
+      }
+
+      const wrap = document.createElement('div');
+      wrap.style.cssText = 'display:flex;gap:16px;align-items:flex-start;';
+
+      // ── Left: soil profile SVG ──────────────────────────────────────────
+      const leftCol = document.createElement('div');
+      leftCol.style.cssText = 'flex:0 0 110px;';
+
+      const profile = soilProfiles && mukey != null ? soilProfiles[String(mukey)] : null;
+      const allHorizons = profile?.horizons?.length ? profile.horizons : null;
+      const dominantCokey = allHorizons?.[0]?.cokey;
+      const horizons = allHorizons ? allHorizons.filter(h => h.cokey === dominantCokey) : null;
+
+      if (horizons) {
+        const maxDepth = Math.max(...horizons.map(h => h.hzdepb_r || 0)) || 200;
+        const svgH = 220;
+        const scale = svgH / maxDepth;
+        const barX = 35, barW = 38;
+
+        let svgContent = '';
+        horizons.forEach(h => {
+          const y1 = (h.hzdept_r || 0) * scale;
+          const y2 = (h.hzdepb_r || 0) * scale;
+          const bh = Math.max(y2 - y1, 1);
+          const color = h.soil_color || '#808080';
+          const midY = y1 + bh / 2;
+          svgContent += `<rect x="${barX}" y="${y1.toFixed(1)}" width="${barW}" height="${bh.toFixed(1)}" fill="${color}" stroke="#fff" stroke-width="0.5"/>`;
+          if (bh >= 14) svgContent += `<text x="${barX - 3}" y="${(midY + 4).toFixed(1)}" text-anchor="end" font-size="9" fill="#374151" font-family="sans-serif">${h.hzname || ''}</text>`;
+          svgContent += `<line x1="${barX + barW}" y1="${y1.toFixed(1)}" x2="${barX + barW + 4}" y2="${y1.toFixed(1)}" stroke="#9ca3af" stroke-width="0.5"/>`;
+          if (bh >= 10) svgContent += `<text x="${barX + barW + 6}" y="${(y1 + 4).toFixed(1)}" text-anchor="start" font-size="8" fill="#9ca3af" font-family="sans-serif">${h.hzdept_r}</text>`;
+        });
+        const last = horizons[horizons.length - 1];
+        const yBottom = ((last.hzdepb_r || 0) * scale).toFixed(1);
+        svgContent += `<line x1="${barX + barW}" y1="${yBottom}" x2="${barX + barW + 4}" y2="${yBottom}" stroke="#9ca3af" stroke-width="0.5"/>`;
+        svgContent += `<text x="${barX + barW + 6}" y="${(parseFloat(yBottom) + 4).toFixed(1)}" text-anchor="start" font-size="8" fill="#9ca3af" font-family="sans-serif">${last.hzdepb_r}</text>`;
+
+        leftCol.innerHTML = `
+          <div style="font-size:11px;font-weight:600;color:#374151;margin-bottom:4px;">Soil Profile</div>
+          <svg width="110" height="${svgH}" style="overflow:visible;display:block;">${svgContent}</svg>
+          <div style="font-size:9px;color:#9ca3af;margin-top:2px;text-align:center;">depth (cm)</div>
+        `;
+      } else {
+        leftCol.innerHTML = `
+          <div style="font-size:11px;font-weight:600;color:#374151;margin-bottom:4px;">Soil Profile</div>
+          <div style="font-size:11px;color:#9ca3af;font-style:italic;">No profile data</div>
+        `;
+      }
+
+      // ── Right: attribute table + links ──────────────────────────────────
+      const rightCol = document.createElement('div');
+      rightCol.style.cssText = 'flex:1;min-width:0;';
+
+      const fmt = (v, dec) => {
+        if (v == null || v === '') return '—';
+        if (dec != null && typeof v === 'number') return v.toFixed(dec);
+        return v;
+      };
+
+      const fields = [
+        { label: 'Area Symbol',                     val: attrs.areasymbol },
+        { label: 'Map Unit Symbol',                 val: attrs.musym },
+        { label: 'Map Unit Name',                   val: attrs.muname },
+        { label: 'Surface Texture',                 val: attrs.SurfText_DCP_SL },
+        { label: 'Sand % (0-6")',                    val: attrs.Sand_DCP_0_6_in,        dec: 2 },
+        { label: 'Silt % (0-6")',                    val: attrs.Silt_DCP_0_6_in,        dec: 2 },
+        { label: 'Clay % (0-6")',                    val: attrs.Clay_DCP_0_6_in,        dec: 2 },
+        { label: 'pH (0-6")',                        val: attrs.pHwater_DCP_0_6_in,     dec: 2 },
+        { label: 'OM % (0-6")',                      val: attrs.OrgMatter_DCP_0_6_in,   dec: 2 },
+        { label: 'Bulk Density g/cm³ (0-6")',        val: attrs.BdSurf_DCP_0_6_in,      dec: 2 },
+        { label: 'CaCO₃ % (0-6")',                   val: attrs.CaC03_DCP_0_6_in,       dec: 2 },
+        { label: 'EC dS/m (0-6")',                   val: attrs.EC_DCP_0_6_in,          dec: 2 },
+        { label: 'Sand % (All Depths)',              val: attrs.Sand_AllDepth,           dec: 2 },
+        { label: 'Silt % (All Depths)',              val: attrs.Silt_AllDepth,           dec: 2 },
+        { label: 'Clay % (All Depths)',              val: attrs.Clay_AllDepth,           dec: 2 },
+        { label: 'Min pH (All Depths)',              val: attrs.pH_AllDepth,             dec: 2 },
+        { label: 'OM % (All Depths)',                val: attrs.OM_AllDepth,             dec: 2 },
+        { label: 'Bulk Density g/cm³ (All Depths)',  val: attrs.BD_AllDepth,             dec: 2 },
+        { label: 'CaCO₃ % (All Depths)',             val: attrs.CaCO3_AllDepth,          dec: 2 },
+        { label: 'Max EC dS/m (All Depths)',         val: attrs.EC_AllDepth,             dec: 2 },
+        { label: 'Taxonomic Classification',         val: attrs.TaxClName_DCP },
+        { label: 'Taxonomic Order',                  val: attrs.TaxOrder_DCP },
+        { label: 'Parent Material',                  val: attrs.ParMatNm_DCP },
+        { label: 'Drainage Class',                   val: attrs.DrainageCl },
+        { label: 'Soil Moisture Regime',             val: attrs.MoistRegim_DCP },
+        { label: 'Soil Temperature Regime',          val: attrs.TempRegime_DCP },
+        { label: 'Ecological Site Name',             val: attrs.EcoSiteNm_DCP },
+      ];
+
+      const rows = fields.map(f =>
+        `<tr>
+          <td style="padding:2px 6px 2px 0;color:#6b7280;white-space:normal;max-width:120px;vertical-align:top;font-size:11px;">${f.label}</td>
+          <td style="padding:2px 0;color:#111827;word-break:break-word;font-size:11px;">${fmt(f.val, f.dec)}</td>
+        </tr>`
+      ).join('');
+
+      rightCol.innerHTML = `
+        <div style="max-height:240px;overflow-y:auto;margin-bottom:6px;">
+          <table style="width:100%;border-collapse:collapse;font-family:sans-serif;">
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      `;
+
+      // Collapsible More Data section
+      const moreToggle = document.createElement('button');
+      moreToggle.style.cssText = 'display:flex;align-items:center;gap:5px;font-weight:600;font-size:12px;color:#374151;background:none;border:none;border-top:1px solid #e5e7eb;padding:6px 0 4px;cursor:pointer;width:100%;';
+      moreToggle.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;transform:rotate(-90deg);flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg> More Data`;
+
+      const moreBody = document.createElement('div');
+      moreBody.style.cssText = 'display:none;flex-direction:column;gap:5px;padding-bottom:4px;';
+      moreBody.innerHTML = `
+        ${series ? `<a href="https://casoilresource.lawr.ucdavis.edu/sde/?series=${encodeURIComponent(series)}" target="_blank" rel="noopener noreferrer" style="color:#1E4D2B;text-decoration:underline;font-size:12px;">View Soil Profile (${series}) →</a>` : ''}
+        <a href="https://websoilsurvey.nrcs.usda.gov/app/WebSoilSurvey.aspx?location=(${lon.toFixed(5)}%20${lat.toFixed(5)},${lon.toFixed(5)}%20${lat.toFixed(5)})" target="_blank" rel="noopener noreferrer" style="color:#1E4D2B;text-decoration:underline;font-size:12px;">Official NRCS Data →</a>
+      `;
+
+      const arrow = moreToggle.querySelector('svg');
+      moreToggle.addEventListener('click', () => {
+        const open = moreBody.style.display === 'flex';
+        moreBody.style.display = open ? 'none' : 'flex';
+        arrow.style.transform = open ? 'rotate(-90deg)' : 'rotate(0deg)';
+      });
+
+      rightCol.appendChild(moreToggle);
+      rightCol.appendChild(moreBody);
+      wrap.appendChild(leftCol);
+      wrap.appendChild(rightCol);
+      return wrap;
+    }
+
     require([
       "esri/Map",
       "esri/views/MapView",
@@ -678,149 +821,7 @@
               content: [
                 {
                   type: "custom",
-                  creator: function(event) {
-                    const feature = event.graphic;
-                    const attrs = feature.attributes || {};
-                    const mukey = attrs.mukey;
-                    const muname = attrs.muname || '';
-                    const series = extractSeriesName(muname);
-
-                    let lon = -105.5, lat = 40.0;
-                    if (feature.geometry) {
-                      const geom = feature.geometry;
-                      if (geom.centroid) { lon = geom.centroid.longitude; lat = geom.centroid.latitude; }
-                      else if (geom.extent) { lon = geom.extent.center.longitude; lat = geom.extent.center.latitude; }
-                    }
-
-                    const wrap = document.createElement('div');
-                    wrap.style.cssText = 'display:flex;gap:16px;align-items:flex-start;';
-
-                    // ── Left: soil profile SVG ────────────────────────────────
-                    const leftCol = document.createElement('div');
-                    leftCol.style.cssText = 'flex:0 0 110px;';
-
-                    const profile = soilProfiles && mukey != null ? soilProfiles[String(mukey)] : null;
-                    // Filter to dominant component only (first cokey in the sorted list)
-                    const allHorizons = profile?.horizons?.length ? profile.horizons : null;
-                    const dominantCokey = allHorizons?.[0]?.cokey;
-                    const horizons = allHorizons ? allHorizons.filter(h => h.cokey === dominantCokey) : null;
-
-                    if (horizons) {
-                      const maxDepth = Math.max(...horizons.map(h => h.hzdepb_r || 0)) || 200;
-                      const svgH = 220;
-                      const scale = svgH / maxDepth;
-                      const barX = 35, barW = 38;
-
-                      let svgContent = '';
-                      horizons.forEach(h => {
-                        const y1 = (h.hzdept_r || 0) * scale;
-                        const y2 = (h.hzdepb_r || 0) * scale;
-                        const bh = Math.max(y2 - y1, 1);
-                        const color = h.soil_color || '#808080';
-                        const midY = y1 + bh / 2;
-                        svgContent += `<rect x="${barX}" y="${y1.toFixed(1)}" width="${barW}" height="${bh.toFixed(1)}" fill="${color}" stroke="#fff" stroke-width="0.5"/>`;
-                        if (bh >= 14) svgContent += `<text x="${barX - 3}" y="${(midY + 4).toFixed(1)}" text-anchor="end" font-size="9" fill="#374151" font-family="sans-serif">${h.hzname || ''}</text>`;
-                        svgContent += `<line x1="${barX + barW}" y1="${y1.toFixed(1)}" x2="${barX + barW + 4}" y2="${y1.toFixed(1)}" stroke="#9ca3af" stroke-width="0.5"/>`;
-                        if (bh >= 10) svgContent += `<text x="${barX + barW + 6}" y="${(y1 + 4).toFixed(1)}" text-anchor="start" font-size="8" fill="#9ca3af" font-family="sans-serif">${h.hzdept_r}</text>`;
-                      });
-                      const last = horizons[horizons.length - 1];
-                      const yBottom = ((last.hzdepb_r || 0) * scale).toFixed(1);
-                      svgContent += `<line x1="${barX + barW}" y1="${yBottom}" x2="${barX + barW + 4}" y2="${yBottom}" stroke="#9ca3af" stroke-width="0.5"/>`;
-                      svgContent += `<text x="${barX + barW + 6}" y="${(parseFloat(yBottom) + 4).toFixed(1)}" text-anchor="start" font-size="8" fill="#9ca3af" font-family="sans-serif">${last.hzdepb_r}</text>`;
-
-                      leftCol.innerHTML = `
-                        <div style="font-size:11px;font-weight:600;color:#374151;margin-bottom:4px;">Soil Profile</div>
-                        <svg width="110" height="${svgH}" style="overflow:visible;display:block;">${svgContent}</svg>
-                        <div style="font-size:9px;color:#9ca3af;margin-top:2px;text-align:center;">depth (cm)</div>
-                      `;
-                    } else {
-                      leftCol.innerHTML = `
-                        <div style="font-size:11px;font-weight:600;color:#374151;margin-bottom:4px;">Soil Profile</div>
-                        <div style="font-size:11px;color:#9ca3af;font-style:italic;">No profile data</div>
-                      `;
-                    }
-
-                    // ── Right: attribute table + links ────────────────────────
-                    const rightCol = document.createElement('div');
-                    rightCol.style.cssText = 'flex:1;min-width:0;';
-
-                    const fmt = (v, dec) => {
-                      if (v == null || v === '') return '—';
-                      if (dec != null && typeof v === 'number') return v.toFixed(dec);
-                      return v;
-                    };
-
-                    const fields = [
-                      { label: 'Area Symbol',                     val: attrs.areasymbol },
-                      { label: 'Map Unit Symbol',                 val: attrs.musym },
-                      { label: 'Map Unit Name',                   val: attrs.muname },
-                      { label: 'Surface Texture',                 val: attrs.SurfText_DCP_SL },
-                      { label: 'Sand % (0-6")',                    val: attrs.Sand_DCP_0_6_in,        dec: 2 },
-                      { label: 'Silt % (0-6")',                    val: attrs.Silt_DCP_0_6_in,        dec: 2 },
-                      { label: 'Clay % (0-6")',                    val: attrs.Clay_DCP_0_6_in,        dec: 2 },
-                      { label: 'pH (0-6")',                        val: attrs.pHwater_DCP_0_6_in,     dec: 2 },
-                      { label: 'OM % (0-6")',                      val: attrs.OrgMatter_DCP_0_6_in,   dec: 2 },
-                      { label: 'Bulk Density g/cm³ (0-6")',        val: attrs.BdSurf_DCP_0_6_in,      dec: 2 },
-                      { label: 'CaCO₃ % (0-6")',                   val: attrs.CaC03_DCP_0_6_in,       dec: 2 },
-                      { label: 'EC dS/m (0-6")',                   val: attrs.EC_DCP_0_6_in,          dec: 2 },
-                      { label: 'Sand % (All Depths)',              val: attrs.Sand_AllDepth,           dec: 2 },
-                      { label: 'Silt % (All Depths)',              val: attrs.Silt_AllDepth,           dec: 2 },
-                      { label: 'Clay % (All Depths)',              val: attrs.Clay_AllDepth,           dec: 2 },
-                      { label: 'Min pH (All Depths)',              val: attrs.pH_AllDepth,             dec: 2 },
-                      { label: 'OM % (All Depths)',                val: attrs.OM_AllDepth,             dec: 2 },
-                      { label: 'Bulk Density g/cm³ (All Depths)',  val: attrs.BD_AllDepth,             dec: 2 },
-                      { label: 'CaCO₃ % (All Depths)',             val: attrs.CaCO3_AllDepth,          dec: 2 },
-                      { label: 'Max EC dS/m (All Depths)',         val: attrs.EC_AllDepth,             dec: 2 },
-                      { label: 'Taxonomic Classification',         val: attrs.TaxClName_DCP },
-                      { label: 'Taxonomic Order',                  val: attrs.TaxOrder_DCP },
-                      { label: 'Parent Material',                  val: attrs.ParMatNm_DCP },
-                      { label: 'Drainage Class',                   val: attrs.DrainageCl },
-                      { label: 'Soil Moisture Regime',             val: attrs.MoistRegim_DCP },
-                      { label: 'Soil Temperature Regime',          val: attrs.TempRegime_DCP },
-                      { label: 'Ecological Site Name',             val: attrs.EcoSiteNm_DCP },
-                    ];
-
-                    const rows = fields.map(f =>
-                      `<tr>
-                        <td style="padding:2px 6px 2px 0;color:#6b7280;white-space:normal;max-width:120px;vertical-align:top;font-size:11px;">${f.label}</td>
-                        <td style="padding:2px 0;color:#111827;word-break:break-word;font-size:11px;">${fmt(f.val, f.dec)}</td>
-                      </tr>`
-                    ).join('');
-
-                    rightCol.innerHTML = `
-                      <div style="max-height:240px;overflow-y:auto;margin-bottom:6px;">
-                        <table style="width:100%;border-collapse:collapse;font-family:sans-serif;">
-                          <tbody>${rows}</tbody>
-                        </table>
-                      </div>
-                    `;
-
-                    // Collapsible More Data section
-                    const moreToggle = document.createElement('button');
-                    moreToggle.style.cssText = 'display:flex;align-items:center;gap:5px;font-weight:600;font-size:12px;color:#374151;background:none;border:none;border-top:1px solid #e5e7eb;padding:6px 0 4px;cursor:pointer;width:100%;';
-                    moreToggle.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;transform:rotate(-90deg);flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg> More Data`;
-
-                    const moreBody = document.createElement('div');
-                    moreBody.style.cssText = 'display:none;flex-direction:column;gap:5px;padding-bottom:4px;';
-                    moreBody.innerHTML = `
-                      ${series ? `<a href="https://casoilresource.lawr.ucdavis.edu/sde/?series=${encodeURIComponent(series)}" target="_blank" rel="noopener noreferrer" style="color:#1E4D2B;text-decoration:underline;font-size:12px;">View Soil Profile (${series}) →</a>` : ''}
-                      <a href="https://websoilsurvey.nrcs.usda.gov/app/WebSoilSurvey.aspx?location=(${lon.toFixed(5)}%20${lat.toFixed(5)},${lon.toFixed(5)}%20${lat.toFixed(5)})" target="_blank" rel="noopener noreferrer" style="color:#1E4D2B;text-decoration:underline;font-size:12px;">Official NRCS Data →</a>
-                    `;
-
-                    const arrow = moreToggle.querySelector('svg');
-                    moreToggle.addEventListener('click', () => {
-                      const open = moreBody.style.display === 'flex';
-                      moreBody.style.display = open ? 'none' : 'flex';
-                      arrow.style.transform = open ? 'rotate(-90deg)' : 'rotate(0deg)';
-                    });
-
-                    rightCol.appendChild(moreToggle);
-                    rightCol.appendChild(moreBody);
-
-                    wrap.appendChild(leftCol);
-                    wrap.appendChild(rightCol);
-                    return wrap;
-                  }
+                  creator: function(event) { return buildSoilPopupContent(event.graphic); }
                 }
               ]
             },
@@ -986,11 +987,9 @@
                   const feature = result.features[0];
                   const attrs = feature.attributes || {};
                   const loc = feature.geometry?.centroid || feature.geometry?.extent?.center;
-                  const creator = layer.popupTemplate?.content?.[0]?.creator;
-                  const contentEl = creator ? creator({ graphic: feature }) : null;
                   window.currentMiniView.popup.open({
                     title: `${attrs.musym || ''} — ${attrs.muname || ''}`,
-                    content: contentEl,
+                    content: buildSoilPopupContent(feature),
                     location: loc
                   });
                 }
