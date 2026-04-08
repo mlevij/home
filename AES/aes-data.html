@@ -37,7 +37,7 @@
     .active-station { color:#1E4D2B !important; text-decoration: underline; }
     .mini-map { height: 700px; width: 100%; border-radius: 0rem; overflow: hidden; }
     .esri-popup__main-container {
-      max-width: 300px !important;
+      max-width: 560px !important;
       max-height: calc(100% - 40px) !important;
       overflow-y: auto !important;
     }
@@ -55,45 +55,49 @@
     .esri-legend__message, .esri-legend__layer-caption, .esri-legend__service-label,
     .esri-legend__layer-cell, .esri-attribution__sources { font-family: var(--font-sans); }
 
-    /* ── pH horizontal scale ── */
-    .ph-horiz-wrap { display: flex; flex-direction: column; gap: 4px; width: 100%; }
-    .ph-horiz-zones {
-      display: flex; justify-content: space-between;
-      font-size: 0.7rem; color: #9ca3af; padding: 0;
+    /* ── pH vertical scale ── */
+    .ph-column-wrap { display: flex; align-items: stretch; gap: 6px; height: 260px; }
+    .ph-column-bar {
+      width: 38px; border-radius: 6px; flex-shrink: 0; position: relative;
+      background: linear-gradient(to bottom,
+        #d32f2f 0%, #e65100 12%, #f9a825 25%, #cddc39 36%,
+        #4caf50 43%, #2e7d32 50%, #4caf50 57%,
+        #cddc39 64%, #f9a825 75%, #e65100 88%, #d32f2f 100%);
     }
-    .ph-horiz-bar {
-      height: 28px; border-radius: 6px; position: relative; width: 100%;
-      background: linear-gradient(to right,
-        #d32f2f 0%, #e65100 14.3%, #f9a825 28.6%, #cddc39 35.7%,
-        #2e7d32 50%,
-        #cddc39 64.3%, #f9a825 71.4%, #e65100 85.7%, #d32f2f 100%);
-    }
-    .ph-horiz-ticks {
-      display: flex;
+    .ph-column-ticks {
+      display: flex; flex-direction: column; justify-content: space-between;
       font-size: 0.65rem; color: #6b7280; padding: 0;
     }
-    .ph-horiz-ticks span {
-      flex: 1; text-align: center;
+    .ph-column-zones {
+      display: flex; flex-direction: column; justify-content: space-between;
+      font-size: 0.7rem; color: #9ca3af; text-align: right; padding: 2px 0;
     }
     .ph-marker {
-      position: absolute; left: 0%; bottom: -55px;
-      transform: translateX(-50%);
-      transition: left 0.8s cubic-bezier(.4,0,.2,1);
-      display: flex; flex-direction: column; align-items: center;
+      position: absolute; left: 100%; top: 100%;
+      transform: translateY(-50%);
+      transition: top 0.8s cubic-bezier(.4,0,.2,1);
+      display: flex; align-items: center; margin-left: 4px;
     }
     .ph-marker-pin {
       width: 0; height: 0;
-      border-left: 7px solid transparent; border-right: 7px solid transparent;
-      border-bottom: 10px solid #1f2937;
+      border-top: 7px solid transparent; border-bottom: 7px solid transparent;
+      border-right: 10px solid #1f2937;
     }
     .ph-marker-label {
       background: #1f2937; color: #fff; font-size: 0.75rem; font-weight: 600;
-      padding: 2px 8px; border-radius: 4px; white-space: nowrap; margin-top: 2px;
+      padding: 2px 8px; border-radius: 4px; white-space: nowrap; margin-left: 2px;
+    }
+    .ph-marker:hover .ph-tooltip { opacity: 0; }
+    .ph-tooltip {
+      position: absolute; left: calc(100% + 6px); top: 50%; transform: translateY(-50%);
+      background: #1f2937; color: #fff; font-size: 0.7rem; padding: 3px 8px;
+      border-radius: 4px; white-space: nowrap; opacity: 0;
+      transition: opacity 0.2s; pointer-events: none;
     }
 
     /* ── OM gauge ── */
     .om-gauge { position: relative; width: 220px; height: 130px; margin: 0 auto; }
-    .om-gauge-wrap { align-self: center; }
+    .om-gauge-wrap { align-self: flex-end; }
     .om-gauge svg { overflow: visible; }
     .om-gauge-value {
       position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
@@ -125,8 +129,6 @@
     }
     .legend-toggle:hover { background: rgba(229,231,235,0.9); }
     .legend-toggle svg { width: 14px; height: 14px; stroke: #6b7280; transition: transform 0.3s ease; }
-    .legend-mu-item { cursor: pointer; }
-    .legend-mu-item:active { transform: scale(0.97); }
 
     /* ── Bullet bars (BD, CaCO3, EC) ── */
     .bullet-bar-group { display: flex; flex-direction: column; gap: 24px; }
@@ -316,15 +318,10 @@
           </div>
 
           <div class="card p-5" data-aos="fade-up">
-            <div class="flex flex-col gap-4">
-              <div class="flex flex-col items-center">
-                <span class="text-xl font-semibold text-gray-600 mb-1">OM %</span>
-                <div id="omGaugeHost" class="om-gauge-wrap flex flex-col items-center justify-center"></div>
-              </div>
-              <div>
-                <span class="text-sm font-semibold text-gray-600 mb-1 block">pH (0-6")</span>
-                <div id="phScaleHost"></div>
-              </div>
+            <h3 class="text-lg font-semibold mb-3">pH and OM %</h3>
+            <div class="flex flex-col sm:flex-row items-center justify-around gap-6" style="min-height:280px;">
+              <div id="phScaleHost"></div>
+              <div id="omGaugeHost" class="om-gauge-wrap flex flex-col items-center justify-center"></div>
             </div>
           </div>
 
@@ -343,15 +340,10 @@
           </div>
 
           <div class="card p-5" data-aos="fade-up">
-            <div class="flex flex-col gap-4">
-              <div class="flex flex-col items-center">
-                <span class="text-xl font-semibold text-gray-600 mb-1">OM %</span>
-                <div id="omGaugeHostAD" class="om-gauge-wrap flex flex-col items-center justify-center"></div>
-              </div>
-              <div>
-                <span class="text-sm font-semibold text-gray-600 mb-1 block">Min pH (All Depths)</span>
-                <div id="phScaleHostAD"></div>
-              </div>
+            <h3 class="text-lg font-semibold mb-3">pH (min) and OM %</h3>
+            <div class="flex flex-col sm:flex-row items-center justify-around gap-6" style="min-height:280px;">
+              <div id="phScaleHostAD"></div>
+              <div id="omGaugeHostAD" class="om-gauge-wrap flex flex-col items-center justify-center"></div>
             </div>
           </div>
 
@@ -392,6 +384,13 @@
     });
     
     feather.replace();
+
+    // Load soil profile data (keyed by mukey)
+    let soilProfiles = null;
+    fetch('./all_stations_profiles.json')
+      .then(r => r.json())
+      .then(data => { soilProfiles = data; })
+      .catch(() => { soilProfiles = {}; });
 
     // Mobile menu toggle
     const mobileMenuBtn = document.getElementById('mobile-menu-button');
@@ -663,7 +662,6 @@
           window.currentMiniView.destroy();
           window.currentMiniView = null;
         }
-        window.currentMiniLayer = null;
 
         try {
           // Clear any existing content in the container
@@ -679,75 +677,137 @@
               title: "{musym} - {muname}",
               content: [
                 {
-                  type: "fields",
-                  fieldInfos: [
-                    { fieldName: "areasymbol", label: "Area Symbol" },
-                    { fieldName: "musym", label: "Map Unit Symbol" },
-                    { fieldName: "muname", label: "Map Unit Name" },
-                    { fieldName: "SurfText_DCP_SL", label: "Surface Texture" },
-                    { fieldName: "Sand_DCP_0_6_in", label: "Sand % (0-6\")", format: { places: 2, digitSeparator: true } },
-                    { fieldName: "Silt_DCP_0_6_in", label: "Silt % (0-6\")", format: { places: 2, digitSeparator: true } },
-                    { fieldName: "Clay_DCP_0_6_in", label: "Clay % (0-6\")", format: { places: 2, digitSeparator: true } },
-                    { fieldName: "pHwater_DCP_0_6_in", label: "pH (0-6\")", format: { places: 2, digitSeparator: true } },
-                    { fieldName: "OrgMatter_DCP_0_6_in", label: "OM % (0-6\")", format: { places: 2, digitSeparator: true } },
-                    { fieldName: "BdSurf_DCP_0_6_in", label: "Bulk Density g/cm³ (0-6\")", format: { places: 2, digitSeparator: true } },
-                    { fieldName: "CaC03_DCP_0_6_in", label: "CaCO₃ % (0-6\")", format: { places: 2, digitSeparator: true } },
-                    { fieldName: "EC_DCP_0_6_in", label: "EC dS/m (0-6\")", format: { places: 2, digitSeparator: true } },
-                    { fieldName: "Sand_AllDepth", label: "Sand % (All Depths)", format: { places: 2, digitSeparator: true } },
-                    { fieldName: "Silt_AllDepth", label: "Silt % (All Depths)", format: { places: 2, digitSeparator: true } },
-                    { fieldName: "Clay_AllDepth", label: "Clay % (All Depths)", format: { places: 2, digitSeparator: true } },
-                    { fieldName: "pH_AllDepth", label: "Min pH (All Depths)", format: { places: 2, digitSeparator: true } },
-                    { fieldName: "OM_AllDepth", label: "OM % (All Depths)", format: { places: 2, digitSeparator: true } },
-                    { fieldName: "BD_AllDepth", label: "Bulk Density g/cm³ (All Depths)", format: { places: 2, digitSeparator: true } },
-                    { fieldName: "CaCO3_AllDepth", label: "CaCO₃ % (All Depths)", format: { places: 2, digitSeparator: true } },
-                    { fieldName: "EC_AllDepth", label: "Max EC dS/m (All Depths)", format: { places: 2, digitSeparator: true } },
-                    { fieldName: "TaxClName_DCP", label: "Taxonomic Classification" },
-                    { fieldName: "TaxOrder_DCP", label: "Taxonomic Order" },
-                    { fieldName: "ParMatNm_DCP", label: "Parent Material" },
-                    { fieldName: "DrainageCl", label: "Drainage Class" },
-                    { fieldName: "MoistRegim_DCP", label: "Soil Moisture Regime" },
-                    { fieldName: "TempRegime_DCP", label: "Soil Temperature Regime" },
-                    { fieldName: "EcoSiteNm_DCP", label: "Ecological Site Name" }
-                  ]
-                },
-                {
                   type: "custom",
                   creator: function(event) {
                     const feature = event.graphic;
-                    const muname = feature.attributes?.muname || '';
+                    const attrs = feature.attributes || {};
+                    const mukey = attrs.mukey;
+                    const muname = attrs.muname || '';
                     const series = extractSeriesName(muname);
 
-                    // Get centroid for WSS link
                     let lon = -105.5, lat = 40.0;
                     if (feature.geometry) {
                       const geom = feature.geometry;
-                      if (geom.centroid) {
-                        lon = geom.centroid.longitude;
-                        lat = geom.centroid.latitude;
-                      } else if (geom.extent) {
-                        lon = geom.extent.center.longitude;
-                        lat = geom.extent.center.latitude;
-                      }
+                      if (geom.centroid) { lon = geom.centroid.longitude; lat = geom.centroid.latitude; }
+                      else if (geom.extent) { lon = geom.extent.center.longitude; lat = geom.extent.center.latitude; }
                     }
 
-                    const div = document.createElement('div');
-                    div.style.cssText = 'margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;';
-                    div.innerHTML = `
-                      <div style="font-weight: 600; font-size: 13px; margin-bottom: 8px; color: #374151;">More Data</div>
-                      <div style="display: flex; flex-direction: column; gap: 6px;">
+                    const wrap = document.createElement('div');
+                    wrap.style.cssText = 'display:flex;gap:16px;align-items:flex-start;';
+
+                    // ── Left: soil profile SVG ────────────────────────────────
+                    const leftCol = document.createElement('div');
+                    leftCol.style.cssText = 'flex:0 0 110px;';
+
+                    const profile = soilProfiles && mukey != null ? soilProfiles[String(mukey)] : null;
+                    const horizons = profile?.horizons?.length ? profile.horizons : null;
+
+                    if (horizons) {
+                      const maxDepth = Math.max(...horizons.map(h => h.hzdepb_r || 0)) || 200;
+                      const svgH = 220;
+                      const scale = svgH / maxDepth;
+                      const barX = 35, barW = 38;
+
+                      let svgContent = '';
+                      horizons.forEach(h => {
+                        const y1 = (h.hzdept_r || 0) * scale;
+                        const y2 = (h.hzdepb_r || 0) * scale;
+                        const bh = Math.max(y2 - y1, 1);
+                        const color = h.soil_color || '#808080';
+                        const midY = y1 + bh / 2;
+                        svgContent += `<rect x="${barX}" y="${y1.toFixed(1)}" width="${barW}" height="${bh.toFixed(1)}" fill="${color}" stroke="#fff" stroke-width="0.5"/>`;
+                        svgContent += `<text x="${barX - 3}" y="${(midY + 4).toFixed(1)}" text-anchor="end" font-size="9" fill="#374151" font-family="sans-serif">${h.hzname || ''}</text>`;
+                        svgContent += `<line x1="${barX + barW}" y1="${y1.toFixed(1)}" x2="${barX + barW + 4}" y2="${y1.toFixed(1)}" stroke="#9ca3af" stroke-width="0.5"/>`;
+                        svgContent += `<text x="${barX + barW + 6}" y="${(y1 + 4).toFixed(1)}" text-anchor="start" font-size="8" fill="#9ca3af" font-family="sans-serif">${h.hzdept_r}</text>`;
+                      });
+                      const last = horizons[horizons.length - 1];
+                      const yBottom = ((last.hzdepb_r || 0) * scale).toFixed(1);
+                      svgContent += `<line x1="${barX + barW}" y1="${yBottom}" x2="${barX + barW + 4}" y2="${yBottom}" stroke="#9ca3af" stroke-width="0.5"/>`;
+                      svgContent += `<text x="${barX + barW + 6}" y="${(parseFloat(yBottom) + 4).toFixed(1)}" text-anchor="start" font-size="8" fill="#9ca3af" font-family="sans-serif">${last.hzdepb_r}</text>`;
+
+                      leftCol.innerHTML = `
+                        <div style="font-size:11px;font-weight:600;color:#374151;margin-bottom:4px;">Soil Profile</div>
+                        <svg width="110" height="${svgH}" style="overflow:visible;display:block;">${svgContent}</svg>
+                        <div style="font-size:9px;color:#9ca3af;margin-top:2px;text-align:center;">depth (cm)</div>
+                      `;
+                    } else {
+                      leftCol.innerHTML = `
+                        <div style="font-size:11px;font-weight:600;color:#374151;margin-bottom:4px;">Soil Profile</div>
+                        <div style="font-size:11px;color:#9ca3af;font-style:italic;">No profile data</div>
+                      `;
+                    }
+
+                    // ── Right: attribute table + links ────────────────────────
+                    const rightCol = document.createElement('div');
+                    rightCol.style.cssText = 'flex:1;min-width:0;';
+
+                    const fmt = (v, dec) => {
+                      if (v == null || v === '') return '—';
+                      if (dec != null && typeof v === 'number') return v.toFixed(dec);
+                      return v;
+                    };
+
+                    const fields = [
+                      { label: 'Area Symbol',                     val: attrs.areasymbol },
+                      { label: 'Map Unit Symbol',                 val: attrs.musym },
+                      { label: 'Map Unit Name',                   val: attrs.muname },
+                      { label: 'Surface Texture',                 val: attrs.SurfText_DCP_SL },
+                      { label: 'Sand % (0-6")',                    val: attrs.Sand_DCP_0_6_in,        dec: 2 },
+                      { label: 'Silt % (0-6")',                    val: attrs.Silt_DCP_0_6_in,        dec: 2 },
+                      { label: 'Clay % (0-6")',                    val: attrs.Clay_DCP_0_6_in,        dec: 2 },
+                      { label: 'pH (0-6")',                        val: attrs.pHwater_DCP_0_6_in,     dec: 2 },
+                      { label: 'OM % (0-6")',                      val: attrs.OrgMatter_DCP_0_6_in,   dec: 2 },
+                      { label: 'Bulk Density g/cm³ (0-6")',        val: attrs.BdSurf_DCP_0_6_in,      dec: 2 },
+                      { label: 'CaCO₃ % (0-6")',                   val: attrs.CaC03_DCP_0_6_in,       dec: 2 },
+                      { label: 'EC dS/m (0-6")',                   val: attrs.EC_DCP_0_6_in,          dec: 2 },
+                      { label: 'Sand % (All Depths)',              val: attrs.Sand_AllDepth,           dec: 2 },
+                      { label: 'Silt % (All Depths)',              val: attrs.Silt_AllDepth,           dec: 2 },
+                      { label: 'Clay % (All Depths)',              val: attrs.Clay_AllDepth,           dec: 2 },
+                      { label: 'Min pH (All Depths)',              val: attrs.pH_AllDepth,             dec: 2 },
+                      { label: 'OM % (All Depths)',                val: attrs.OM_AllDepth,             dec: 2 },
+                      { label: 'Bulk Density g/cm³ (All Depths)',  val: attrs.BD_AllDepth,             dec: 2 },
+                      { label: 'CaCO₃ % (All Depths)',             val: attrs.CaCO3_AllDepth,          dec: 2 },
+                      { label: 'Max EC dS/m (All Depths)',         val: attrs.EC_AllDepth,             dec: 2 },
+                      { label: 'Taxonomic Classification',         val: attrs.TaxClName_DCP },
+                      { label: 'Taxonomic Order',                  val: attrs.TaxOrder_DCP },
+                      { label: 'Parent Material',                  val: attrs.ParMatNm_DCP },
+                      { label: 'Drainage Class',                   val: attrs.DrainageCl },
+                      { label: 'Soil Moisture Regime',             val: attrs.MoistRegim_DCP },
+                      { label: 'Soil Temperature Regime',          val: attrs.TempRegime_DCP },
+                      { label: 'Ecological Site Name',             val: attrs.EcoSiteNm_DCP },
+                    ];
+
+                    const rows = fields.map(f =>
+                      `<tr>
+                        <td style="padding:2px 6px 2px 0;color:#6b7280;white-space:nowrap;vertical-align:top;font-size:11px;">${f.label}</td>
+                        <td style="padding:2px 0;color:#111827;word-break:break-word;font-size:11px;">${fmt(f.val, f.dec)}</td>
+                      </tr>`
+                    ).join('');
+
+                    rightCol.innerHTML = `
+                      <div style="max-height:240px;overflow-y:auto;margin-bottom:10px;">
+                        <table style="width:100%;border-collapse:collapse;font-family:sans-serif;">
+                          <tbody>${rows}</tbody>
+                        </table>
+                      </div>
+                      <div style="border-top:1px solid #e5e7eb;padding-top:8px;display:flex;flex-direction:column;gap:5px;">
+                        <div style="font-weight:600;font-size:12px;color:#374151;">More Data</div>
                         ${series ? `<a href="https://casoilresource.lawr.ucdavis.edu/sde/?series=${encodeURIComponent(series)}"
                            target="_blank" rel="noopener noreferrer"
-                           style="color: #1E4D2B; text-decoration: underline; font-size: 13px;">
+                           style="color:#1E4D2B;text-decoration:underline;font-size:12px;">
                            View Soil Profile (${series}) →
                         </a>` : ''}
                         <a href="https://websoilsurvey.nrcs.usda.gov/app/WebSoilSurvey.aspx?location=(${lon.toFixed(5)}%20${lat.toFixed(5)},${lon.toFixed(5)}%20${lat.toFixed(5)})"
                            target="_blank" rel="noopener noreferrer"
-                           style="color: #1E4D2B; text-decoration: underline; font-size: 13px;">
+                           style="color:#1E4D2B;text-decoration:underline;font-size:12px;">
                            Official NRCS Data →
                         </a>
                       </div>
                     `;
-                    return div;
+
+                    wrap.appendChild(leftCol);
+                    wrap.appendChild(rightCol);
+                    return wrap;
                   }
                 }
               ]
@@ -763,17 +823,16 @@
           await layer.when();
           
           miniMap.add(layer);
-          window.currentMiniLayer = layer;
 
-          // Create map view (zoom disabled, drag enabled)
+          // Create map view with no zoom/pan controls
           window.currentMiniView = new MapView({
             container: containerEl,
             map: miniMap,
-            ui: {
-              components: ["attribution"]
+            ui: { 
+              components: ["zoom", "attribution"]
             },
             navigation: {
-              mouseWheelZoomEnabled: false,
+              mouseWheelZoomEnabled: true,
               browserTouchPanEnabled: true
             },
             constraints: {
@@ -795,18 +854,6 @@
           });
           // Wait for view to fully initialize
           await window.currentMiniView.when();
-
-          // Disable double-click zoom
-          window.currentMiniView.on("double-click", function(event) {
-            event.stopPropagation();
-          });
-
-          // Disable keyboard +/- zoom
-          window.currentMiniView.on("key-down", function(event) {
-            if (["+", "-", "_", "="].includes(event.key)) {
-              event.stopPropagation();
-            }
-          });
 
           // Auto-zoom to layer extent (like Arc's zoom to extent)
           const { extent } = await layer.queryExtent();
@@ -902,9 +949,7 @@
                   : 'rgba(16, 24, 32, 0.5)';
                 
                 return `
-                  <div class="mb-2 p-2 rounded hover:opacity-80 transition-opacity legend-mu-item"
-                       data-musym="${musym}"
-                       style="background-color: ${bgColor}; border: 1.5px solid ${borderColor};">
+                  <div class="mb-2 p-2 rounded hover:opacity-90 transition-opacity" style="background-color: ${bgColor}; border: 1.5px solid ${borderColor};">
                     <div class="font-semibold text-gray-900">${musym}</div>
                     <div class="text-xs text-gray-700">${muname}</div>
                   </div>
@@ -912,51 +957,6 @@
               }).join('');
             
             legendContent.innerHTML = legendItems || '<div class="text-gray-500">No map units found</div>';
-
-            // Attach click handlers to legend items
-            legendContent.querySelectorAll('.legend-mu-item').forEach(item => {
-              item.addEventListener('click', async function() {
-                const clickedMusym = this.dataset.musym;
-                if (!clickedMusym) return;
-
-                const view = window.currentMiniView;
-                if (!view) return;
-
-                try {
-                  const query = layer.createQuery();
-                  query.where = `musym = '${clickedMusym.replace(/'/g, "''")}'`;
-                  query.outFields = ["*"];
-                  query.returnGeometry = true;
-
-                  const results = await layer.queryFeatures(query);
-                  if (!results.features.length) return;
-                  if (!window.currentMiniView) return;
-
-                  // Pick the largest feature by bounding extent
-                  let targetFeature = results.features[0];
-                  if (results.features.length > 1) {
-                    targetFeature = results.features.reduce((largest, current) => {
-                      const la = largest.geometry?.extent;
-                      const ca = current.geometry?.extent;
-                      const largestArea = la ? la.width * la.height : 0;
-                      const currentArea = ca ? ca.width * ca.height : 0;
-                      return currentArea > largestArea ? current : largest;
-                    });
-                  }
-
-                  const geom = targetFeature.geometry;
-                  const location = geom.centroid || (geom.extent && geom.extent.center);
-                  if (!location) return;
-
-                  view.popup.open({
-                    features: [targetFeature],
-                    location: location
-                  });
-                } catch (err) {
-                  console.error('Legend click query failed:', err);
-                }
-              });
-            });
           } else {
             legendContent.innerHTML = '<div class="text-gray-500">Legend unavailable</div>';
           }
@@ -1044,7 +1044,6 @@
           console.warn('Error destroying previous view:', e);
         }
       }
-      window.currentMiniLayer = null;
       
       mapContainer.innerHTML = '<div class="flex items-center justify-center h-full text-gray-500">Loading map...</div>';
       mapStationName.textContent = stationName;
@@ -1097,27 +1096,29 @@
     let chTexture=null, chADTexture=null;
     function destroyChart(c){ c && c.destroy && c.destroy(); }
 
-    /* ── pH horizontal sliding scale ── */
+    /* ── pH vertical sliding scale ── */
     function renderPhScale(phVal, hostId='phScaleHost', markerId='phMarker'){
       const host = document.getElementById(hostId);
       const safe = Number.isFinite(phVal) ? phVal : 0;
-      const pct  = (safe / 14 * 100).toFixed(2);
-      const ticks = Array.from({length:15},(_,i)=>`<span>${i}</span>`).join('');
+      // 0 = top (100%), 14 = bottom (0%) — invert so 14 is at top
+      const pct  = ((14 - safe) / 14 * 100).toFixed(2);
+      const ticks = Array.from({length:15},(_,i)=>`<span>${14 - i}</span>`).join('');
       host.innerHTML = `
-        <div class="ph-horiz-wrap">
-          <div class="ph-horiz-zones">
-            <span>Acidic</span><span>Neutral</span><span>Alkaline</span>
+        <div class="ph-column-wrap">
+          <div class="ph-column-zones">
+            <span>Alkaline</span><span>Neutral</span><span>Acidic</span>
           </div>
-          <div class="ph-horiz-bar">
-            <div class="ph-marker" id="${markerId}" style="left:0%">
+          <div class="ph-column-ticks">${ticks}</div>
+          <div class="ph-column-bar">
+            <div class="ph-marker" id="${markerId}" style="top:0%">
               <div class="ph-marker-pin"></div>
               <div class="ph-marker-label">${safe.toFixed(2)}</div>
+              <div class="ph-tooltip">pH ${safe.toFixed(2)}</div>
             </div>
           </div>
-          <div class="ph-horiz-ticks">${ticks}</div>
         </div>`;
       requestAnimationFrame(()=>requestAnimationFrame(()=>{
-        document.getElementById(markerId).style.left = pct + '%';
+        document.getElementById(markerId).style.top = pct + '%';
       }));
     }
 
