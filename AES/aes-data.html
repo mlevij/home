@@ -880,6 +880,12 @@
             if (stationName === 'ARDEC South') expandFactor = 1.5;
             
             await window.currentMiniView.goTo(extent.expand(expandFactor), { animate: false });
+            if (stationName === 'Eastern Colorado RC') {
+              await window.currentMiniView.goTo(
+                { scale: window.currentMiniView.scale / Math.sqrt(2) },
+                { animate: false }
+              );
+            }
           }
 
           // Generate legend after layer loads
@@ -975,7 +981,8 @@
 
             // Click a card → open popup for that map unit
             legendContent.querySelectorAll('[data-musym]').forEach(el => {
-              el.addEventListener('click', async () => {
+              el.addEventListener('click', async (evt) => {
+                evt.stopPropagation();
                 if (!window.currentMiniView) return;
                 const musym = el.dataset.musym;
                 const q = layer.createQuery();
@@ -986,7 +993,10 @@
                 if (result.features.length > 0) {
                   const feature = result.features[0];
                   const attrs = feature.attributes || {};
-                  const loc = feature.geometry?.centroid || feature.geometry?.extent?.center;
+                  const loc = feature.geometry?.centroid
+                    ?? feature.geometry?.extent?.center
+                    ?? window.currentMiniView.center;
+                  window.currentMiniView.popup.close();
                   window.currentMiniView.popup.open({
                     title: `${attrs.musym || ''} — ${attrs.muname || ''}`,
                     content: buildSoilPopupContent(feature),
