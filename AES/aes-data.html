@@ -250,7 +250,7 @@
                 <div id="mediaHost" class="border rounded-lg overflow-hidden bg-white">
                   <div class="map-and-legend">
                     <div id="miniMapContainer" class="mini-map flex-1"></div>
-                    <div id="mapLegend" class="border-l bg-gray-50 overflow-y-auto max-h-[700px]" style="width:288px; position:relative;">
+                    <div id="mapLegend" class="border-l bg-gray-50 overflow-y-auto max-h-[700px]" style="width:200px; position:relative;">
                       <button id="btnLegendToggle" type="button" class="legend-toggle" title="Toggle legend">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                       </button>
@@ -716,9 +716,9 @@
                         const color = h.soil_color || '#808080';
                         const midY = y1 + bh / 2;
                         svgContent += `<rect x="${barX}" y="${y1.toFixed(1)}" width="${barW}" height="${bh.toFixed(1)}" fill="${color}" stroke="#fff" stroke-width="0.5"/>`;
-                        svgContent += `<text x="${barX - 3}" y="${(midY + 4).toFixed(1)}" text-anchor="end" font-size="9" fill="#374151" font-family="sans-serif">${h.hzname || ''}</text>`;
+                        if (bh >= 14) svgContent += `<text x="${barX - 3}" y="${(midY + 4).toFixed(1)}" text-anchor="end" font-size="9" fill="#374151" font-family="sans-serif">${h.hzname || ''}</text>`;
                         svgContent += `<line x1="${barX + barW}" y1="${y1.toFixed(1)}" x2="${barX + barW + 4}" y2="${y1.toFixed(1)}" stroke="#9ca3af" stroke-width="0.5"/>`;
-                        svgContent += `<text x="${barX + barW + 6}" y="${(y1 + 4).toFixed(1)}" text-anchor="start" font-size="8" fill="#9ca3af" font-family="sans-serif">${h.hzdept_r}</text>`;
+                        if (bh >= 10) svgContent += `<text x="${barX + barW + 6}" y="${(y1 + 4).toFixed(1)}" text-anchor="start" font-size="8" fill="#9ca3af" font-family="sans-serif">${h.hzdept_r}</text>`;
                       });
                       const last = horizons[horizons.length - 1];
                       const yBottom = ((last.hzdepb_r || 0) * scale).toFixed(1);
@@ -779,7 +779,7 @@
 
                     const rows = fields.map(f =>
                       `<tr>
-                        <td style="padding:2px 6px 2px 0;color:#6b7280;white-space:nowrap;vertical-align:top;font-size:11px;">${f.label}</td>
+                        <td style="padding:2px 6px 2px 0;color:#6b7280;white-space:normal;max-width:120px;vertical-align:top;font-size:11px;">${f.label}</td>
                         <td style="padding:2px 0;color:#111827;word-break:break-word;font-size:11px;">${fmt(f.val, f.dec)}</td>
                       </tr>`
                     ).join('');
@@ -949,7 +949,9 @@
                   : 'rgba(16, 24, 32, 0.5)';
                 
                 return `
-                  <div class="mb-2 p-2 rounded hover:opacity-90 transition-opacity" style="background-color: ${bgColor}; border: 1.5px solid ${borderColor};">
+                  <div class="mb-2 p-2 rounded hover:opacity-90 transition-opacity cursor-pointer"
+                       data-musym="${musym.replace(/"/g, '&quot;')}"
+                       style="background-color: ${bgColor}; border: 1.5px solid ${borderColor};">
                     <div class="font-semibold text-gray-900">${musym}</div>
                     <div class="text-xs text-gray-700">${muname}</div>
                   </div>
@@ -957,6 +959,24 @@
               }).join('');
             
             legendContent.innerHTML = legendItems || '<div class="text-gray-500">No map units found</div>';
+
+            // Click a card → open popup for that map unit
+            legendContent.querySelectorAll('[data-musym]').forEach(el => {
+              el.addEventListener('click', async () => {
+                if (!window.currentMiniView) return;
+                const musym = el.dataset.musym;
+                const q = layer.createQuery();
+                q.where = `musym = '${musym.replace(/'/g, "''")}'`;
+                q.outFields = ['*'];
+                q.returnGeometry = true;
+                const result = await layer.queryFeatures(q);
+                if (result.features.length > 0) {
+                  const feature = result.features[0];
+                  const loc = feature.geometry?.centroid || feature.geometry?.extent?.center;
+                  window.currentMiniView.openPopup({ features: [feature], location: loc });
+                }
+              });
+            });
           } else {
             legendContent.innerHTML = '<div class="text-gray-500">Legend unavailable</div>';
           }
