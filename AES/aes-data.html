@@ -591,8 +591,8 @@
       let lon = -105.5, lat = 40.0;
       if (feature.geometry) {
         const geom = feature.geometry;
-        if (geom.centroid) { lon = geom.centroid.longitude; lat = geom.centroid.latitude; }
-        else if (geom.extent) { lon = geom.extent.center.longitude; lat = geom.extent.center.latitude; }
+        const c = geom.centroid ?? geom.extent?.center;
+        if (c?.longitude != null) { lon = c.longitude; lat = c.latitude; }
       }
 
       const wrap = document.createElement('div');
