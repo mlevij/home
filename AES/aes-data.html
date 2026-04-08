@@ -984,9 +984,15 @@
                 const result = await layer.queryFeatures(q);
                 if (result.features.length > 0) {
                   const feature = result.features[0];
-                  feature.popupTemplate = layer.popupTemplate;
+                  const attrs = feature.attributes || {};
                   const loc = feature.geometry?.centroid || feature.geometry?.extent?.center;
-                  window.currentMiniView.openPopup({ features: [feature], location: loc });
+                  const creator = layer.popupTemplate?.content?.[0]?.creator;
+                  const contentEl = creator ? creator({ graphic: feature }) : null;
+                  window.currentMiniView.popup.open({
+                    title: `${attrs.musym || ''} — ${attrs.muname || ''}`,
+                    content: contentEl,
+                    location: loc
+                  });
                 }
               });
             });
