@@ -980,10 +980,16 @@
             legendContent.innerHTML = legendItems || '<div class="text-gray-500">No map units found</div>';
 
             // Click a card → open popup for that map unit
+            let activeHighlight = null;
+            window.currentMiniView.popup.watch('visible', (visible) => {
+              if (!visible && activeHighlight) { activeHighlight.remove(); activeHighlight = null; }
+            });
+
             legendContent.querySelectorAll('[data-musym]').forEach(el => {
               el.addEventListener('click', async (evt) => {
                 evt.stopPropagation();
                 if (!window.currentMiniView) return;
+                if (activeHighlight) { activeHighlight.remove(); activeHighlight = null; }
                 const musym = el.dataset.musym;
                 const q = layer.createQuery();
                 q.where = `musym = '${musym.replace(/'/g, "''")}'`;
@@ -996,6 +1002,8 @@
                   const loc = feature.geometry?.centroid
                     ?? feature.geometry?.extent?.center
                     ?? window.currentMiniView.center;
+                  const layerView = await window.currentMiniView.whenLayerView(layer);
+                  activeHighlight = layerView.highlight(result.features);
                   window.currentMiniView.popup.close();
                   window.currentMiniView.popup.open({
                     title: `${attrs.musym || ''} — ${attrs.muname || ''}`,
