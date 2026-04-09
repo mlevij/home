@@ -38,7 +38,7 @@
     .mini-map { height: 700px; width: 100%; border-radius: 0rem; overflow: hidden; }
     .esri-popup__main-container {
       max-width: 560px !important;
-      max-height: calc(100% - 40px) !important;
+      max-height: 640px !important;
       overflow-y: auto !important;
     }
 
@@ -621,9 +621,9 @@
           const color = h.soil_color || '#808080';
           const midY = y1 + bh / 2;
           svgContent += `<rect x="${barX}" y="${y1.toFixed(1)}" width="${barW}" height="${bh.toFixed(1)}" fill="${color}" stroke="#fff" stroke-width="0.5"/>`;
-          if (bh >= 14) svgContent += `<text x="${barX - 3}" y="${(midY + 4).toFixed(1)}" text-anchor="end" font-size="9" fill="#374151" font-family="sans-serif">${h.hzname || ''}</text>`;
+          svgContent += `<text x="${barX - 3}" y="${(midY + 4).toFixed(1)}" text-anchor="end" font-size="9" fill="#374151" font-family="sans-serif">${h.hzname || ''}</text>`;
           svgContent += `<line x1="${barX + barW}" y1="${y1.toFixed(1)}" x2="${barX + barW + 4}" y2="${y1.toFixed(1)}" stroke="#9ca3af" stroke-width="0.5"/>`;
-          if (bh >= 10) svgContent += `<text x="${barX + barW + 6}" y="${(y1 + 4).toFixed(1)}" text-anchor="start" font-size="8" fill="#9ca3af" font-family="sans-serif">${h.hzdept_r}</text>`;
+          svgContent += `<text x="${barX + barW + 6}" y="${(y1 + 4).toFixed(1)}" text-anchor="start" font-size="8" fill="#9ca3af" font-family="sans-serif">${h.hzdept_r}</text>`;
         });
         const last = horizons[horizons.length - 1];
         const yBottom = ((last.hzdepb_r || 0) * scale).toFixed(1);
