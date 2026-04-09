@@ -728,8 +728,9 @@
     require([
       "esri/Map",
       "esri/views/MapView",
-      "esri/layers/FeatureLayer"
-    ], function(Map, MapView, FeatureLayer) {
+      "esri/layers/FeatureLayer",
+      "esri/core/reactiveUtils"
+    ], function(Map, MapView, FeatureLayer, reactiveUtils) {
       async function generateUniqueValueRenderer(layer) {
         // Define a color palette - you can customize these colors
         const colorPalette = [
@@ -858,7 +859,7 @@
               dockOptions: {
                 position: "top-right",
                 breakpoint: false,
-                buttonEnabled: false
+                buttonEnabled: true
               },
               collapseEnabled: false,
               visibleElements: {
@@ -997,11 +998,22 @@
               }
             };
 
-            // Clear card-click highlight when user clicks a polygon directly on the map
+            // Clear highlight when user clicks a polygon directly on the map
             window.currentMiniView.on('click', () => {
               if (activeHighlight) { activeHighlight.remove(); activeHighlight = null; }
               if (activeCard) { activeCard.style.border = activeCard.dataset.origBorder; activeCard.style.boxShadow = ''; activeCard = null; }
             });
+
+            // Clear highlight when popup is closed via X button
+            reactiveUtils.watch(
+              () => window.currentMiniView.popup.visible,
+              (visible) => {
+                if (!visible) {
+                  if (activeHighlight) { activeHighlight.remove(); activeHighlight = null; }
+                  if (activeCard) { activeCard.style.border = activeCard.dataset.origBorder; activeCard.style.boxShadow = ''; activeCard = null; }
+                }
+              }
+            );
 
             legendContent.querySelectorAll('[data-musym]').forEach(el => {
               el.addEventListener('click', async (evt) => {
