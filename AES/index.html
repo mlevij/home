@@ -451,6 +451,7 @@
 
       // Helper: zoom to a station extent and ensure polygons are visible — without the "jump"
       async function goToStationExtentEnsuringVisibility(serviceTitle){
+        view.popup.close();
         const lyr = layerByServiceTitle[serviceTitle];
         if (!lyr) return;
         await lyr.when();
