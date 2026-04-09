@@ -982,12 +982,18 @@
 
             // Click a card → open popup for that map unit
             let activeHighlight = null;
+            let activeCard = null;
 
             legendContent.querySelectorAll('[data-musym]').forEach(el => {
               el.addEventListener('click', async (evt) => {
                 evt.stopPropagation();
                 if (!window.currentMiniView) return;
                 if (activeHighlight) { activeHighlight.remove(); activeHighlight = null; }
+                if (activeCard) { activeCard.style.border = activeCard.dataset.origBorder; activeCard.style.boxShadow = ''; activeCard = null; }
+                el.dataset.origBorder = el.style.border;
+                el.style.border = '2.5px solid #374151';
+                el.style.boxShadow = '0 0 8px 3px rgba(55, 65, 81, 0.45)';
+                activeCard = el;
                 const musym = el.dataset.musym;
                 const q = layer.createQuery();
                 q.where = `musym = '${musym.replace(/'/g, "''")}'`;
