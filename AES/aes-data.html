@@ -417,7 +417,7 @@
       ]},
       { group:'OTHER RCs', items:[
         { name:'Eastern Colorado RC',  svc:'ECRC Soils', url:`${BASE_URL}/26` },
-        { name:'Western Colorado RC',svc:'SWCRC Soils',url:`${BASE_URL}/32` },
+        { name:'Southwest Colorado RC',svc:'SWCRC Soils',url:`${BASE_URL}/32` },
         { name:'San Luis Valley RC',   svc:'SLVRC Soils',url:`${BASE_URL}/31` },
         { name:'Arkansas Valley RC',   svc:'AVRC Soils', url:`${BASE_URL}/25` },
         { name:'Plainsman RC',         svc:'PRC Soils',  url:`${BASE_URL}/29` },
@@ -429,7 +429,7 @@
       'ARDEC': `Based on the Larimer County Soil Survey (1:24,000). Soils formed on nearly level fans, terraces and valley side slopes from mixed alluvium and some eolian sediments weathered from nearby sandstones and shales. Most are very deep and well-drained, though areas such as MU 5 and 76 can have a seasonally high water table. Near-neutral sandy loams/loams/clay loams at the surface trend to higher clay and pH with depth.`,
       'San Luis Valley RC': `From the Rio Grande County Soil Survey (1:24,000). Soils formed in calcareous coarse-textured alluvium over sand and gravel. Several soils have abundant gravel/cobbles with pH ~7.5–8.5. Norte (~45%) has a fluctuating water table (somewhat poorly drained). Quamon is moderately well drained (seasonally high WT at ~3–5 ft). Dunul is well to excessively drained. San Arcacio (~⅓) is well drained with higher clay and lower gravel than others.`,
       'Arkansas Valley RC': `From the Otero County Soil Survey (1:24,000). Entire station is mapped as Rocky Ford silty clay loam (mostly 0–1% slopes). Very deep soil formed in mixed alluvium; surface clay content is elevated by sediment-rich irrigation water. Well drained; pH ~7.6 at surface increasing to ~8.6 with depth.`,
-      'Western Colorado RC': `From the Cortez Area Soil Survey (1:24,000). Wetherill soils (~75%) formed in eolian material from sandstone/shale; well drained; pH near neutral at surface rising to ~8.0 with depth; clay increases with depth. Cahona is very deep/well drained in eolian sandstone, typically with shallower carbonate accumulations. Sharps is similar, with shale/soft sandstone bedrock usually within ~40 inches.`,
+      'Southwest Colorado RC': `From the Cortez Area Soil Survey (1:24,000). Wetherill soils (~75%) formed in eolian material from sandstone/shale; well drained; pH near neutral at surface rising to ~8.0 with depth; clay increases with depth. Cahona is very deep/well drained in eolian sandstone, typically with shallower carbonate accumulations. Sharps is similar, with shale/soft sandstone bedrock usually within ~40 inches.`,
       'Orchard Mesa RC': `From the Mesa County Soil Survey (1:24,000). Level to gently sloping (0–2%), well-drained, very deep. Fruitvale formed in sandstone/shale alluvium; clay loam–silty clay loam throughout; pH ~7.6–7.8; gypsum masses ~2 ft. Gyprockmesa similar with cobbles starting ~15". Turley has clay loam throughout and higher CaCO₃ (pH ~8.2–8.6). Blackston is gravelly (15–60% in upper ~15", >60% below ~15").`,
       'Grand Valley RC': `From the Mesa County Soil Survey (1:24,000). Seven mapped soils on 0–2% slopes; well drained; mostly alluvium from sandstone/shale; ≥5 ft deep (except Killpack with shale ~2–3 ft). Sagrlite loam (~⅓) has loam/silt loam with pH ~7.4–8.0. Sagers/Turley have higher clay than Sagrlite. Fruitvale clay loam ranges to silty clay; gypsum often within ~2 ft (pH ~7.7). Glenton/Fruitland are sandier (pH ~8.0–8.2).`,
       'Rogers Mesa RC': `From the Paonia Area Soil Survey (1:24,000). Almost two-thirds is Mesa–Ultaline stony loam and Mesa loam. Very deep, well drained; formed in alluvium/colluvium. Mesa: loam/clay loam, gravel increases near ~20". pH ~7.6 at surface rising to ~8.4. Ultaline: loam throughout with cobbles (15–35% surface up to ~60% with depth; pH ~8.2). Agua Fria is very deep/well drained, alluvium from crystalline rocks; thin loam over clay/clay loam then loams again; gypsum ~4 ft; pH ~7.5 rising to ~8.5–9.0 with depth; rock fragments high at depth.`,
@@ -877,7 +877,7 @@
             // Special handling for stations that need more zoom out
             let expandFactor = 1.0;
             if (stationName === 'Eastern Colorado RC') expandFactor = 1.5;
-            if (stationName === 'Western Colorado RC') expandFactor = 1.5;
+            if (stationName === 'Southwest Colorado RC') expandFactor = 1.5;
             if (stationName === 'Arkansas Valley RC') expandFactor = 1.5;
             if (stationName === 'San Luis Valley RC') expandFactor = 1.5;
             if (stationName === 'ARDEC South') expandFactor = 1.5;
