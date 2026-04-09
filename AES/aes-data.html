@@ -981,9 +981,6 @@
 
             // Click a card → open popup for that map unit
             let activeHighlight = null;
-            window.currentMiniView.popup.watch('visible', (visible) => {
-              if (!visible && activeHighlight) { activeHighlight.remove(); activeHighlight = null; }
-            });
 
             legendContent.querySelectorAll('[data-musym]').forEach(el => {
               el.addEventListener('click', async (evt) => {
