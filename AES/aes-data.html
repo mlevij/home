@@ -1006,7 +1006,7 @@
 
             // Clear highlight when popup is closed via X button
             reactiveUtils.watch(
-              () => window.currentMiniView.popup.visible,
+              () => window.currentMiniView?.popup?.visible,
               (visible) => {
                 if (!visible) {
                   if (activeHighlight) { activeHighlight.remove(); activeHighlight = null; }
