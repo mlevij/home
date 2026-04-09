@@ -588,6 +588,7 @@
       const mukey = attrs.mukey;
       const muname = attrs.muname || '';
       const series = extractSeriesName(muname);
+      if (attrs.musym) window.highlightLegendCard?.(attrs.musym);
 
       let lon = -105.5, lat = 40.0;
       if (feature.geometry) {
@@ -984,16 +985,24 @@
             let activeHighlight = null;
             let activeCard = null;
 
+            window.highlightLegendCard = (musym) => {
+              if (activeCard) { activeCard.style.border = activeCard.dataset.origBorder; activeCard.style.boxShadow = ''; activeCard = null; }
+              const card = legendContent.querySelector(`[data-musym="${CSS.escape(musym)}"]`);
+              if (card) {
+                card.dataset.origBorder = card.style.border;
+                card.style.border = '2.5px solid #374151';
+                card.style.boxShadow = '0 0 6px 2px rgba(55, 65, 81, 0.35)';
+                card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                activeCard = card;
+              }
+            };
+
             legendContent.querySelectorAll('[data-musym]').forEach(el => {
               el.addEventListener('click', async (evt) => {
                 evt.stopPropagation();
                 if (!window.currentMiniView) return;
                 if (activeHighlight) { activeHighlight.remove(); activeHighlight = null; }
-                if (activeCard) { activeCard.style.border = activeCard.dataset.origBorder; activeCard.style.boxShadow = ''; activeCard = null; }
-                el.dataset.origBorder = el.style.border;
-                el.style.border = '2.5px solid #374151';
-                el.style.boxShadow = '0 0 8px 3px rgba(55, 65, 81, 0.45)';
-                activeCard = el;
+                window.highlightLegendCard(el.dataset.musym);
                 const musym = el.dataset.musym;
                 const q = layer.createQuery();
                 q.where = `musym = '${musym.replace(/'/g, "''")}'`;
