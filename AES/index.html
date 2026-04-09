@@ -453,6 +453,7 @@
       async function goToStationExtentEnsuringVisibility(serviceTitle){
         const lyr = layerByServiceTitle[serviceTitle];
         if (!lyr) return;
+        await lyr.when();
         const { extent } = await lyr.queryExtent();
         if (!extent) return;
 
