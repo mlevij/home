@@ -38,6 +38,7 @@
     .mini-map { height: 700px; width: 100%; border-radius: 0rem; overflow: hidden; }
     .esri-popup__main-container {
       max-width: 560px !important;
+      min-height: 480px !important;
       max-height: 640px !important;
       overflow-y: auto !important;
     }
@@ -609,7 +610,7 @@
 
       if (horizons) {
         const maxDepth = Math.max(...horizons.map(h => h.hzdepb_r || 0)) || 200;
-        const svgH = 220;
+        const svgH = 300;
         const scale = svgH / maxDepth;
         const barX = 35, barW = 38;
 
