@@ -31,8 +31,10 @@
       border: none; flex-shrink: 0;
     }
     .toggle-btn.on { background: #1E4D2B; }
-    .toggle-btn.on.orange { background: #f97316; }
+    .toggle-btn.on.orange { background: #ff0000; }
+    .toggle-btn.on.green { background: #4CE600; }
     .toggle-btn.on.teal { background: #0d9488; }
+    .toggle-btn.on.gold  { background: #C8C372; }
     .toggle-btn::after {
       content: ''; position: absolute; left: 2px; top: 2px;
       width: 16px; height: 16px; border-radius: 50%; background: white;
@@ -42,6 +44,13 @@
 
     /* Depth table alternating rows */
     #depthTableBody tr:nth-child(odd) { background: #f9fafb; }
+
+    /* SMM site markers */
+    .smm-dot {
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+    }
 
     @media (max-width: 900px) {
       .sidebar { width: 100%; }
@@ -89,31 +98,33 @@
             <div class="text-xs uppercase tracking-wide text-gray-400 mb-1">Networks</div>
 
             <label class="flex items-center gap-3 cursor-pointer select-none">
-              <button class="toggle-btn on" id="btn-coagmet"></button>
-              <span class="w-3 h-3 rounded-full flex-shrink-0" style="background:#3b82f6;"></span>
-              <span class="text-sm text-gray-700">CoAgMET Network</span>
+              <button class="toggle-btn on green" id="btn-coagmet"></button>
+              <span class="w-3 h-3 rounded-full flex-shrink-0 opacity-50" style="background:#4CE600;"></span>
+              <span class="text-sm text-gray-700">CoAgMET</span>
             </label>
 
             <label class="flex items-center gap-3 cursor-pointer select-none">
               <button class="toggle-btn on orange" id="btn-raws"></button>
-              <span class="w-3 h-3 rounded-full flex-shrink-0" style="background:#f97316;"></span>
-              <span class="text-sm text-gray-700">RAWS Network</span>
+              <span class="w-3 h-3 rounded-full flex-shrink-0 opacity-50" style="background:#ff0000;"></span>
+              <span class="text-sm text-gray-700">RAWS</span>
             </label>
 
             <div class="h-px bg-gray-100 my-2"></div>
-            <div class="text-xs uppercase tracking-wide text-gray-400 mb-1">Overlay</div>
+            <div class="text-xs uppercase tracking-wide text-gray-400 mb-1">Soil Moisture Monitoring Sites</div>
 
-            <label class="flex items-center gap-3 cursor-pointer select-none">
-              <button class="toggle-btn on teal" id="btn-soil"></button>
-              <span class="w-3 h-3 rounded-full flex-shrink-0 border-2" style="background:#0d9488;border-color:#0d9488;"></span>
-              <span class="text-sm text-gray-700">Soil Monitoring Sites</span>
+            <label class="flex items-start gap-3 cursor-pointer select-none">
+              <button class="toggle-btn on gold mt-1" id="btn-soil"></button>
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full flex-shrink-0" style="background:#4CE600;box-shadow:0 0 4px 1px #4CE600;"></span>
+                  <span class="text-sm text-gray-700">CoAgMET</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full flex-shrink-0" style="background:#ff0000;box-shadow:0 0 4px 1px #ff0000;"></span>
+                  <span class="text-sm text-gray-700">RAWS</span>
+                </div>
+              </div>
             </label>
-          </div>
-
-          <div class="mt-4 pt-3 border-t space-y-1 text-xs text-gray-400">
-            <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full bg-blue-400 opacity-50"></span> CoAgMET station (all)</div>
-            <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full bg-orange-400 opacity-50"></span> RAWS station (all)</div>
-            <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full" style="background:#0d9488;"></span> Soil sampled site</div>
           </div>
 
           <div class="mt-3 pt-2 border-t text-xs text-gray-400" id="stationCount">Loading CoAgMET…</div>
@@ -649,12 +660,16 @@
       let n = 0;
       COAGMET_NETWORK.forEach(s => {
         const lbl = `${s.id} — ${s.name}`;
-        circ([s.lat, s.lon], '#3b82f6', 5, 0.55, 1)
+        circ([s.lat, s.lon], '#4CE600', 5, 0.55, 1)
           .bindTooltip(lbl, { direction:'top', sticky:true })
           .addTo(coagmetLayer);
         if (COAGMET_SOIL[s.id]) {
           const soil = COAGMET_SOIL[s.id];
-          circ([s.lat, s.lon], '#0d9488', 9, 0.9, 1.5)
+          L.marker([s.lat, s.lon], { icon: L.divIcon({
+            className: 'smm-dot',
+            html: '<div style="width:10px;height:10px;border-radius:50%;background:#4CE600;box-shadow:0 0 4px 1px #4CE600;"></div>',
+            iconSize: [10, 10], iconAnchor: [5, 5]
+          })})
             .bindTooltip(`● ${lbl} (soil monitored)`, { direction:'top', sticky:true })
             .on('click', () => showSite(soil, s.name, [s.lat, s.lon]))
             .addTo(soilLayer);
@@ -669,12 +684,16 @@
     function loadRAWS() {
       RAWS_NETWORK.forEach(s => {
         const latlng = [s.lat, s.lon];
-        circ(latlng, '#f97316', 5, 0.55, 1)
+        circ(latlng, '#ff0000', 5, 0.55, 1)
           .bindTooltip(s.name, { direction:'top', sticky:true })
           .addTo(rawsLayer);
         if (s.soilKey && RAWS_SOIL[s.soilKey]) {
           const soil = RAWS_SOIL[s.soilKey];
-          circ(latlng, '#0d9488', 9, 0.9, 1.5)
+          L.marker(latlng, { icon: L.divIcon({
+            className: 'smm-dot',
+            html: '<div style="width:10px;height:10px;border-radius:50%;background:#ff0000;box-shadow:0 0 4px 1px #ff0000;"></div>',
+            iconSize: [10, 10], iconAnchor: [5, 5]
+          })})
             .bindTooltip(`● ${s.name} (soil monitored)`, { direction:'top', sticky:true })
             .on('click', () => showSite(soil, s.name, latlng))
             .addTo(soilLayer);
