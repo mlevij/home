@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CoAgMET & RAWS Soil Health Monitoring</title>
+  <meta name="description" content="Soil health monitoring data from CoAgMET and RAWS networks across Colorado, 2025 sampling season.">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    :root { --font-sans: "Poppins", ui-sans-serif, system-ui, -apple-system; }
+    html, body, button, input, select, textarea { font-family: var(--font-sans); }
+    .sidebar { width: 280px; flex-shrink: 0; }
+    .card { background: #fff; border-radius: 0.75rem; box-shadow: 0 10px 20px rgba(0,0,0,.06); }
+    #map { height: 580px; width: 100%; z-index: 1; }
+
+    /* Toggle switch */
+    .toggle-btn {
+      position: relative; width: 36px; height: 20px; border-radius: 10px;
+      background: #d1d5db; transition: background 0.2s; cursor: pointer;
+      border: none; flex-shrink: 0;
+    }
+    .toggle-btn.on { background: #1E4D2B; }
+    .toggle-btn.on.orange { background: #f97316; }
+    .toggle-btn.on.teal { background: #0d9488; }
+    .toggle-btn::after {
+      content: ''; position: absolute; left: 2px; top: 2px;
+      width: 16px; height: 16px; border-radius: 50%; background: white;
+      transition: transform 0.2s;
+    }
+    .toggle-btn.on::after { transform: translateX(16px); }
+
+    /* Depth table alternating rows */
+    #depthTableBody tr:nth-child(odd) { background: #f9fafb; }
+
+    @media (max-width: 900px) {
+      .sidebar { width: 100%; }
+      .main-flex { flex-direction: column; }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+
+  <!-- Header -->
+  <header class="bg-[#1E4D2B] text-white shadow-md">
+    <div class="container mx-auto px-4 py-2 flex justify-between items-center relative">
+      <div class="flex items-center space-x-4">
+        <a href="https://www.colostate.edu/" target="_blank" rel="noopener noreferrer" class="hover:opacity-80 transition-opacity">
+          <img src="CSU-Symbol-r-357-617-RGB.png" alt="Colorado State University" class="h-20 w-auto"/>
+        </a>
+      </div>
+      <div class="hidden md:flex items-center space-x-6">
+        <h1 class="text-xl font-normal">Soil Health Monitoring</h1>
+        <span class="text-white/40">|</span>
+        <a href="/" class="hover:text-green-200">Home</a>
+      </div>
+      <button class="md:hidden" id="mobile-menu-button" aria-label="Open navigation menu">
+        <i data-feather="menu" class="w-6 h-6"></i>
+      </button>
+      <div id="mobile-menu" class="hidden md:hidden absolute top-full left-0 right-0 bg-[#1E4D2B] border-t border-green-800 shadow-lg z-50">
+        <div class="container mx-auto px-4 py-3 space-y-2">
+          <a href="/" class="block text-white hover:text-green-200 py-2">Home</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-6">
+    <div class="flex gap-6 main-flex">
+
+      <!-- Sidebar -->
+      <aside class="sidebar flex flex-col gap-4">
+
+        <!-- Layer Controls -->
+        <div class="card p-4" data-aos="fade-right">
+          <h2 class="text-lg font-semibold text-gray-800 mb-3">Map Layers</h2>
+
+          <div class="space-y-2">
+            <div class="text-xs uppercase tracking-wide text-gray-400 mb-1">Networks</div>
+
+            <label class="flex items-center gap-3 cursor-pointer select-none">
+              <button class="toggle-btn on" id="btn-coagmet"></button>
+              <span class="w-3 h-3 rounded-full flex-shrink-0" style="background:#3b82f6;"></span>
+              <span class="text-sm text-gray-700">CoAgMET Network</span>
+            </label>
+
+            <label class="flex items-center gap-3 cursor-pointer select-none">
+              <button class="toggle-btn on orange" id="btn-raws"></button>
+              <span class="w-3 h-3 rounded-full flex-shrink-0" style="background:#f97316;"></span>
+              <span class="text-sm text-gray-700">RAWS Network</span>
+            </label>
+
+            <div class="h-px bg-gray-100 my-2"></div>
+            <div class="text-xs uppercase tracking-wide text-gray-400 mb-1">Overlay</div>
+
+            <label class="flex items-center gap-3 cursor-pointer select-none">
+              <button class="toggle-btn on teal" id="btn-soil"></button>
+              <span class="w-3 h-3 rounded-full flex-shrink-0 border-2" style="background:#0d9488;border-color:#0d9488;"></span>
+              <span class="text-sm text-gray-700">Soil Monitoring Sites</span>
+            </label>
+          </div>
+
+          <div class="mt-4 pt-3 border-t space-y-1 text-xs text-gray-400">
+            <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full bg-blue-400 opacity-50"></span> CoAgMET station (all)</div>
+            <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full bg-orange-400 opacity-50"></span> RAWS station (all)</div>
+            <div class="flex items-center gap-2"><span class="inline-block w-3 h-3 rounded-full" style="background:#0d9488;"></span> Soil sampled site</div>
+          </div>
+
+          <div class="mt-3 pt-2 border-t text-xs text-gray-400" id="stationCount">Loading CoAgMET…</div>
+        </div>
+
+        <!-- Site Info Card -->
+        <div class="card p-4" id="siteInfoCard" data-aos="fade-right">
+          <h2 class="text-base font-semibold text-gray-800 mb-2">Site Info</h2>
+          <div id="siteInfoContent" class="text-sm text-gray-400 italic">Click a soil monitoring site to view data.</div>
+        </div>
+
+      </aside>
+
+      <!-- Main content -->
+      <section class="flex-1 min-w-0 space-y-5">
+
+        <!-- Map card -->
+        <div class="card overflow-hidden" data-aos="fade-up">
+          <div class="px-4 pt-4 pb-2 flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-800">Colorado Station Network</h2>
+            <span class="text-xs text-gray-400">2025 sampling season</span>
+          </div>
+          <div id="map"></div>
+          <div class="px-4 py-2 text-xs text-gray-400 border-t">
+            CoAgMET station data from <a href="https://coagmet.colostate.edu" target="_blank" class="underline hover:text-[#1E4D2B]">coagmet.colostate.edu</a>.
+            RAWS stations from USFS site access records.
+          </div>
+        </div>
+
+        <!-- Data panel — hidden until a monitoring site is clicked -->
+        <div class="card p-5 hidden" id="dataPanel" data-aos="fade-up">
+          <div class="flex items-start justify-between mb-1">
+            <div>
+              <h2 class="text-xl font-bold text-gray-900" id="dataPanelTitle">—</h2>
+              <p class="text-sm text-gray-500" id="dataPanelSub">—</p>
+            </div>
+            <span class="text-xs px-2 py-1 rounded-full font-medium" id="dataPanelNetwork"
+              style="background:#e0f2fe;color:#0369a1;"></span>
+          </div>
+
+          <div class="overflow-x-auto mt-4">
+            <table class="w-full text-xs border-collapse" id="depthTable">
+              <thead>
+                <tr class="text-gray-500 uppercase tracking-wide border-b-2 border-gray-200">
+                  <th class="px-3 py-2 text-left">Depth</th>
+                  <th class="px-3 py-2 text-left">Texture</th>
+                  <th class="px-3 py-2 text-right">Sand %</th>
+                  <th class="px-3 py-2 text-right">Silt %</th>
+                  <th class="px-3 py-2 text-right">Clay %</th>
+                  <th class="px-3 py-2 text-right">pH</th>
+                  <th class="px-3 py-2 text-right">EC (mS)</th>
+                  <th class="px-3 py-2 text-right">%N</th>
+                  <th class="px-3 py-2 text-right">%C</th>
+                  <th class="px-3 py-2 text-right">C:N</th>
+                  <th class="px-3 py-2 text-right">WP</th>
+                  <th class="px-3 py-2 text-right">SR FC</th>
+                  <th class="px-3 py-2 text-right">Bag FC</th>
+                </tr>
+              </thead>
+              <tbody id="depthTableBody"></tbody>
+            </table>
+          </div>
+          <p class="text-xs text-gray-400 mt-2">WP = Wilting Point, SR FC = Saxton-Rawls Field Capacity, Bag FC = Bagnall Field Capacity. All water values in %.</p>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <footer class="text-center py-10 text-gray-400 text-sm">
+    Colorado State University — CoAgMET &amp; RAWS Soil Health Monitoring 2025
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { if (typeof AOS !== 'undefined') AOS.init(); });
+    feather.replace();
+    document.getElementById('mobile-menu-button').addEventListener('click', () => {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+
+    // ── Full RAWS network (from USFS site access records) ────────────────────
+    // Name mismatches corrected: JUNCO LAKE→KENOSHA PASS, STUB CREEK→SUGARLOAF, TAYLOR MOUNTAIN→TAYLOR PARK
+    const RAWS_NETWORK = [
+      { id:"575",   name:"BAILEY",              lat:39.379444, lon:-105.338333 },
+      { id:"4287",  name:"BEAR CREEK",           lat:38.448583, lon:-105.948361 },
+      { id:"2244",  name:"BIG BEAR PARK",         lat:37.496111, lon:-107.729444 },
+      { id:"584",   name:"BIG HORN",             lat:37.020833, lon:-106.201111 },
+      { id:"895",   name:"BLACK MOUNTAIN",        lat:37.8615,   lon:-105.284083, soilKey:"BLACK MOUNTAIN" },
+      { id:"585",   name:"BLUE PARK",            lat:37.793056, lon:-106.778611 },
+      { id:"1625",  name:"BOSQUE",               lat:37.091944, lon:-104.919444, soilKey:"BOSQUE" },
+      { id:"7726",  name:"BUCKLES",              lat:37.119889, lon:-106.819,    soilKey:"BUCKLES" },
+      { id:"1954",  name:"CARPENTER PEAK",        lat:39.419083, lon:-105.084056 },
+      { id:"583",   name:"CHEESMAN",             lat:39.181389, lon:-105.267222, soilKey:"CHEESEMAN" },
+      { id:"1676",  name:"CORRAL CREEK",          lat:39.64,     lon:-105.464722, soilKey:"CORRAL CREEK" },
+      { id:"599",   name:"DEAD HORSE",            lat:40.078444, lon:-107.368 },
+      { id:"2243",  name:"DEEP CREEK",            lat:39.773528, lon:-107.647056 },
+      { id:"594",   name:"DEVIL MTN.",            lat:37.226944, lon:-107.305278 },
+      { id:"600",   name:"DOWD JUNCTION",         lat:39.627639, lon:-106.452167 },
+      { id:"588",   name:"DRY LAKE",              lat:40.534722, lon:-106.780833 },
+      { id:"1590",  name:"ESTES PARK",            lat:40.366361, lon:-105.562778, soilKey:"ESTES PARK" },
+      { id:"576",   name:"FT CARSON",             lat:38.60757,  lon:-104.88667,  soilKey:"FT CARSON" },
+      { id:"11866", name:"GRAND MESA",            lat:39.033733, lon:-107.9769,   soilKey:"GRAND MESA" },
+      { id:"2242",  name:"HANGMAN",              lat:39.918056, lon:-106.916111 },
+      { id:"1033",  name:"HARBISON MEADOW",       lat:40.270278, lon:-105.8375,   soilKey:"HARBISON" },
+      { id:"2066",  name:"JONES HILL",            lat:39.041361, lon:-106.003694 },
+      { id:"2247",  name:"KENOSHA PASS",          lat:39.410833, lon:-105.749722 },
+      { id:"3867",  name:"KEYSER RIDGE",          lat:39.890556, lon:-106.036667 },
+      { id:"582",   name:"LAKE GEORGE",           lat:38.978611, lon:-105.354444 },
+      { id:"3027",  name:"LODGE POLE FLATS",      lat:39.153639, lon:-106.349806, soilKey:"LODGEPOLE FLATS" },
+      { id:"2914",  name:"LOG CHUTE",             lat:37.352222, lon:-107.914722 },
+      { id:"3026",  name:"LOST PARK",             lat:39.306944, lon:-105.542778 },
+      { id:"568",   name:"LUJAN",                lat:38.254667, lon:-106.56775 },
+      { id:"2248",  name:"MANCHESTER",            lat:39.105278, lon:-105.138056 },
+      { id:"574",   name:"NEEDLE CREEK",          lat:38.389167, lon:-106.530833 },
+      { id:"1677",  name:"PICKLE GULCH",          lat:39.844444, lon:-105.517222 },
+      { id:"644",   name:"PINION CANYON",         lat:37.5425,   lon:-104.031944, soilKey:"PINION CANYON" },
+      { id:"2249",  name:"POLHEMUS",              lat:39.254722, lon:-105.131944 },
+      { id:"587",   name:"PORCUPINE CR.",         lat:40.098083, lon:-106.680611 },
+      { id:"3226",  name:"RAMPART RANGE",         lat:38.958611, lon:-104.952778 },
+      { id:"2706",  name:"RED CREEK",             lat:38.207222, lon:-104.997778, soilKey:"RED CREEK" },
+      { id:"591",   name:"RED DEER",              lat:38.827278, lon:-106.211611, soilKey:"RED DEER" },
+      { id:"586",   name:"REDFEATHER",            lat:40.792806, lon:-105.572361 },
+      { id:"1128",  name:"REDSTONE",              lat:40.570833, lon:-105.226944, soilKey:"REDSTONE" },
+      { id:"593",   name:"SALTER",               lat:37.651194, lon:-108.537 },
+      { id:"597",   name:"SANBORN PARK",          lat:38.192167, lon:-108.216806, soilKey:"SANBORN PARK" },
+      { id:"11867", name:"SILVER JACK",           lat:38.23925,  lon:-107.540333, soilKey:"SILVER JACK" },
+      { id:"601",   name:"SODA CREEK",            lat:39.56,     lon:-105.985556 },
+      { id:"46",    name:"STORM KING MOUNTAIN",   lat:39.586944, lon:-107.404444 },
+      { id:"1589",  name:"SUGARLOAF",             lat:40.018056, lon:-105.361389 },
+      { id:"573",   name:"TAYLOR PARK",           lat:38.908361, lon:-106.602806 },
+      { id:"2713",  name:"UTE CANYON",            lat:37.060833, lon:-102.630278, soilKey:"UTE CANYON" },
+      { id:"590",   name:"WILLIS CREEK",          lat:38.002889, lon:-105.056028, soilKey:"WILLIS CREEK" },
+      { id:"589",   name:"WILLOW CREEK",          lat:40.351667, lon:-106.215278 },
+    ];
+
+    // ── Soil monitoring data (2025 sampling) ─────────────────────────────────
+    // Depths: [d, silt, sand, clay, texture, pH, ec, n, c, cn, wp, srFC, sat, bagFC]
+    // null = not measured / not available
+    const COAGMET_SOIL = {
+      'LAM01': { name:'LAM01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:47.4,sand:27,  clay:25.6,tex:'Loam',          pH:7.87,ec:0.2, n:0.12, c:1.91,cn:16,  wp:17,srFC:33,sat:48,bagFC:33},
+        {d:'6-12"', silt:49.4,sand:25,  clay:25.6,tex:'Loam',          pH:8.28,ec:0.2, n:0.067,c:1.6, cn:24,  wp:17,srFC:33,sat:48,bagFC:33},
+        {d:'12-20"',silt:48.4,sand:24,  clay:27.6,tex:'Clay Loam',     pH:8.8, ec:0.41,n:0.055,c:1.65,cn:30,  wp:18,srFC:34,sat:48,bagFC:34}]},
+      'ILF01': { name:'ILF01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:26.4,sand:42,  clay:31.6,tex:'Clay Loam',     pH:7.96,ec:0.39,n:0.219,c:2.17,cn:10,  wp:20,srFC:33,sat:46,bagFC:31},
+        {d:'6-12"', silt:24.4,sand:42,  clay:33.6,tex:'Clay Loam',     pH:7.92,ec:0.59,n:0.161,c:1.63,cn:10,  wp:21,srFC:34,sat:46,bagFC:32},
+        {d:'12-20"',silt:25.4,sand:49,  clay:25.6,tex:'Sandy Clay Loam',pH:8.09,ec:0.58,n:0.126,c:1.21,cn:10, wp:17,srFC:29,sat:45,bagFC:30}]},
+      'HXT01': { name:'HXT01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:20.4,sand:72,  clay:7.6, tex:'Sandy Loam',    pH:6.06,ec:0.06,n:0.14, c:1.49,cn:11,  wp:7, srFC:15,sat:45,bagFC:23},
+        {d:'6-12"', silt:13.4,sand:79,  clay:7.6, tex:'Loamy Sand',    pH:5.6, ec:0,   n:0.102,c:0.97,cn:10,  wp:7, srFC:14,sat:45,bagFC:22},
+        {d:'12-20"',silt:17.4,sand:71,  clay:11.6,tex:'Sandy Loam',    pH:6.42,ec:0,   n:0.077,c:0.72,cn:9,   wp:9, srFC:17,sat:44,bagFC:24}]},
+      'WRY02': { name:'WRY02', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:7.4, sand:89,  clay:3.6, tex:'Sand',          pH:6.42,ec:0.13,n:0.124,c:1.28,cn:10,  wp:4, srFC:9, sat:47,bagFC:19},
+        {d:'6-12"', silt:8.4, sand:90,  clay:1.6, tex:'Sand',          pH:6.98,ec:0.06,n:0.055,c:0.52,cn:9,   wp:3, srFC:8, sat:47,bagFC:18},
+        {d:'12-20"',silt:9.4, sand:85,  clay:5.6, tex:'Loamy Sand',    pH:6.9, ec:0,   n:0.041,c:0.38,cn:9,   wp:5, srFC:11,sat:46,bagFC:20}]},
+      'PAI01': { name:'PAI01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:12.4,sand:82,  clay:5.6, tex:'Loamy Sand',    pH:6.51,ec:0.04,n:0.122,c:1.24,cn:10,  wp:5, srFC:12,sat:46,bagFC:21},
+        {d:'6-12"', silt:12.4,sand:78,  clay:9.6, tex:'Sandy Loam',    pH:6.95,ec:0,   n:0.083,c:0.76,cn:9,   wp:8, srFC:15,sat:45,bagFC:22},
+        {d:'12-20"',silt:8.4, sand:76,  clay:15.6,tex:'Sandy Loam',    pH:7.0, ec:0,   n:0.075,c:0.66,cn:9,   wp:11,srFC:19,sat:43,bagFC:24}]},
+      'WLS01': { name:'WLS01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:35.8,sand:24.6,clay:39.6,tex:'Clay Loam',     pH:7.74,ec:0.19,n:0.163,c:1.9, cn:12,  wp:24,srFC:38,sat:49,bagFC:35},
+        {d:'6-12"', silt:38.8,sand:17.6,clay:43.6,tex:'Clay',          pH:7.98,ec:0.15,n:0.114,c:1.83,cn:16,  wp:26,srFC:40,sat:51,bagFC:36},
+        {d:'12-20"',silt:37.8,sand:18.6,clay:43.6,tex:'Clay',          pH:8.15,ec:0.14,n:0.078,c:1.84,cn:24,  wp:26,srFC:40,sat:51,bagFC:36}]},
+      'STG01': { name:'STG01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:29.8,sand:38.6,clay:31.6,tex:'Clay Loam',     pH:7.11,ec:0.23,n:0.099,c:0.82,cn:8,   wp:20,srFC:33,sat:46,bagFC:32},
+        {d:'6-12"', silt:33.8,sand:32.6,clay:33.6,tex:'Clay Loam',     pH:7.88,ec:0.17,n:0.092,c:1.13,cn:12,  wp:21,srFC:35,sat:47,bagFC:33},
+        {d:'12-20"',silt:35.8,sand:36.6,clay:27.6,tex:'Clay Loam',     pH:8.3, ec:0.15,n:0.057,c:2.23,cn:39,  wp:18,srFC:32,sat:46,bagFC:32}]},
+      'YUM02': { name:'YUM02', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:7.8, sand:82.6,clay:9.6, tex:'Loamy Sand',    pH:6.13,ec:0.1, n:0.068,c:0.61,cn:9,   wp:8, srFC:14,sat:45,bagFC:21},
+        {d:'6-12"', silt:6.8, sand:79.6,clay:13.6,tex:'Sandy Loam',    pH:6.45,ec:0.05,n:0.063,c:0.51,cn:8,   wp:10,srFC:17,sat:44,bagFC:23},
+        {d:'12-20"',silt:5.8, sand:82.6,clay:11.6,tex:'Loamy Sand',    pH:6.72,ec:0,   n:0.044,c:0.34,cn:8,   wp:9, srFC:15,sat:44,bagFC:22}]},
+      'HYK01': { name:'HYK01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:2.8, sand:89.6,clay:7.6, tex:'Sand',          pH:6.8, ec:0.04,n:0.098,c:0.93,cn:9,   wp:7, srFC:11,sat:45,bagFC:20},
+        {d:'6-12"', silt:2.8, sand:91.6,clay:5.6, tex:'Sand',          pH:6.95,ec:0,   n:0.052,c:0.49,cn:9,   wp:5, srFC:10,sat:46,bagFC:19},
+        {d:'12-20"',silt:4.8, sand:87.6,clay:7.6, tex:'Loamy Sand',    pH:7.04,ec:0,   n:0.061,c:0.57,cn:9,   wp:7, srFC:12,sat:45,bagFC:20}]},
+      'AKR02': { name:'AKR02', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:54.8,sand:39.6,clay:5.6, tex:'Silt Loam',     pH:7.21,ec:0.19,n:0.15, c:1.4, cn:9,   wp:6, srFC:22,sat:46,bagFC:29},
+        {d:'6-12"', silt:30.8,sand:29.6,clay:39.6,tex:'Clay Loam',     pH:7.45,ec:0.14,n:0.114,c:0.97,cn:9,   wp:24,srFC:38,sat:48,bagFC:34},
+        {d:'12-20"',silt:33.8,sand:30.6,clay:35.6,tex:'Clay Loam',     pH:7.86,ec:0.19,n:0.102,c:2.17,cn:21,  wp:22,srFC:36,sat:48,bagFC:33}]},
+      'EAC01': { name:'EAC01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:36.4,sand:36,  clay:27.6,tex:'Clay Loam',     pH:7.84,ec:0.54,n:0.13, c:1.15,cn:9,   wp:18,srFC:32,sat:46,bagFC:32},
+        {d:'6-12"', silt:39.4,sand:37,  clay:23.6,tex:'Loam',          pH:7.81,ec:0.32,n:0.091,c:0.74,cn:8,   wp:16,srFC:30,sat:46,bagFC:31},
+        {d:'12-20"',silt:40.4,sand:30,  clay:29.6,tex:'Clay Loam',     pH:7.6, ec:0.7, n:0.107,c:0.82,cn:8,   wp:19,srFC:34,sat:47,bagFC:33}]},
+      'HLY01': { name:'HLY01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:53.4,sand:31,  clay:15.6,tex:'Silt Loam',     pH:7.89,ec:0.19,n:0.142,c:1.64,cn:12,  wp:11,srFC:28,sat:47,bagFC:32},
+        {d:'6-12"', silt:43.4,sand:25,  clay:31.6,tex:'Clay Loam',     pH:8.06,ec:0.15,n:0.106,c:1.94,cn:18,  wp:19,srFC:34,sat:54,bagFC:34},
+        {d:'12-20"',silt:44.4,sand:26,  clay:29.6,tex:'Clay Loam',     pH:8.4, ec:0.12,n:0.057,c:1.66,cn:29,  wp:18,srFC:33,sat:53,bagFC:34}]},
+      'KRK01': { name:'KRK01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:23.4,sand:53,  clay:23.6,tex:'Loam',          pH:7.9, ec:0.16,n:0.13, c:1.46,cn:11,  wp:14,srFC:25,sat:48,bagFC:29},
+        {d:'6-12"', silt:19.4,sand:55,  clay:25.6,tex:'Loam',          pH:7.88,ec:0.13,n:0.117,c:1.31,cn:11,  wp:15,srFC:25,sat:48,bagFC:29},
+        {d:'12-20"',silt:20.4,sand:56,  clay:23.6,tex:'Loam',          pH:8.04,ec:0.09,n:0.1,  c:1.24,cn:12,  wp:14,srFC:24,sat:47,bagFC:28}]},
+      'LSL01': { name:'LSL01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:15.4,sand:65,  clay:19.6,tex:'Sandy Loam',    pH:7.94,ec:1.35,n:0.159,c:1.65,cn:10,  wp:12,srFC:20,sat:44,bagFC:26},
+        {d:'6-12"', silt:17.4,sand:63,  clay:19.6,tex:'Sandy Loam',    pH:8.63,ec:2.57,n:0.06, c:0.51,cn:9,   wp:12,srFC:20,sat:44,bagFC:27},
+        {d:'12-20"',silt:9.4, sand:55,  clay:35.6,tex:'Sandy Clay Loam',pH:8.95,ec:4.55,n:0.061,c:0.6,cn:10,  wp:21,srFC:32,sat:52,bagFC:30}]},
+      'LCN01': { name:'LCN01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:17.4,sand:59,  clay:23.6,tex:'Loam',          pH:7.94,ec:0.22,n:0.132,c:1.12,cn:8,   wp:14,srFC:23,sat:46,bagFC:28},
+        {d:'6-12"', silt:14.4,sand:60,  clay:25.6,tex:'Loam',          pH:7.81,ec:0.21,n:0.101,c:0.8, cn:8,   wp:15,srFC:24,sat:47,bagFC:28},
+        {d:'12-20"',silt:19.4,sand:49,  clay:31.6,tex:'Sandy Clay Loam',pH:7.77,ec:0.32,n:0.078,c:0.56,cn:7,  wp:19,srFC:30,sat:51,bagFC:30}]},
+      'PKN01': { name:'PKN01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:16.4,sand:66,  clay:17.6,tex:'Sandy Loam',    pH:7.53,ec:0.27,n:0.148,c:1.44,cn:10,  wp:10,srFC:19,sat:43,bagFC:26},
+        {d:'6-12"', silt:20.4,sand:52,  clay:27.6,tex:'Sandy Clay Loam',pH:7.86,ec:0.15,n:0.093,c:0.78,cn:8,  wp:17,srFC:27,sat:49,bagFC:29},
+        {d:'12-20"',silt:22.4,sand:46,  clay:31.6,tex:'Sandy Clay Loam',pH:7.9, ec:0.12,n:0.085,c:0.66,cn:8,  wp:19,srFC:30,sat:51,bagFC:31}]},
+      'KSY01': { name:'KSY01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:8.4, sand:82,  clay:9.6, tex:'Loamy Sand',    pH:8.33,ec:0.17,n:0.05, c:0.48,cn:10,  wp:5, srFC:11,sat:38,bagFC:22},
+        {d:'6-12"', silt:8.4, sand:82,  clay:9.6, tex:'Loamy Sand',    pH:8.02,ec:0.32,n:0.05, c:0.42,cn:8,   wp:5, srFC:11,sat:38,bagFC:22},
+        {d:'12-20"',silt:6.4, sand:84,  clay:9.6, tex:'Loamy Sand',    pH:7.87,ec:0.79,n:0.052,c:0.42,cn:8,   wp:5, srFC:10,sat:37,bagFC:21}]},
+      'GBY01': { name:'GBY01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:20.4,sand:64,  clay:15.6,tex:'Sandy Loam',    pH:6.84,ec:0.3, n:0.198,c:2.03,cn:10,  wp:9, srFC:18,sat:43,bagFC:26},
+        {d:'6-12"', silt:21.4,sand:63,  clay:15.6,tex:'Sandy Loam',    pH:7.5, ec:0.16,n:0.094,c:0.87,cn:9,   wp:9, srFC:18,sat:43,bagFC:26},
+        {d:'12-20"',silt:20.4,sand:66,  clay:13.6,tex:'Sandy Loam',    pH:7.93,ec:0.29,n:0.06, c:0.53,cn:9,   wp:8, srFC:16,sat:41,bagFC:25}]},
+      'BLA01': { name:'BLA01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:9.4, sand:83,  clay:7.6, tex:'Loamy Sand',    pH:7.99,ec:0,   n:0.039,c:0.33,cn:8,   wp:4, srFC:9, sat:36,bagFC:21},
+        {d:'6-12"', silt:4.4, sand:84,  clay:11.6,tex:'Loamy Sand',    pH:7.87,ec:0,   n:0.043,c:0.35,cn:8,   wp:6, srFC:11,sat:38,bagFC:22},
+        {d:'12-20"',silt:7.4, sand:83,  clay:9.6, tex:'Loamy Sand',    pH:7.92,ec:0,   n:0.034,c:0.27,cn:8,   wp:5, srFC:10,sat:37,bagFC:21}]},
+      'LAM03': { name:'LAM03', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:43.4,sand:25,  clay:31.6,tex:'Clay Loam',     pH:8.16,ec:0.09,n:0.101,c:2.06,cn:20,  wp:19,srFC:34,sat:54,bagFC:34},
+        {d:'6-12"', silt:46.8,sand:18,  clay:35.2,tex:'Silty Clay Loam',pH:8.35,ec:0.09,n:0.064,c:1.89,cn:30, wp:21,srFC:36,sat:55,bagFC:35},
+        {d:'12-20"',silt:52.8,sand:20,  clay:27.2,tex:'Clay Loam',     pH:8.61,ec:0.11,n:0.046,c:1.55,cn:34,  wp:17,srFC:33,sat:53,bagFC:34}]},
+      'BRG01': { name:'BRG01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:16.8,sand:74,  clay:9.2, tex:'Loamy Sand',    pH:5.98,ec:0.12,n:0.101,c:0.93,cn:9,   wp:5, srFC:12,sat:38,bagFC:23},
+        {d:'6-12"', silt:8.8, sand:80,  clay:11.2,tex:'Loamy Sand',    pH:7.35,ec:0.06,n:0.055,c:0.4, cn:7,   wp:6, srFC:12,sat:38,bagFC:22},
+        {d:'12-20"',silt:12.8,sand:70,  clay:17.2,tex:'Sandy Loam',    pH:7.91,ec:0.17,n:0.064,c:0.55,cn:9,   wp:10,srFC:17,sat:42,bagFC:25}]},
+      'LMS02': { name:'LMS02', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:29.8,sand:29,  clay:41.2,tex:'Clay',          pH:8.22,ec:0.58,n:0.134,c:1.83,cn:14,  wp:25,srFC:38,sat:57,bagFC:34},
+        {d:'6-12"', silt:22.8,sand:28,  clay:49.2,tex:'Clay',          pH:7.7, ec:4.28,n:0.125,c:1.6, cn:13,  wp:29,srFC:42,sat:59,bagFC:35},
+        {d:'12-20"',silt:15.8,sand:39,  clay:45.2,tex:'Clay',          pH:7.79,ec:4.87,n:0.098,c:1.25,cn:13,  wp:27,srFC:39,sat:57,bagFC:33}]},
+      'BRL02': { name:'BRL02', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:43.8,sand:35,  clay:21.2,tex:'Loam',          pH:7.1, ec:0.22,n:0.169,c:1.54,cn:9,   wp:13,srFC:27,sat:49,bagFC:31},
+        {d:'6-12"', silt:48.8,sand:26,  clay:25.2,tex:'Loam',          pH:7.41,ec:0.06,n:0.139,c:1.27,cn:9,   wp:15,srFC:31,sat:52,bagFC:33},
+        {d:'12-20"',silt:45.8,sand:23,  clay:31.2,tex:'Clay Loam',     pH:7.58,ec:0.1, n:0.105,c:0.89,cn:8,   wp:19,srFC:34,sat:54,bagFC:34}]},
+      'CTR01': { name:'CTR01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:17.8,sand:65,  clay:17.2,tex:'Sandy Loam',    pH:8.46,ec:0.19,n:0.076,c:0.73,cn:10,  wp:10,srFC:19,sat:43,bagFC:26},
+        {d:'6-12"', silt:17.8,sand:67,  clay:15.2,tex:'Sandy Loam',    pH:8.28,ec:0.19,n:0.073,c:0.69,cn:9,   wp:9, srFC:17,sat:42,bagFC:25},
+        {d:'12-20"',silt:34.8,sand:36,  clay:29.2,tex:'Clay Loam',     pH:7.91,ec:0.91,n:0.074,c:0.66,cn:9,   wp:18,srFC:31,sat:52,bagFC:32}]},
+      'CTR02': { name:'CTR02', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:14.8,sand:74,  clay:11.2,tex:'Loamy Sand',    pH:8.48,ec:0.36,n:0.126,c:1.44,cn:11,  wp:6, srFC:13,sat:39,bagFC:23},
+        {d:'6-12"', silt:14.8,sand:74,  clay:11.2,tex:'Loamy Sand',    pH:8.12,ec:1.24,n:0.053,c:0.82,cn:15,  wp:6, srFC:13,sat:39,bagFC:23},
+        {d:'12-20"',silt:12.8,sand:66,  clay:21.2,tex:'Loam',          pH:7.86,ec:3.02,n:0.063,c:2.2, cn:35,  wp:13,srFC:21,sat:45,bagFC:26}]},
+      'FWL01': { name:'FWL01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:32.8,sand:54,  clay:13.2,tex:'Sandy Loam',    pH:8.4, ec:0.25,n:0.096,c:1.55,cn:16,  wp:8, srFC:19,sat:43,bagFC:27},
+        {d:'6-12"', silt:26.8,sand:50,  clay:23.2,tex:'Loam',          pH:7.9, ec:3.04,n:0.086,c:1.43,cn:17,  wp:14,srFC:25,sat:48,bagFC:29},
+        {d:'12-20"',silt:30.8,sand:44,  clay:25.2,tex:'Loam',          pH:7.87,ec:3.79,n:0.099,c:1.69,cn:17,  wp:15,srFC:27,sat:49,bagFC:30}]},
+      'LBN01': { name:'LBN01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:35.8,sand:33,  clay:31.2,tex:'Clay Loam',     pH:7.81,ec:0.19,n:0.143,c:1.48,cn:10,  wp:19,srFC:32,sat:52,bagFC:33},
+        {d:'6-12"', silt:33.8,sand:37,  clay:29.2,tex:'Clay Loam',     pH:7.78,ec:0.27,n:0.093,c:0.94,cn:10,  wp:18,srFC:31,sat:52,bagFC:32},
+        {d:'12-20"',silt:36.8,sand:34,  clay:29.2,tex:'Clay Loam',     pH:7.72,ec:0.16,n:0.054,c:0.43,cn:8,   wp:18,srFC:31,sat:52,bagFC:32}]},
+      'IGN01': { name:'IGN01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:32,  sand:22,  clay:46,  tex:'Clay',          pH:6.71,ec:0.44,n:null, c:null,cn:null, wp:27,srFC:41,sat:59,bagFC:35},
+        {d:'6-12"', silt:33,  sand:21,  clay:46,  tex:'Clay',          pH:7.24,ec:0.43,n:null, c:null,cn:null, wp:27,srFC:41,sat:59,bagFC:35},
+        {d:'12-20"',silt:32,  sand:26,  clay:42,  tex:'Clay',          pH:7.59,ec:0.72,n:null, c:null,cn:null, wp:25,srFC:38,sat:57,bagFC:34}]},
+      'HYD01': { name:'HYD01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:31,  sand:51,  clay:18,  tex:'Sandy Loam',    pH:6.61,ec:0.21,n:null, c:null,cn:null, wp:11,srFC:22,sat:45,bagFC:28},
+        {d:'6-12"', silt:32,  sand:50,  clay:18,  tex:'Sandy Loam',    pH:6.69,ec:0.06,n:null, c:null,cn:null, wp:11,srFC:22,sat:45,bagFC:29},
+        {d:'12-20"',silt:35,  sand:43,  clay:22,  tex:'Loam',          pH:6.86,ec:0.05,n:null, c:null,cn:null, wp:13,srFC:26,sat:48,bagFC:30}]},
+      'HNE01': { name:'HNE01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:22,  sand:62,  clay:16,  tex:'Sandy Loam',    pH:7.65,ec:0.24,n:null, c:null,cn:null, wp:10,srFC:18,sat:43,bagFC:26},
+        {d:'6-12"', silt:25,  sand:57,  clay:18,  tex:'Sandy Loam',    pH:7.7, ec:0.22,n:null, c:null,cn:null, wp:11,srFC:21,sat:45,bagFC:27},
+        {d:'12-20"',silt:24,  sand:60,  clay:16,  tex:'Sandy Loam',    pH:7.85,ec:0.22,n:null, c:null,cn:null, wp:10,srFC:19,sat:43,bagFC:27}]},
+      'BNV01': { name:'BNV01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:21,  sand:47,  clay:32,  tex:'Sandy Clay Loam',pH:7.48,ec:1.26,n:null, c:null,cn:null, wp:19,srFC:30,sat:51,bagFC:31},
+        {d:'6-12"', silt:14,  sand:56,  clay:30,  tex:'Sandy Clay Loam',pH:7.6, ec:0.57,n:null, c:null,cn:null, wp:18,srFC:28,sat:50,bagFC:29},
+        {d:'12-20"',silt:21,  sand:69,  clay:10,  tex:'Sandy Loam',    pH:7.48,ec:0.38,n:null, c:null,cn:null, wp:6, srFC:14,sat:40,bagFC:24}]},
+      'TWC01': { name:'TWC01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:25,  sand:57,  clay:18,  tex:'Sandy Loam',    pH:7.58,ec:0.83,n:null, c:null,cn:null, wp:11,srFC:21,sat:45,bagFC:27},
+        {d:'6-12"', silt:27,  sand:45,  clay:28,  tex:'Sandy Clay Loam',pH:7.42,ec:1.83,n:null, c:null,cn:null, wp:17,srFC:29,sat:50,bagFC:31},
+        {d:'12-20"',silt:25,  sand:47,  clay:28,  tex:'Sandy Clay Loam',pH:7.39,ec:2.15,n:null, c:null,cn:null, wp:17,srFC:28,sat:50,bagFC:30}]},
+      'SBT01': { name:'SBT01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:22,  sand:58,  clay:20,  tex:'Sandy Loam',    pH:7.31,ec:0.23,n:null, c:null,cn:null, wp:12,srFC:22,sat:45,bagFC:28},
+        {d:'6-12"', silt:23,  sand:61,  clay:16,  tex:'Sandy Loam',    pH:7.5, ec:0.2, n:null, c:null,cn:null, wp:10,srFC:19,sat:43,bagFC:26},
+        {d:'12-20"',silt:33,  sand:49,  clay:18,  tex:'Sandy Loam',    pH:7.47,ec:0.23,n:null, c:null,cn:null, wp:11,srFC:22,sat:45,bagFC:29}]},
+      'SAN01': { name:'SAN01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:13,  sand:73,  clay:14,  tex:'Loamy Sand',    pH:7.62,ec:0.3, n:null, c:null,cn:null, wp:8, srFC:15,sat:41,bagFC:24},
+        {d:'6-12"', silt:14,  sand:74,  clay:12,  tex:'Loamy Sand',    pH:7.56,ec:0.17,n:null, c:null,cn:null, wp:7, srFC:14,sat:40,bagFC:24},
+        {d:'12-20"',silt:13,  sand:69,  clay:18,  tex:'Sandy Loam',    pH:7.62,ec:0.2, n:null, c:null,cn:null, wp:11,srFC:18,sat:43,bagFC:25}]},
+      'WFD01': { name:'WFD01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:24,  sand:50,  clay:26,  tex:'Loam',          pH:7.55,ec:0.2, n:null, c:null,cn:null, wp:16,srFC:27,sat:49,bagFC:30},
+        {d:'6-12"', silt:24,  sand:44,  clay:32,  tex:'Clay Loam',     pH:7.59,ec:0.18,n:null, c:null,cn:null, wp:19,srFC:31,sat:52,bagFC:31},
+        {d:'12-20"',silt:23,  sand:45,  clay:32,  tex:'Sandy Clay Loam',pH:7.64,ec:0.24,n:null, c:null,cn:null, wp:19,srFC:31,sat:52,bagFC:31}]},
+      'NWD01': { name:'NWD01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:36,  sand:36,  clay:28,  tex:'Clay Loam',     pH:7.28,ec:0.5, n:null, c:null,cn:null, wp:17,srFC:30,sat:51,bagFC:32},
+        {d:'6-12"', silt:33,  sand:37,  clay:30,  tex:'Clay Loam',     pH:7.42,ec:3.52,n:null, c:null,cn:null, wp:18,srFC:31,sat:52,bagFC:32},
+        {d:'12-20"',silt:29,  sand:39,  clay:32,  tex:'Clay Loam',     pH:7.61,ec:5.49,n:null, c:null,cn:null, wp:19,srFC:32,sat:52,bagFC:32}]},
+      'YJK01': { name:'YJK01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:39,  sand:43,  clay:18,  tex:'Loam',          pH:7.45,ec:0.06,n:null, c:null,cn:null, wp:11,srFC:24,sat:47,bagFC:30},
+        {d:'6-12"', silt:41,  sand:41,  clay:18,  tex:'Loam',          pH:7.47,ec:0,   n:null, c:null,cn:null, wp:11,srFC:24,sat:47,bagFC:30},
+        {d:'12-20"',silt:38,  sand:34,  clay:28,  tex:'Clay Loam',     pH:7.42,ec:0,   n:null, c:null,cn:null, wp:17,srFC:30,sat:51,bagFC:32}]},
+      'DVC01': { name:'DVC01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:32,  sand:44,  clay:24,  tex:'Loam',          pH:7.64,ec:0.24,n:null, c:null,cn:null, wp:14,srFC:27,sat:49,bagFC:30},
+        {d:'6-12"', silt:27,  sand:47,  clay:26,  tex:'Loam',          pH:7.57,ec:0.21,n:null, c:null,cn:null, wp:16,srFC:27,sat:49,bagFC:30},
+        {d:'12-20"',silt:21,  sand:61,  clay:18,  tex:'Sandy Loam',    pH:7.6, ec:0.22,n:null, c:null,cn:null, wp:11,srFC:20,sat:44,bagFC:27}]},
+      'FTC01': { name:'FTC01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:19,  sand:55,  clay:26,  tex:'Loam',          pH:7.41,ec:0.33,n:null, c:null,cn:null, wp:16,srFC:26,sat:48,bagFC:29},
+        {d:'6-12"', silt:18,  sand:50,  clay:32,  tex:'Sandy Clay Loam',pH:7.49,ec:0.25,n:null, c:null,cn:null, wp:19,srFC:30,sat:51,bagFC:30},
+        {d:'12-20"',silt:20,  sand:46,  clay:34,  tex:'Sandy Clay Loam',pH:7.64,ec:0.2, n:null, c:null,cn:null, wp:20,srFC:32,sat:52,bagFC:31}]},
+      'LJR01': { name:'LJR01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:16,  sand:68,  clay:16,  tex:'Sandy Loam',    pH:8.05,ec:3.11,n:null, c:null,cn:null, wp:9, srFC:17,sat:42,bagFC:25},
+        {d:'6-12"', silt:18,  sand:68,  clay:14,  tex:'Sandy Loam',    pH:7.93,ec:2.85,n:null, c:null,cn:null, wp:8, srFC:16,sat:41,bagFC:25},
+        {d:'12-20"',silt:23,  sand:65,  clay:12,  tex:'Sandy Loam',    pH:7.75,ec:1.93,n:null, c:null,cn:null, wp:7, srFC:16,sat:41,bagFC:25}]},
+      'OTH01': { name:'OTH01', network:'CoAgMET', depths:[
+        {d:'0-6"',  silt:32,  sand:18,  clay:50,  tex:'Clay',          pH:7.37,ec:5.23,n:null, c:null,cn:null, wp:29,srFC:43,sat:60,bagFC:36},
+        {d:'6-12"', silt:45,  sand:45,  clay:10,  tex:'Sandy Loam',    pH:7.9, ec:6.74,n:null, c:null,cn:null, wp:6, srFC:19,sat:43,bagFC:29},
+        {d:'12-20"',silt:51,  sand:45,  clay:4,   tex:'Silt Loam',     pH:8.22,ec:7.88,n:null, c:null,cn:null, wp:3, srFC:16,sat:41,bagFC:28}]},
+    };
+
+    const RAWS_SOIL = {
+      'FT CARSON':      { name:'FT CARSON',      network:'RAWS', depths:[
+        {d:'0-4"',  silt:25.4,sand:43,  clay:31.6,tex:'Clay Loam',     pH:7.7, ec:0.15,n:0.12, c:1.2, cn:10,  wp:19,srFC:31,sat:52,bagFC:31.3},
+        {d:'4-12"', silt:25.4,sand:35,  clay:39.6,tex:'Clay Loam',     pH:7.49,ec:0.09,n:0.098,c:0.84,cn:8.6, wp:24,srFC:36,sat:55,bagFC:33.2},
+        {d:'12-20"',silt:34.4,sand:32,  clay:33.6,tex:'Clay Loam',     pH:7.79,ec:0.16,n:0.066,c:0.48,cn:7.3, wp:20,srFC:34,sat:54,bagFC:33.0}]},
+      'BUCKLES':        { name:'BUCKLES',        network:'RAWS', depths:[
+        {d:'0-4"',  silt:28.4,sand:50,  clay:21.6,tex:'Loam',          pH:6.85,ec:0.32,n:null, c:null,cn:null, wp:13,srFC:24,sat:47,bagFC:29.1},
+        {d:'4-12"', silt:29.4,sand:43,  clay:27.6,tex:'Clay Loam',     pH:6.7, ec:0.17,n:null, c:null,cn:null, wp:17,srFC:29,sat:50,bagFC:30.9},
+        {d:'12-20"',silt:24.4,sand:44,  clay:31.6,tex:'Clay Loam',     pH:6.54,ec:0.08,n:null, c:null,cn:null, wp:19,srFC:31,sat:52,bagFC:31.1}]},
+      'BLACK MOUNTAIN': { name:'BLACK MOUNTAIN', network:'RAWS', depths:[
+        {d:'0-4"',  silt:23.4,sand:69,  clay:7.6, tex:'Sandy Loam',    pH:6.81,ec:0.04,n:null, c:null,cn:null, wp:4, srFC:12,sat:38,bagFC:23.7},
+        {d:'4-12"', silt:15.4,sand:67,  clay:17.6,tex:'Sandy Loam',    pH:6.84,ec:0.07,n:null, c:null,cn:null, wp:10,srFC:18,sat:43,bagFC:25.7},
+        {d:'12-20"',silt:10.4,sand:70,  clay:19.6,tex:'Sandy Loam',    pH:7.03,ec:0.03,n:null, c:null,cn:null, wp:12,srFC:19,sat:43,bagFC:25.5}]},
+      'BOSQUE':         { name:'BOSQUE',         network:'RAWS', depths:[
+        {d:'0-4"',  silt:21.4,sand:61,  clay:17.6,tex:'Sandy Loam',    pH:6.76,ec:0,   n:null, c:null,cn:null, wp:10,srFC:20,sat:44,bagFC:26.7},
+        {d:'4-12"', silt:18.4,sand:60,  clay:21.6,tex:'Loam',          pH:6.72,ec:0,   n:null, c:null,cn:null, wp:13,srFC:22,sat:45,bagFC:27.4},
+        {d:'12-20"',silt:12.4,sand:54,  clay:33.6,tex:'Sandy Clay Loam',pH:6.75,ec:0,  n:null, c:null,cn:null, wp:20,srFC:30,sat:51,bagFC:30.0}]},
+      'CHEESEMAN':      { name:'CHEESEMAN',      network:'RAWS', depths:[
+        {d:'0-4"',  silt:24.4,sand:58,  clay:17.6,tex:'Sandy Loam',    pH:6.75,ec:0.05,n:null, c:null,cn:null, wp:11,srFC:20,sat:44,bagFC:27.2},
+        {d:'4-12"', silt:10.4,sand:80,  clay:9.6, tex:'Loamy Sand',    pH:6.7, ec:0,   n:null, c:null,cn:null, wp:5, srFC:11,sat:38,bagFC:22.0},
+        {d:'12-20"',silt:2.4, sand:90,  clay:7.6, tex:'Sand',          pH:6.72,ec:0,   n:null, c:null,cn:null, wp:4, srFC:8, sat:36,bagFC:19.7}]},
+      'CORRAL CREEK':   { name:'CORRAL CREEK',   network:'RAWS', depths:[
+        {d:'0-4"',  silt:16.4,sand:68,  clay:15.6,tex:'Sandy Loam',    pH:6.28,ec:0.21,n:null, c:null,cn:null, wp:9, srFC:17,sat:42,bagFC:25.2},
+        {d:'4-12"', silt:19.4,sand:67,  clay:13.6,tex:'Sandy Loam',    pH:6.31,ec:0.05,n:null, c:null,cn:null, wp:8, srFC:16,sat:41,bagFC:25.0},
+        {d:'12-20"',silt:13.4,sand:75,  clay:11.6,tex:'Loamy Sand',    pH:6.53,ec:0,   n:null, c:null,cn:null, wp:7, srFC:13,sat:39,bagFC:23.3}]},
+      'HARBISON':       { name:'HARBISON',       network:'RAWS', depths:[
+        {d:'0-4"',  silt:34,  sand:44,  clay:22,  tex:'Loam',          pH:5.72,ec:1.49,n:null, c:null,cn:null, wp:13,srFC:25,sat:48,bagFC:30.1},
+        {d:'4-12"', silt:20,  sand:66,  clay:14,  tex:'Sandy Loam',    pH:6.31,ec:0,   n:null, c:null,cn:null, wp:8, srFC:16,sat:41,bagFC:25.3},
+        {d:'12-20"',silt:36,  sand:40,  clay:24,  tex:'Loam',          pH:6.09,ec:0,   n:null, c:null,cn:null, wp:15,srFC:27,sat:49,bagFC:30.9}]},
+      'ESTES PARK':     { name:'ESTES PARK',     network:'RAWS', depths:[
+        {d:'0-4"',  silt:9,   sand:81,  clay:10,  tex:'Loamy Sand',    pH:6.58,ec:0.06,n:null, c:null,cn:null, wp:6, srFC:11,sat:38,bagFC:21.9},
+        {d:'4-12"', silt:12,  sand:78,  clay:10,  tex:'Loamy Sand',    pH:6.72,ec:0,   n:null, c:null,cn:null, wp:6, srFC:12,sat:38,bagFC:22.4},
+        {d:'12-20"',silt:12,  sand:78,  clay:10,  tex:'Loamy Sand',    pH:6.91,ec:0,   n:null, c:null,cn:null, wp:6, srFC:12,sat:38,bagFC:22.4}]},
+      'SILVER JACK':    { name:'SILVER JACK',    network:'RAWS', depths:[
+        {d:'0-4"',  silt:46,  sand:32,  clay:22,  tex:'Loam',          pH:6.63,ec:0.31,n:null, c:null,cn:null, wp:13,srFC:28,sat:50,bagFC:32.0},
+        {d:'4-12"', silt:44,  sand:32,  clay:24,  tex:'Loam',          pH:6.62,ec:0.2, n:null, c:null,cn:null, wp:15,srFC:29,sat:50,bagFC:32.2},
+        {d:'12-20"',silt:42,  sand:32,  clay:26,  tex:'Loam',          pH:6.63,ec:0.18,n:null, c:null,cn:null, wp:16,srFC:30,sat:51,bagFC:32.4}]},
+      'SANBORN PARK':   { name:'SANBORN PARK',   network:'RAWS', depths:[
+        {d:'0-4"',  silt:43,  sand:29,  clay:28,  tex:'Clay Loam',     pH:6.87,ec:0.25,n:null, c:null,cn:null, wp:17,srFC:31,sat:52,bagFC:33.0},
+        {d:'4-12"', silt:37,  sand:25,  clay:38,  tex:'Clay Loam',     pH:6.8, ec:0.1, n:null, c:null,cn:null, wp:23,srFC:37,sat:56,bagFC:34.3},
+        {d:'12-20"',silt:30,  sand:24,  clay:46,  tex:'Clay',          pH:6.92,ec:0.06,n:null, c:null,cn:null, wp:27,srFC:41,sat:59,bagFC:35.0}]},
+      'GRAND MESA':     { name:'GRAND MESA',     network:'RAWS', depths:[
+        {d:'0-4"',  silt:44,  sand:36,  clay:20,  tex:'Loam',          pH:6.03,ec:0.06,n:null, c:null,cn:null, wp:12,srFC:26,sat:48,bagFC:31.2},
+        {d:'4-12"', silt:44,  sand:34,  clay:22,  tex:'Loam',          pH:6.07,ec:0,   n:null, c:null,cn:null, wp:13,srFC:28,sat:50,bagFC:31.7},
+        {d:'12-20"',silt:34,  sand:38,  clay:28,  tex:'Clay Loam',     pH:6.05,ec:0,   n:null, c:null,cn:null, wp:17,srFC:30,sat:51,bagFC:31.7}]},
+      'WILLIS CREEK':   { name:'WILLIS CREEK',   network:'RAWS', depths:[
+        {d:'0-4"',  silt:36,  sand:44,  clay:20,  tex:'Loam',          pH:6.44,ec:0.12,n:null, c:null,cn:null, wp:12,srFC:24,sat:47,bagFC:29.9},
+        {d:'4-12"', silt:36,  sand:44,  clay:20,  tex:'Loam',          pH:6.42,ec:0.03,n:null, c:null,cn:null, wp:12,srFC:24,sat:47,bagFC:29.9},
+        {d:'12-20"',silt:34,  sand:46,  clay:20,  tex:'Loam',          pH:6.48,ec:0,   n:null, c:null,cn:null, wp:12,srFC:24,sat:47,bagFC:29.5}]},
+      'RED CREEK':      { name:'RED CREEK',      network:'RAWS', depths:[
+        {d:'0-4"',  silt:28,  sand:46,  clay:26,  tex:'Loam',          pH:7.54,ec:0.28,n:null, c:null,cn:null, wp:16,srFC:27,sat:49,bagFC:30.2},
+        {d:'4-12"', silt:28,  sand:46,  clay:26,  tex:'Loam',          pH:7.7, ec:0.25,n:null, c:null,cn:null, wp:16,srFC:27,sat:49,bagFC:30.2},
+        {d:'12-20"',silt:27,  sand:45,  clay:28,  tex:'Sandy Clay Loam',pH:7.72,ec:0.21,n:null, c:null,cn:null, wp:17,srFC:29,sat:50,bagFC:30.6}]},
+      'REDSTONE':       { name:'REDSTONE',       network:'RAWS', depths:[
+        {d:'0-4"',  silt:18,  sand:68,  clay:14,  tex:'Sandy Loam',    pH:7.16,ec:0.16,n:null, c:null,cn:null, wp:8, srFC:16,sat:41,bagFC:24.9},
+        {d:'4-12"', silt:16,  sand:70,  clay:14,  tex:'Loamy Sand',    pH:6.82,ec:0,   n:null, c:null,cn:null, wp:8, srFC:16,sat:41,bagFC:24.6},
+        {d:'12-20"',silt:15,  sand:63,  clay:22,  tex:'Loam',          pH:6.66,ec:0.08,n:null, c:null,cn:null, wp:13,srFC:22,sat:45,bagFC:27.0}]},
+      'LODGEPOLE FLATS':{ name:'LODGEPOLE FLATS',network:'RAWS', depths:[
+        {d:'0-4"',  silt:5,   sand:67,  clay:28,  tex:'Sandy Clay Loam',pH:6.61,ec:0,   n:null, c:null,cn:null, wp:17,srFC:25,sat:48,bagFC:27.3},
+        {d:'4-12"', silt:12,  sand:82,  clay:6,   tex:'Loamy Sand',    pH:6.41,ec:0,   n:null, c:null,cn:null, wp:3, srFC:9, sat:36,bagFC:20.9},
+        {d:'12-20"',silt:6,   sand:86,  clay:8,   tex:'Sand',          pH:6.5, ec:0,   n:null, c:null,cn:null, wp:4, srFC:9, sat:36,bagFC:20.5}]},
+      'RED DEER':       { name:'RED DEER',       network:'RAWS', depths:[
+        {d:'0-4"',  silt:19,  sand:67,  clay:14,  tex:'Sandy Loam',    pH:6.78,ec:0.07,n:null, c:null,cn:null, wp:8, srFC:16,sat:41,bagFC:25.1},
+        {d:'4-12"', silt:18,  sand:68,  clay:14,  tex:'Sandy Loam',    pH:6.77,ec:0,   n:null, c:null,cn:null, wp:8, srFC:16,sat:41,bagFC:24.9},
+        {d:'12-20"',silt:16,  sand:70,  clay:14,  tex:'Loamy Sand',    pH:6.84,ec:0,   n:null, c:null,cn:null, wp:8, srFC:16,sat:41,bagFC:24.6}]},
+      'UTE CANYON':     { name:'UTE CANYON',     network:'RAWS', depths:[
+        {d:'0-4"',  silt:10,  sand:78,  clay:12,  tex:'Loamy Sand',    pH:7.36,ec:0.42,n:null, c:null,cn:null, wp:7, srFC:13,sat:39,bagFC:22.8},
+        {d:'4-12"', silt:6,   sand:80,  clay:14,  tex:'Loamy Sand',    pH:7.5, ec:0.25,n:null, c:null,cn:null, wp:8, srFC:14,sat:40,bagFC:22.8},
+        {d:'12-20"',silt:4,   sand:86,  clay:10,  tex:'Sand',          pH:7.61,ec:0.15,n:null, c:null,cn:null, wp:5, srFC:10,sat:37,bagFC:20.9}]},
+      'PINION CANYON':  { name:'PINION CANYON',  network:'RAWS', depths:[
+        {d:'0-4"',  silt:24,  sand:22,  clay:54,  tex:'Clay',          pH:7.38,ec:0.96,n:null, c:null,cn:null, wp:32,srFC:45,sat:62,bagFC:35.8},
+        {d:'4-12"', silt:22,  sand:28,  clay:50,  tex:'Clay',          pH:7.33,ec:2.5, n:null, c:null,cn:null, wp:30,srFC:42,sat:59,bagFC:34.9},
+        {d:'12-20"',silt:32,  sand:26,  clay:42,  tex:'Clay',          pH:7.3, ec:2.6, n:null, c:null,cn:null, wp:25,srFC:38,sat:57,bagFC:34.5}]},
+    };
+
+    // ── Leaflet map ──────────────────────────────────────────────────────────
+    const map = L.map('map', { center: [39.0, -105.5], zoom: 7 });
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      maxZoom: 19
+    }).addTo(map);
+
+    const coagmetLayer = L.layerGroup().addTo(map);
+    const rawsLayer    = L.layerGroup().addTo(map);
+    const soilLayer    = L.layerGroup().addTo(map);
+
+    // Shared marker factory
+    function circ(latlng, color, radius, opacity, weight) {
+      return L.circleMarker(latlng, {
+        radius, fillColor: color, color: color,
+        weight, opacity, fillOpacity: opacity * 0.55
+      });
+    }
+
+    // ── CoAgMET network (static snapshot from coagmet.colostate.edu/data/metadata.json) ──
+    const COAGMET_NETWORK = [
+      {id:"AKR02",name:"Akron",lat:40.1548,lon:-103.1420},
+      {id:"ALT01",name:"Ault",lat:40.5690,lon:-104.7195},
+      {id:"AVN01",name:"Avondale",lat:38.2056,lon:-104.3290},
+      {id:"BLA01",name:"Blanca",lat:37.3906,lon:-105.5575},
+      {id:"BNV01",name:"Buena Vista",lat:38.8315,lon:-106.1290},
+      {id:"BRG01",name:"Briggsdale",lat:40.5947,lon:-104.3190},
+      {id:"BRK01",name:"Bedrock",lat:38.3279,lon:-108.8546},
+      {id:"BRL01",name:"Burlington North (1)",lat:39.4998,lon:-102.0740},
+      {id:"BRL02",name:"Burlington South (2)",lat:39.2651,lon:-102.1090},
+      {id:"BRL03",name:"Burlington 3",lat:39.3374,lon:-102.1960},
+      {id:"CBL01",name:"Carbondale",lat:39.3623,lon:-107.2078},
+      {id:"CBN01",name:"Collbran",lat:39.1993,lon:-107.9899},
+      {id:"CCR01",name:"Cherry Creek Reservoir",lat:39.6059,lon:-104.8340},
+      {id:"CDG01",name:"Cedaredge",lat:38.9142,lon:-107.9320},
+      {id:"CHT01",name:"Chatfield at South Platte Reservoir",lat:39.5741,lon:-105.0540},
+      {id:"CKP01",name:"Cherokee Park",lat:40.8263,lon:-105.2670},
+      {id:"CLK01",name:"Clark",lat:40.7043,lon:-106.9340},
+      {id:"CNN01",name:"Canon City",lat:38.4319,lon:-105.1780},
+      {id:"COW01",name:"Cowdrey",lat:40.8659,lon:-106.3360},
+      {id:"CTR01",name:"Center",lat:37.7067,lon:-106.1444},
+      {id:"CTR02",name:"Center 2",lat:37.8289,lon:-106.0378},
+      {id:"CTZ01",name:"Cortez",lat:37.2246,lon:-108.6725},
+      {id:"CYA01",name:"Canyon of the Ancients",lat:37.5009,lon:-108.8155},
+      {id:"DEN01",name:"Denver",lat:39.7836,lon:-104.9742},
+      {id:"DLR01",name:"Dolores",lat:37.4121,lon:-108.5199},
+      {id:"DLT01",name:"Delta",lat:38.7345,lon:-108.1186},
+      {id:"DRG01",name:"Durango",lat:37.1125,lon:-107.8805},
+      {id:"DVC01",name:"Dove Creek",lat:37.7271,lon:-108.9563},
+      {id:"EAC01",name:"Eastern Adams County",lat:39.7692,lon:-103.7972},
+      {id:"EGL01",name:"Eagle",lat:39.6308,lon:-106.7820},
+      {id:"EKT01",name:"Eckert",lat:38.8397,lon:-107.9734},
+      {id:"FCC01",name:"Christman Field",lat:40.5917,lon:-105.1418},
+      {id:"FCL01",name:"Fort Collins",lat:40.5762,lon:-105.0857},
+      {id:"FRT01",name:"CSU Fruita Expt",lat:39.1667,lon:-108.7500},
+      {id:"FRT02",name:"CSU Fruita Expt Station",lat:39.1803,lon:-108.6993},
+      {id:"FRT03",name:"CSU Fruita Exp Station",lat:39.1830,lon:-108.6970},
+      {id:"FTC01",name:"Fort Collins AERC",lat:40.5947,lon:-105.1370},
+      {id:"FTC03",name:"CSU - ARDEC",lat:40.6523,lon:-104.9962},
+      {id:"FTL01",name:"Fort Lupton",lat:40.0011,lon:-104.8490},
+      {id:"FTM01",name:"Fort Morgan",lat:40.2585,lon:-103.9540},
+      {id:"FWL01",name:"Fowler",lat:38.1351,lon:-104.0319},
+      {id:"GBY01",name:"Granby",lat:40.1047,lon:-105.9430},
+      {id:"GJC01",name:"Grand Junction",lat:39.1752,lon:-108.6320},
+      {id:"GLY03",name:"Greeley",lat:40.4394,lon:-104.6470},
+      {id:"GLY04",name:"Greeley 4",lat:40.4487,lon:-104.6380},
+      {id:"GUN01",name:"Gunnison",lat:38.6135,lon:-106.9015},
+      {id:"GUN02",name:"Gunnison 2",lat:38.4850,lon:-106.6806},
+      {id:"GYP01",name:"Gypsum",lat:39.6344,lon:-106.9470},
+      {id:"HEB01",name:"Hebron",lat:40.5455,lon:-106.3880},
+      {id:"HLY01",name:"Holly",lat:38.1198,lon:-102.1605},
+      {id:"HLY02",name:"Holly 2",lat:38.1361,lon:-102.2405},
+      {id:"HNE01",name:"Hoehne",lat:37.2893,lon:-104.3130},
+      {id:"HOT01",name:"CSU Rogers Mesa Expt Sta",lat:38.7917,lon:-107.7920},
+      {id:"HOT02",name:"CSU Rogers Mesa Research Sta",lat:38.7985,lon:-107.7882},
+      {id:"HRT01",name:"Heartstrong",lat:39.9552,lon:-102.6250},
+      {id:"HXT01",name:"Haxtun",lat:40.6722,lon:-102.6470},
+      {id:"HYD01",name:"Hayden",lat:40.4990,lon:-107.1810},
+      {id:"HYK02",name:"Holyoke",lat:40.4909,lon:-102.0890},
+      {id:"IDL01",name:"Idalia",lat:39.7312,lon:-102.3020},
+      {id:"IGN01",name:"Ignacio",lat:37.1383,lon:-107.7072},
+      {id:"IGN02",name:"Ignacio 2",lat:37.0769,lon:-107.5872},
+      {id:"ILF01",name:"Iliff",lat:40.7678,lon:-103.0450},
+      {id:"JFN01",name:"Jefferson",lat:39.3509,lon:-105.8152},
+      {id:"KLN01",name:"Kline",lat:37.1261,lon:-108.1460},
+      {id:"KRK01",name:"Kirk",lat:39.6554,lon:-102.6210},
+      {id:"KRM01",name:"Kremmling",lat:40.1153,lon:-106.2835},
+      {id:"KSY01",name:"Kersey 1",lat:40.3703,lon:-104.5358},
+      {id:"KSY02",name:"Kersey 2",lat:40.3629,lon:-104.4780},
+      {id:"LAM01",name:"Lamar 1",lat:37.9808,lon:-102.5962},
+      {id:"LAM02",name:"Lamar 2",lat:38.1734,lon:-102.5590},
+      {id:"LAM03",name:"Lamar 3",lat:37.9769,lon:-102.7127},
+      {id:"LAM04",name:"Lamar 4",lat:38.1539,lon:-102.5990},
+      {id:"LAR01",name:"Larand",lat:40.6126,lon:-106.2997},
+      {id:"LBN01",name:"Lebanon",lat:37.4464,lon:-108.5530},
+      {id:"LCN01",name:"Lucerne",lat:40.4756,lon:-104.7066},
+      {id:"LJR01",name:"La Jara",lat:37.2443,lon:-105.9722},
+      {id:"LJT01",name:"La Junta",lat:38.0777,lon:-103.3665},
+      {id:"LMS02",name:"Las Animas 2",lat:38.0090,lon:-103.2438},
+      {id:"LSL01",name:"La Salle",lat:40.3349,lon:-104.6300},
+      {id:"MCL01",name:"McClave (was Las Animas 1)",lat:38.1500,lon:-102.8484},
+      {id:"MKR01",name:"Meeker",lat:40.0083,lon:-107.9080},
+      {id:"MNC01",name:"Mancos",lat:37.3212,lon:-108.3390},
+      {id:"MTR01",name:"Montrose",lat:38.5470,lon:-107.9143},
+      {id:"NUC01",name:"Nucla",lat:38.2658,lon:-108.5456},
+      {id:"NWD01",name:"Norwood",lat:38.1510,lon:-108.2836},
+      {id:"ORM01",name:"Orchard Mesa",lat:39.0424,lon:-108.4664},
+      {id:"ORM02",name:"CSU Orchard Mesa Research Station",lat:39.0441,lon:-108.4673},
+      {id:"OTH01",name:"Olathe",lat:38.6350,lon:-107.9636},
+      {id:"OTH02",name:"Olathe 2",lat:38.6135,lon:-108.0690},
+      {id:"PAI01",name:"Paoli",lat:40.4248,lon:-102.4750},
+      {id:"PAN01",name:"Paonia",lat:38.8656,lon:-107.5990},
+      {id:"PBL01",name:"Pueblo (defunct)",lat:38.2317,lon:-104.4670},
+      {id:"PBW01",name:"Pueblo West",lat:38.1515,lon:-104.8042},
+      {id:"PGS01",name:"Pagosa Springs",lat:37.2770,lon:-106.9826},
+      {id:"PKH01",name:"Peckham",lat:40.3125,lon:-104.7270},
+      {id:"PKN01",name:"Punkin Center",lat:38.9313,lon:-103.6846},
+      {id:"PKR01",name:"Parker",lat:39.5505,lon:-104.8110},
+      {id:"PNR01",name:"Penrose",lat:38.4119,lon:-104.9980},
+      {id:"PTV01",name:"Platteville",lat:40.2278,lon:-104.8350},
+      {id:"RFD01",name:"Rocky Ford, AVRC",lat:38.0385,lon:-103.6950},
+      {id:"RFD02",name:"CSU Expt Stn Rocky Ford NRCS",lat:38.0385,lon:-103.6950},
+      {id:"SAN01",name:"San Acacio",lat:37.1417,lon:-105.6110},
+      {id:"SBT01",name:"Seibert",lat:39.1187,lon:-102.9250},
+      {id:"SCM01",name:"Sand Creek Massacre HS",lat:38.5442,lon:-102.5025},
+      {id:"SLD01",name:"Salida",lat:38.5713,lon:-106.0427},
+      {id:"SLT01",name:"Silt",lat:39.5667,lon:-107.6934},
+      {id:"STG01",name:"Sterling",lat:40.4621,lon:-103.0290},
+      {id:"STN01",name:"Stratton",lat:39.2987,lon:-102.5220},
+      {id:"STT01",name:"Stonington",lat:37.1613,lon:-102.1220},
+      {id:"TWC01",name:"Towaoc",lat:37.1892,lon:-108.9353},
+      {id:"UWR70",name:"United Water",lat:40.3806,lon:-104.3500},
+      {id:"VLD01",name:"Vineland",lat:38.2235,lon:-104.4610},
+      {id:"WAV01",name:"Waverly",lat:40.7102,lon:-105.1030},
+      {id:"WCF01",name:"Westcliffe",lat:38.1504,lon:-105.4988},
+      {id:"WFD01",name:"Wolford Mtn Reservoir",lat:40.1387,lon:-106.4150},
+      {id:"WGG01",name:"Wiggins 06",lat:40.3333,lon:-104.0360},
+      {id:"WGG02",name:"Wiggins 39",lat:40.2998,lon:-103.9520},
+      {id:"WLS01",name:"Walsh",lat:37.3830,lon:-102.2940},
+      {id:"WLT01",name:"Wellington",lat:40.6762,lon:-104.9970},
+      {id:"WRY01",name:"Wray",lat:40.1924,lon:-102.2030},
+      {id:"WRY02",name:"Wray 2",lat:40.2187,lon:-102.2650},
+      {id:"YAM01",name:"Yampa",lat:40.2012,lon:-106.9212},
+      {id:"YJK01",name:"Yellow Jacket",lat:37.5428,lon:-108.7398},
+      {id:"YUC01",name:"Yucca House",lat:37.2478,lon:-108.6870},
+      {id:"YUM01",name:"Yuma",lat:40.1035,lon:-102.6060},
+      {id:"YUM02",name:"Yuma",lat:40.1504,lon:-102.7240},
+      {id:"HYK01",name:"Holyoke",lat:40.4909,lon:-102.0890}
+    ];
+
+    function loadCoAgMET() {
+      let n = 0;
+      COAGMET_NETWORK.forEach(s => {
+        const lbl = `${s.id} — ${s.name}`;
+        circ([s.lat, s.lon], '#3b82f6', 5, 0.55, 1)
+          .bindTooltip(lbl, { direction:'top', sticky:true })
+          .addTo(coagmetLayer);
+        if (COAGMET_SOIL[s.id]) {
+          const soil = COAGMET_SOIL[s.id];
+          circ([s.lat, s.lon], '#0d9488', 9, 0.9, 1.5)
+            .bindTooltip(`● ${lbl} (soil monitored)`, { direction:'top', sticky:true })
+            .on('click', () => showSite(soil, s.name, [s.lat, s.lon]))
+            .addTo(soilLayer);
+        }
+        n++;
+      });
+      document.getElementById('stationCount').textContent =
+        `${n} CoAgMET · ${RAWS_NETWORK.length} RAWS stations`;
+    }
+
+    // ── Load RAWS network ────────────────────────────────────────────────────
+    function loadRAWS() {
+      RAWS_NETWORK.forEach(s => {
+        const latlng = [s.lat, s.lon];
+        circ(latlng, '#f97316', 5, 0.55, 1)
+          .bindTooltip(s.name, { direction:'top', sticky:true })
+          .addTo(rawsLayer);
+        if (s.soilKey && RAWS_SOIL[s.soilKey]) {
+          const soil = RAWS_SOIL[s.soilKey];
+          circ(latlng, '#0d9488', 9, 0.9, 1.5)
+            .bindTooltip(`● ${s.name} (soil monitored)`, { direction:'top', sticky:true })
+            .on('click', () => showSite(soil, s.name, latlng))
+            .addTo(soilLayer);
+        }
+      });
+    }
+
+    loadCoAgMET();
+    loadRAWS();
+
+    // ── Layer toggles ────────────────────────────────────────────────────────
+    [['btn-coagmet', coagmetLayer], ['btn-raws', rawsLayer], ['btn-soil', soilLayer]].forEach(([id, layer]) => {
+      document.getElementById(id).addEventListener('click', function() {
+        this.classList.toggle('on');
+        this.classList.contains('on') ? map.addLayer(layer) : map.removeLayer(layer);
+      });
+    });
+
+    // ── Site info display ────────────────────────────────────────────────────
+    const fmt = v => (v == null || v === '') ? '—' : (typeof v === 'number' ? v : v);
+
+    function showSite(soil, displayName, latlng) {
+      const s = soil.depths[0];
+      const netColor = soil.network === 'CoAgMET'
+        ? 'background:#dbeafe;color:#1d4ed8;'
+        : 'background:#ffedd5;color:#c2410c;';
+
+      // Sidebar card
+      document.getElementById('siteInfoContent').innerHTML = `
+        <div class="font-semibold text-gray-800 mb-1">${displayName}</div>
+        <div class="text-xs text-gray-500 mb-2">Surface (${s.d})</div>
+        <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
+          <span class="text-gray-500">Texture</span><span class="font-medium">${s.tex}</span>
+          <span class="text-gray-500">Sand</span><span class="font-medium">${s.sand}%</span>
+          <span class="text-gray-500">Silt</span><span class="font-medium">${s.silt}%</span>
+          <span class="text-gray-500">Clay</span><span class="font-medium">${s.clay}%</span>
+          <span class="text-gray-500">pH</span><span class="font-medium">${s.pH}</span>
+          <span class="text-gray-500">EC (mS)</span><span class="font-medium">${s.ec}</span>
+          ${s.n != null ? `<span class="text-gray-500">%N</span><span class="font-medium">${s.n}</span>` : ''}
+          ${s.c != null ? `<span class="text-gray-500">%C</span><span class="font-medium">${s.c}</span>` : ''}
+          ${s.cn != null ? `<span class="text-gray-500">C:N</span><span class="font-medium">${s.cn}</span>` : ''}
+        </div>`;
+
+      // Full depth table
+      const panel = document.getElementById('dataPanel');
+      panel.classList.remove('hidden');
+      document.getElementById('dataPanelTitle').textContent = displayName;
+      document.getElementById('dataPanelSub').textContent =
+        `${soil.depths.length} depth increments · 2025 sampling`;
+      document.getElementById('dataPanelNetwork').setAttribute('style', netColor);
+      document.getElementById('dataPanelNetwork').textContent = soil.network;
+
+      document.getElementById('depthTableBody').innerHTML = soil.depths.map(d => `
+        <tr class="border-t border-gray-100 hover:bg-gray-50 transition-colors">
+          <td class="px-3 py-2 font-medium text-gray-700">${d.d}</td>
+          <td class="px-3 py-2 text-gray-600">${d.tex}</td>
+          <td class="px-3 py-2 text-right text-gray-700">${fmt(d.sand)}</td>
+          <td class="px-3 py-2 text-right text-gray-700">${fmt(d.silt)}</td>
+          <td class="px-3 py-2 text-right text-gray-700">${fmt(d.clay)}</td>
+          <td class="px-3 py-2 text-right text-gray-700">${fmt(d.pH)}</td>
+          <td class="px-3 py-2 text-right ${d.ec > 2 ? 'text-amber-600 font-semibold' : 'text-gray-700'}">${fmt(d.ec)}</td>
+          <td class="px-3 py-2 text-right text-gray-700">${fmt(d.n)}</td>
+          <td class="px-3 py-2 text-right text-gray-700">${fmt(d.c)}</td>
+          <td class="px-3 py-2 text-right text-gray-700">${fmt(d.cn)}</td>
+          <td class="px-3 py-2 text-right text-gray-700">${fmt(d.wp)}</td>
+          <td class="px-3 py-2 text-right text-gray-700">${fmt(d.srFC)}</td>
+          <td class="px-3 py-2 text-right text-gray-700">${typeof d.bagFC === 'number' ? d.bagFC.toFixed(1) : '—'}</td>
+        </tr>`).join('');
+
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  </script>
+</body>
+</html>
