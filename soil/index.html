@@ -863,9 +863,7 @@
       const span = document.getElementById('smSpan').value;
 
       try {
-        const data = await fetch(
-          `https://coagmet.colostate.edu/data/daily/soilmoisture.json?to=now&span=${span}`
-        ).then(r => r.json());
+        const data = await fetch(`/soil/soilmoisture.json`).then(r => r.json());
 
         const key = stationId.toLowerCase();
         const st  = data[key];

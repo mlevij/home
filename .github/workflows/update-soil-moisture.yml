@@ -1,0 +1,25 @@
+name: Update CoAgMET Soil Moisture Data
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch soil moisture data
+        run: |
+          curl -sf "https://coagmet.colostate.edu/data/daily/soilmoisture.json?to=now&span=30" \
+            -o soil/soilmoisture.json
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add soil/soilmoisture.json
+          git diff --cached --quiet || git commit -m "chore: update CoAgMET soil moisture data"
+          git push
