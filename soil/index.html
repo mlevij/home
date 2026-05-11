@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
   <!-- Leaflet -->
@@ -45,11 +46,51 @@
     /* Depth table alternating rows */
     #depthTableBody tr:nth-child(odd) { background: #f9fafb; }
 
+    /* ── Mini pH scale ── */
+    .mini-ph-wrap { display:flex; align-items:stretch; gap:4px; height:160px; }
+    .mini-ph-bar {
+      width:22px; border-radius:4px; flex-shrink:0; position:relative;
+      background: linear-gradient(to bottom,
+        #d32f2f 0%, #e65100 12%, #f9a825 25%, #cddc39 36%,
+        #4caf50 43%, #2e7d32 50%, #4caf50 57%,
+        #cddc39 64%, #f9a825 75%, #e65100 88%, #d32f2f 100%);
+    }
+    .mini-ph-ticks {
+      display:flex; flex-direction:column; justify-content:space-between;
+      font-size:0.55rem; color:#9ca3af; padding:0;
+    }
+    .mini-ph-zones {
+      display:flex; flex-direction:column; justify-content:space-between;
+      font-size:0.6rem; color:#9ca3af; text-align:right; padding:2px 0;
+    }
+    .mini-ph-marker {
+      position:absolute; left:100%; top:100%;
+      transform:translateY(-50%);
+      transition:top 0.8s cubic-bezier(.4,0,.2,1);
+      display:flex; align-items:center; margin-left:3px;
+    }
+    .mini-ph-pin {
+      width:0; height:0;
+      border-top:5px solid transparent; border-bottom:5px solid transparent;
+      border-right:7px solid #1f2937;
+    }
+    .mini-ph-label {
+      background:#1f2937; color:#fff; font-size:0.65rem; font-weight:600;
+      padding:1px 5px; border-radius:3px; white-space:nowrap; margin-left:1px;
+    }
+
+    /* Remove square focus outline on network circle markers */
+    .leaflet-interactive:focus { outline: none; }
+
     /* SMM site markers */
     .smm-dot {
       border-radius: 50%;
       border: none !important;
       background: transparent !important;
+    }
+    .smm-dot.selected > div {
+      outline: 2px solid black;
+      outline-offset: 2px;
     }
 
     @media (max-width: 900px) {
@@ -132,8 +173,34 @@
 
         <!-- Site Info Card -->
         <div class="card p-4" id="siteInfoCard" data-aos="fade-right">
-          <h2 class="text-base font-semibold text-gray-800 mb-2">Site Info</h2>
-          <div id="siteInfoContent" class="text-sm text-gray-400 italic">Click a soil monitoring site to view data.</div>
+          <!-- Header row: site name + depth nav -->
+          <div class="flex items-start justify-between mb-1">
+            <div>
+              <h2 class="text-sm font-semibold text-gray-800" id="siteInfoName">Site Info</h2>
+              <p class="text-xs text-gray-400" id="siteInfoDepthLabel">Click a soil monitoring site to view data.</p>
+            </div>
+            <div class="flex items-center gap-1 hidden" id="depthNav">
+              <button id="depthPrev" class="text-gray-400 hover:text-gray-700 text-lg leading-none px-1">&lsaquo;</button>
+              <span class="text-xs text-gray-500" id="depthIdx">1/3</span>
+              <button id="depthNext" class="text-gray-400 hover:text-gray-700 text-lg leading-none px-1">&rsaquo;</button>
+            </div>
+          </div>
+
+          <!-- Charts (hidden until site selected) -->
+          <div class="hidden" id="siteCharts">
+            <!-- Texture doughnut -->
+            <div class="flex items-center gap-3 mb-3">
+              <div style="width:110px;height:110px;flex-shrink:0;"><canvas id="sidebarTexture"></canvas></div>
+              <div class="text-xs space-y-1">
+                <div class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-sm flex-shrink-0" style="background:#C8C372;"></span><span class="text-gray-600">Sand</span></div>
+                <div class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-sm flex-shrink-0" style="background:#D9782D;"></span><span class="text-gray-600">Silt</span></div>
+                <div class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-sm flex-shrink-0" style="background:#1E4D2B;"></span><span class="text-gray-600">Clay</span></div>
+                <div class="mt-2 text-gray-400" id="sidebarTexLabel">—</div>
+              </div>
+            </div>
+            <!-- pH mini scale -->
+            <div id="sidebarPhHost"></div>
+          </div>
         </div>
 
       </aside>
@@ -168,26 +235,30 @@
           <div class="overflow-x-auto mt-4">
             <table class="w-full text-xs border-collapse" id="depthTable">
               <thead>
-                <tr class="text-gray-500 uppercase tracking-wide border-b-2 border-gray-200">
+                <tr class="text-gray-400 border-b border-gray-100">
+                  <th colspan="10"></th>
+                  <th colspan="3" class="px-3 py-1 text-center text-gray-500 border-l border-gray-200 italic">Saxton-Rawls</th>
+                </tr>
+                <tr class="text-gray-500 tracking-wide border-b-2 border-gray-200">
                   <th class="px-3 py-2 text-left">Depth</th>
                   <th class="px-3 py-2 text-left">Texture</th>
                   <th class="px-3 py-2 text-right">Sand %</th>
                   <th class="px-3 py-2 text-right">Silt %</th>
                   <th class="px-3 py-2 text-right">Clay %</th>
                   <th class="px-3 py-2 text-right">pH</th>
-                  <th class="px-3 py-2 text-right">EC (mS)</th>
-                  <th class="px-3 py-2 text-right">%N</th>
+                  <th class="px-3 py-2 text-right">EC (mS/cm)</th>
                   <th class="px-3 py-2 text-right">%C</th>
+                  <th class="px-3 py-2 text-right">%N</th>
                   <th class="px-3 py-2 text-right">C:N</th>
-                  <th class="px-3 py-2 text-right">WP</th>
-                  <th class="px-3 py-2 text-right">SR FC</th>
-                  <th class="px-3 py-2 text-right">Bag FC</th>
+                  <th class="px-3 py-2 text-right border-l border-gray-200">WP (%)</th>
+                  <th class="px-3 py-2 text-right">FC (%)</th>
+                  <th class="px-3 py-2 text-right">Sat (%)</th>
                 </tr>
               </thead>
               <tbody id="depthTableBody"></tbody>
             </table>
           </div>
-          <p class="text-xs text-gray-400 mt-2">WP = Wilting Point, SR FC = Saxton-Rawls Field Capacity, Bag FC = Bagnall Field Capacity. All water values in %.</p>
+          <p class="text-xs text-gray-400 mt-2">Saxton-Rawls: WP = Wilting Point, FC = Field Capacity, Sat = Saturation. All water values in %.</p>
         </div>
 
       </section>
@@ -667,18 +738,19 @@
       let n = 0;
       COAGMET_NETWORK.forEach(s => {
         const lbl = `${s.id} — ${s.name}`;
-        circ([s.lat, s.lon], '#4CE600', 5, 0.55, 1)
+        const cn = circ([s.lat, s.lon], '#4CE600', 5, 0.55, 1)
           .bindTooltip(lbl, { direction:'top', sticky:true })
+          .on('click', () => selectNetMarker(cn, '#4CE600'))
           .addTo(coagmetLayer);
         if (COAGMET_SOIL[s.id]) {
           const soil = COAGMET_SOIL[s.id];
-          L.marker([s.lat, s.lon], { icon: L.divIcon({
+          const cm = L.marker([s.lat, s.lon], { icon: L.divIcon({
             className: 'smm-dot',
             html: '<div style="width:10px;height:10px;border-radius:50%;background:#4CE600;box-shadow:0 0 2px 1px #4CE600;"></div>',
             iconSize: [10, 10], iconAnchor: [5, 5]
           })})
             .bindTooltip(`● ${lbl} (soil monitored)`, { direction:'top', sticky:true })
-            .on('click', () => showSite(soil, s.name, [s.lat, s.lon]))
+            .on('click', () => { selectSMMMarker(cm); showSite(soil, s.name, [s.lat, s.lon]); })
             .addTo(soilLayer);
         }
         n++;
@@ -703,19 +775,20 @@
       stns.forEach(s => {
         const name   = s['Name'] || s.name;
         const latlng = [s['Latitude'] || s.lat, s['Longitude'] || s.lon];
-        circ(latlng, '#ff0000', 5, 0.55, 1)
+        const rn = circ(latlng, '#ff0000', 5, 0.55, 1)
           .bindTooltip(name, { direction:'top', sticky:true })
+          .on('click', () => selectNetMarker(rn, '#ff0000'))
           .addTo(rawsLayer);
         const soilKey = RAWS_SOIL_KEY[name] || name;
         if (RAWS_SOIL[soilKey]) {
           const soil = RAWS_SOIL[soilKey];
-          L.marker(latlng, { icon: L.divIcon({
+          const rm = L.marker(latlng, { icon: L.divIcon({
             className: 'smm-dot',
             html: '<div style="width:10px;height:10px;border-radius:50%;background:#ff0000;box-shadow:0 0 2px 1px #ff0000;"></div>',
             iconSize: [10, 10], iconAnchor: [5, 5]
           })})
             .bindTooltip(`● ${name} (soil monitored)`, { direction:'top', sticky:true })
-            .on('click', () => showSite(soil, name, latlng))
+            .on('click', () => { selectSMMMarker(rm); showSite(soil, name, latlng); })
             .addTo(soilLayer);
         }
         rawsCount++;
@@ -736,29 +809,108 @@
     });
 
     // ── Site info display ────────────────────────────────────────────────────
+    let selectedSMMMarker = null;
+    let selectedNetMarker = null;
+
+    function selectSMMMarker(marker) {
+      if (selectedSMMMarker) selectedSMMMarker.getElement()?.classList.remove('selected');
+      if (selectedNetMarker) { selectedNetMarker.setStyle({ color: selectedNetMarker._origColor, weight: 1 }); selectedNetMarker = null; }
+      selectedSMMMarker = marker;
+      marker.getElement()?.classList.add('selected');
+    }
+
+    function selectNetMarker(marker, origColor) {
+      if (selectedNetMarker) selectedNetMarker.setStyle({ color: selectedNetMarker._origColor, weight: 1 });
+      if (selectedSMMMarker) { selectedSMMMarker.getElement()?.classList.remove('selected'); selectedSMMMarker = null; }
+      marker._origColor = origColor;
+      selectedNetMarker = marker;
+      marker.setStyle({ color: '#000000', weight: 2 });
+    }
+
     const fmt = v => (v == null || v === '') ? '—' : (typeof v === 'number' ? v : v);
 
+    // ── Sidebar mini charts ──────────────────────────────────────────────────
+    let sidebarTexChart = null;
+    let currentSoil = null;
+    let currentDepthIdx = 0;
+
+    function renderMiniPhScale(phVal) {
+      const safe = Number.isFinite(phVal) ? phVal : 0;
+      const pct  = ((14 - safe) / 14 * 100).toFixed(2);
+      const ticks = Array.from({length:8}, (_,i) => `<span>${14 - i*2}</span>`).join('');
+      document.getElementById('sidebarPhHost').innerHTML = `
+        <div class="mini-ph-wrap">
+          <div class="mini-ph-zones">
+            <span>Alk.</span><span>Neu.</span><span>Acid</span>
+          </div>
+          <div class="mini-ph-ticks">${ticks}</div>
+          <div class="mini-ph-bar">
+            <div class="mini-ph-marker" id="miniPhMarker" style="top:0%">
+              <div class="mini-ph-pin"></div>
+              <div class="mini-ph-label">${safe.toFixed(1)}</div>
+            </div>
+          </div>
+        </div>`;
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        const el = document.getElementById('miniPhMarker');
+        if (el) el.style.top = pct + '%';
+      }));
+    }
+
+    function renderSidebarDepth(d) {
+      // Texture doughnut
+      if (sidebarTexChart) { sidebarTexChart.destroy(); sidebarTexChart = null; }
+      const ctx = document.getElementById('sidebarTexture').getContext('2d');
+      sidebarTexChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Sand %','Silt %','Clay %'],
+          datasets: [{ data: [d.sand, d.silt, d.clay],
+            backgroundColor: ['#C8C372','#D9782D','#1E4D2B'],
+            borderWidth: 1 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } }
+        }
+      });
+      document.getElementById('sidebarTexLabel').textContent = d.tex;
+      renderMiniPhScale(d.pH);
+    }
+
+    function updateDepthNav() {
+      const depths = currentSoil.depths;
+      document.getElementById('depthIdx').textContent =
+        `${currentDepthIdx + 1}/${depths.length}`;
+      document.getElementById('siteInfoDepthLabel').textContent =
+        `Depth: ${depths[currentDepthIdx].d}`;
+      renderSidebarDepth(depths[currentDepthIdx]);
+    }
+
+    document.getElementById('depthPrev').addEventListener('click', () => {
+      if (!currentSoil) return;
+      currentDepthIdx = (currentDepthIdx - 1 + currentSoil.depths.length) % currentSoil.depths.length;
+      updateDepthNav();
+    });
+    document.getElementById('depthNext').addEventListener('click', () => {
+      if (!currentSoil) return;
+      currentDepthIdx = (currentDepthIdx + 1) % currentSoil.depths.length;
+      updateDepthNav();
+    });
+
     function showSite(soil, displayName, latlng) {
-      const s = soil.depths[0];
+      currentSoil = soil;
+      currentDepthIdx = 0;
+
       const netColor = soil.network === 'CoAgMET'
-        ? 'background:#dbeafe;color:#1d4ed8;'
-        : 'background:#ffedd5;color:#c2410c;';
+        ? 'background:rgba(76,230,0,0.2);color:#2a7a00;'
+        : 'background:rgba(255,0,0,0.2);color:#990000;';
 
       // Sidebar card
-      document.getElementById('siteInfoContent').innerHTML = `
-        <div class="font-semibold text-gray-800 mb-1">${displayName}</div>
-        <div class="text-xs text-gray-500 mb-2">Surface (${s.d})</div>
-        <div class="grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
-          <span class="text-gray-500">Texture</span><span class="font-medium">${s.tex}</span>
-          <span class="text-gray-500">Sand</span><span class="font-medium">${s.sand}%</span>
-          <span class="text-gray-500">Silt</span><span class="font-medium">${s.silt}%</span>
-          <span class="text-gray-500">Clay</span><span class="font-medium">${s.clay}%</span>
-          <span class="text-gray-500">pH</span><span class="font-medium">${s.pH}</span>
-          <span class="text-gray-500">EC (mS)</span><span class="font-medium">${s.ec}</span>
-          ${s.n != null ? `<span class="text-gray-500">%N</span><span class="font-medium">${s.n}</span>` : ''}
-          ${s.c != null ? `<span class="text-gray-500">%C</span><span class="font-medium">${s.c}</span>` : ''}
-          ${s.cn != null ? `<span class="text-gray-500">C:N</span><span class="font-medium">${s.cn}</span>` : ''}
-        </div>`;
+      document.getElementById('siteInfoName').textContent = displayName;
+      document.getElementById('siteCharts').classList.remove('hidden');
+      document.getElementById('depthNav').classList.remove('hidden');
+      updateDepthNav();
 
       // Full depth table
       const panel = document.getElementById('dataPanel');
@@ -778,12 +930,12 @@
           <td class="px-3 py-2 text-right text-gray-700">${fmt(d.clay)}</td>
           <td class="px-3 py-2 text-right text-gray-700">${fmt(d.pH)}</td>
           <td class="px-3 py-2 text-right ${d.ec > 2 ? 'text-amber-600 font-semibold' : 'text-gray-700'}">${fmt(d.ec)}</td>
-          <td class="px-3 py-2 text-right text-gray-700">${fmt(d.n)}</td>
           <td class="px-3 py-2 text-right text-gray-700">${fmt(d.c)}</td>
+          <td class="px-3 py-2 text-right text-gray-700">${fmt(d.n)}</td>
           <td class="px-3 py-2 text-right text-gray-700">${fmt(d.cn)}</td>
-          <td class="px-3 py-2 text-right text-gray-700">${fmt(d.wp)}</td>
+          <td class="px-3 py-2 text-right text-gray-700 border-l border-gray-200">${fmt(d.wp)}</td>
           <td class="px-3 py-2 text-right text-gray-700">${fmt(d.srFC)}</td>
-          <td class="px-3 py-2 text-right text-gray-700">${typeof d.bagFC === 'number' ? d.bagFC.toFixed(1) : '—'}</td>
+          <td class="px-3 py-2 text-right text-gray-700">${fmt(d.sat)}</td>
         </tr>`).join('');
 
       panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
