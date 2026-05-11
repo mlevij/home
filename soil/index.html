@@ -163,7 +163,7 @@
         </div>
 
         <!-- Site Info Card -->
-        <div class="card p-4" id="siteInfoCard" data-aos="fade-right">
+        <div class="card p-4 flex-1" id="siteInfoCard" data-aos="fade-right">
           <!-- Header row: site name + depth nav -->
           <div class="flex items-start justify-between mb-1">
             <div>
@@ -179,8 +179,9 @@
 
           <!-- Charts (hidden until site selected) -->
           <div class="hidden" id="siteCharts">
-            <!-- Texture doughnut -->
-            <div class="flex items-center gap-3 mb-3">
+            <!-- Texture label + doughnut -->
+            <p class="text-xs uppercase tracking-wide text-gray-400 mb-2">Texture</p>
+            <div class="flex items-center gap-3 mb-4">
               <div style="width:110px;height:110px;flex-shrink:0;"><canvas id="sidebarTexture"></canvas></div>
               <div class="text-xs space-y-1">
                 <div class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-sm flex-shrink-0" style="background:#C8C372;"></span><span class="text-gray-600">Sand</span></div>
@@ -189,7 +190,8 @@
                 <div class="mt-2 text-gray-400" id="sidebarTexLabel">—</div>
               </div>
             </div>
-            <!-- pH mini scale -->
+            <!-- pH label + scale -->
+            <p class="text-xs uppercase tracking-wide text-gray-400 mb-2">pH</p>
             <div id="sidebarPhHost"></div>
           </div>
         </div>
