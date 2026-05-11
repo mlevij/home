@@ -12,6 +12,7 @@
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
   <!-- Leaflet -->
@@ -249,6 +250,22 @@
             </table>
           </div>
           <p class="text-xs text-gray-400 mt-2">Saxton-Rawls: WP = Wilting Point, FC = Field Capacity, Sat = Saturation. All water values in %.</p>
+
+          <!-- Live Soil Moisture -->
+          <div class="mt-4 pt-3 border-t border-gray-100" id="smSection">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Live Soil Moisture</span>
+              <select id="smSpan" class="text-xs text-gray-500 border border-gray-200 rounded px-1 py-0.5 bg-white">
+                <option value="7">7 days</option>
+                <option value="30" selected>30 days</option>
+                <option value="90">90 days</option>
+              </select>
+            </div>
+            <div id="smStatus" class="text-xs text-gray-400 text-center py-4 italic"></div>
+            <div style="position:relative;height:220px;" id="smChartWrap" class="hidden">
+              <canvas id="soilMoistureChart"></canvas>
+            </div>
+          </div>
         </div>
 
       </section>
@@ -740,7 +757,7 @@
             iconSize: [10, 10], iconAnchor: [5, 5]
           })})
             .bindTooltip(`● ${lbl} (soil monitored)`, { direction:'top', sticky:true })
-            .on('click', () => { selectSMMMarker(cm); showSite(soil, s.name, [s.lat, s.lon]); })
+            .on('click', () => { selectSMMMarker(cm); showSite(soil, s.name, [s.lat, s.lon], s.id); })
             .addTo(soilLayer);
         }
         n++;
@@ -778,7 +795,7 @@
             iconSize: [10, 10], iconAnchor: [5, 5]
           })})
             .bindTooltip(`● ${name} (soil monitored)`, { direction:'top', sticky:true })
-            .on('click', () => { selectSMMMarker(rm); showSite(soil, name, latlng); })
+            .on('click', () => { selectSMMMarker(rm); showSite(soil, name, latlng, null); })
             .addTo(soilLayer);
         }
         rawsCount++;
@@ -818,6 +835,122 @@
     }
 
     const fmt = v => (v == null || v === '') ? '—' : (typeof v === 'number' ? v : v);
+
+    // ── Live soil moisture chart ─────────────────────────────────────────────
+    let smChart = null;
+    let smCurrentSite = null;
+
+    document.getElementById('smSpan').addEventListener('change', () => {
+      if (smCurrentSite) loadSoilMoisture(smCurrentSite.id, smCurrentSite.depths, smCurrentSite.network);
+    });
+
+    async function loadSoilMoisture(stationId, depths, network) {
+      smCurrentSite = { id: stationId, depths, network };
+      const wrap   = document.getElementById('smChartWrap');
+      const status = document.getElementById('smStatus');
+      wrap.classList.add('hidden');
+
+      if (network === 'RAWS') {
+        status.textContent = 'Live soil moisture data not yet available for RAWS sites.';
+        return;
+      }
+      if (!stationId) {
+        status.textContent = 'No live data available for this site.';
+        return;
+      }
+
+      status.textContent = 'Loading…';
+      const span = document.getElementById('smSpan').value;
+
+      try {
+        const data = await fetch(
+          `https://coagmet.colostate.edu/data/daily/soilmoisture.json?to=now&span=${span}`
+        ).then(r => r.json());
+
+        const key = stationId.toLowerCase();
+        const st  = data[key];
+
+        if (!st || !st.vwc4 || st.vwc4.every(v => v == null)) {
+          status.textContent = 'No live soil moisture data available for this site.';
+          return;
+        }
+
+        const times = data.time;
+        const vwc4  = st.vwc4.map(v  => v  != null ? +(v  * 100).toFixed(1) : null);
+        const vwc24 = st.vwc24?.map(v => v  != null ? +(v  * 100).toFixed(1) : null);
+        const hasDeep = vwc24 && !vwc24.every(v => v == null);
+
+        // Zone bands from the shallowest depth; values already in %
+        const d0 = depths[0];
+        const wp = d0.wp, fc = d0.srFC, sat = d0.sat;
+
+        const allVals = [...vwc4, ...(hasDeep ? vwc24 : [])].filter(v => v != null);
+        const yMax = Math.ceil(Math.max(...allVals, sat) * 1.08);
+
+        status.textContent = '';
+        wrap.classList.remove('hidden');
+
+        if (smChart) { smChart.destroy(); smChart = null; }
+
+        const datasets = [{
+          label: 'VWC 4 cm (shallow)',
+          data: vwc4,
+          borderColor: '#32A5E2',
+          backgroundColor: 'transparent',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          tension: 0.3,
+          spanGaps: true
+        }];
+        if (hasDeep) datasets.push({
+          label: 'VWC 24 cm (deep)',
+          data: vwc24,
+          borderColor: '#1F678D',
+          backgroundColor: 'transparent',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          tension: 0.3,
+          spanGaps: true
+        });
+
+        const ctx = document.getElementById('soilMoistureChart').getContext('2d');
+        smChart = new Chart(ctx, {
+          type: 'line',
+          data: { labels: times, datasets },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            scales: {
+              x: {
+                ticks: { maxTicksLimit: 6, font: { size: 9 }, maxRotation: 0 },
+                grid: { color: 'rgba(0,0,0,0.04)' }
+              },
+              y: {
+                min: 0, max: yMax,
+                title: { display: true, text: 'VWC (%)', font: { size: 9 } },
+                ticks: { font: { size: 9 } },
+                grid: { color: 'rgba(0,0,0,0.04)' }
+              }
+            },
+            plugins: {
+              legend: { labels: { font: { size: 9 }, boxWidth: 10, padding: 8 } },
+              tooltip: { titleFont: { size: 9 }, bodyFont: { size: 9 } },
+              annotation: {
+                annotations: {
+                  wpZone:  { type:'box', yScaleID:'y', yMin:0,  yMax:wp,  backgroundColor:'rgba(250,85,85,0.2)',   borderWidth:0 },
+                  fcZone:  { type:'box', yScaleID:'y', yMin:wp, yMax:fc,  backgroundColor:'rgba(141,237,142,0.2)', borderWidth:0 },
+                  satZone: { type:'box', yScaleID:'y', yMin:fc, yMax:sat, backgroundColor:'rgba(247,251,118,0.2)', borderWidth:0 }
+                }
+              }
+            }
+          }
+        });
+      } catch(e) {
+        status.textContent = 'Could not load soil moisture data.';
+        console.warn('SM fetch error:', e);
+      }
+    }
 
     // ── Sidebar mini charts ──────────────────────────────────────────────────
     let sidebarTexChart = null;
@@ -888,7 +1021,7 @@
       updateDepthNav();
     });
 
-    function showSite(soil, displayName, latlng) {
+    function showSite(soil, displayName, latlng, stationId) {
       currentSoil = soil;
       currentDepthIdx = 0;
 
@@ -929,6 +1062,7 @@
         </tr>`).join('');
 
       panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      loadSoilMoisture(stationId, soil.depths, soil.network);
     }
   </script>
 </body>
