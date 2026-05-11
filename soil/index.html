@@ -920,15 +920,17 @@
           const times  = data.time;
           const vwc4   = st.vwc4.map(v  => v  != null ? +(v  * 100).toFixed(1) : null);
           const vwc24  = st.vwc24?.map(v => v  != null ? +(v  * 100).toFixed(1) : null);
+          const d0lbl  = depths[0]?.d || '4 cm';
+          const d1lbl  = depths[1]?.d || '24 cm';
           const datasets = [{
-            label: 'VWC 4 cm', data: vwc4,
+            label: d0lbl, data: vwc4,
             borderColor:'#32A5E2', backgroundColor:'transparent',
-            borderWidth:1.5, pointRadius:0, tension:0.3, spanGaps:true
+            borderWidth:2, pointRadius:0, tension:0.3, spanGaps:true
           }];
           if (vwc24 && !vwc24.every(v => v == null)) datasets.push({
-            label: 'VWC 24 cm', data: vwc24,
-            borderColor:'#1F678D', backgroundColor:'transparent',
-            borderWidth:1.5, pointRadius:0, tension:0.3, spanGaps:true
+            label: d1lbl, data: vwc24,
+            borderColor:'#164863', backgroundColor:'transparent',
+            borderWidth:2, pointRadius:0, tension:0.3, spanGaps:true
           });
 
           status.textContent = '';
@@ -957,21 +959,25 @@
           const vwc1   = records.map(r => getObs(r, 'SMF'));
           const vwc2   = records.map(r => getObs(r, 'SMF2'));
           const vwc3   = records.map(r => getObs(r, 'SMF3'));
+          const d0lbl  = depths[0]?.d || 'Sensor 1';
+          const d1lbl  = depths[1]?.d || 'Sensor 2';
+          const d2lbl  = depths[2]?.d || 'Sensor 3';
 
           const datasets = [{
-            label: 'VWC shallow', data: vwc1,
+            label: d0lbl, data: vwc1,
             borderColor:'#32A5E2', backgroundColor:'transparent',
-            borderWidth:1.5, pointRadius:0, tension:0.3, spanGaps:true
+            borderWidth:2, pointRadius:0, tension:0.3, spanGaps:true
           }];
           if (!vwc2.every(v => v == null)) datasets.push({
-            label: 'VWC mid', data: vwc2,
+            label: d1lbl, data: vwc2,
             borderColor:'#2986B8', backgroundColor:'transparent',
-            borderWidth:1.5, pointRadius:0, tension:0.3, spanGaps:true
+            borderWidth:2, pointRadius:0, tension:0.3, spanGaps:true,
+            borderDash: [5, 3]
           });
           if (!vwc3.every(v => v == null)) datasets.push({
-            label: 'VWC deep', data: vwc3,
-            borderColor:'#1F678D', backgroundColor:'transparent',
-            borderWidth:1.5, pointRadius:0, tension:0.3, spanGaps:true
+            label: d2lbl, data: vwc3,
+            borderColor:'#164863', backgroundColor:'transparent',
+            borderWidth:2, pointRadius:0, tension:0.3, spanGaps:true
           });
 
           status.textContent = '';
