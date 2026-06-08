@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SW Colorado Drought Monitor</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: system-ui, sans-serif;
+      background: #f5f2ec;
+    }
+
+    #wrap {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    #drought-map {
+      flex: 1;
+      min-height: 0;
+    }
+
+    #controls {
+      padding: 10px 14px 8px;
+      background: #f5f2ec;
+      border-top: 1px solid #d4cfc5;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .play-btn {
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      padding: 4px 12px;
+      background: #c85a2a;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      border-radius: 2px;
+    }
+
+    .play-btn:hover { opacity: 0.85; }
+
+    .bound {
+      font-size: 11px;
+      color: #7a7468;
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      accent-color: #c85a2a;
+      cursor: pointer;
+    }
+
+    .year-display {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #c85a2a;
+      min-width: 3rem;
+      text-align: right;
+    }
+
+    .caption {
+      font-size: 11px;
+      color: #7a7468;
+      margin-bottom: 8px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: #7a7468;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border: 1px solid #d4cfc5;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <div id="drought-map"></div>
+    <div id="controls">
+      <p class="caption" id="caption">August 2000 — USDM peak drought classification</p>
+      <div class="slider-row">
+        <button class="play-btn" id="play-btn">▶ Play</button>
+        <span class="bound">2000</span>
+        <input type="range" id="slider" min="2000" max="2025" value="2000" step="1">
+        <span class="bound">2025</span>
+        <span class="year-display" id="year-display">2000</span>
+      </div>
+      <div class="legend">
+        <span class="legend-item"><span class="swatch" style="background:#ffff00"></span>D0 Abnormally Dry</span>
+        <span class="legend-item"><span class="swatch" style="background:#fcd37f"></span>D1 Moderate</span>
+        <span class="legend-item"><span class="swatch" style="background:#ffaa00"></span>D2 Severe</span>
+        <span class="legend-item"><span class="swatch" style="background:#e60000"></span>D3 Extreme</span>
+        <span class="legend-item"><span class="swatch" style="background:#730000"></span>D4 Exceptional</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var bounds = [[36.9988, -109.0602], [39.3667, -106.2453]];
+
+    var map = L.map('drought-map', {
+      zoomSnap: 0.5,
+      zoomControl: false,
+      scrollWheelZoom: false
+    }).setView([38.1, -108.0], 7.5);
+
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Esri World Topo Map'
+    }).addTo(map);
+
+    var overlay = L.imageOverlay('assets/drought_years/usdm_2000.png', bounds, {
+      opacity: 0.75
+    }).addTo(map);
+
+    L.control.scale({ position: 'bottomleft', imperial: true, metric: false }).addTo(map);
+
+    var northArrow = L.control({ position: 'topleft' });
+    northArrow.onAdd = function() {
+      var div = L.DomUtil.create('div');
+      div.style.cssText = 'background:white;padding:4px 7px;border:2px solid rgba(0,0,0,0.2);border-radius:4px;font-size:14px;font-weight:bold;text-align:center;line-height:1.2;';
+      div.innerHTML = '&#8593;<br><span style="font-size:9px;font-weight:normal;">N</span>';
+      return div;
+    };
+    northArrow.addTo(map);
+
+    var slider  = document.getElementById('slider');
+    var display = document.getElementById('year-display');
+    var caption = document.getElementById('caption');
+    var playBtn = document.getElementById('play-btn');
+    var playInterval = null;
+
+    function setYear(yr) {
+      overlay.setUrl('assets/drought_years/usdm_' + yr + '.png');
+      slider.value        = yr;
+      display.textContent = yr;
+      caption.textContent = 'August ' + yr + ' — USDM peak drought classification';
+    }
+
+    slider.addEventListener('input', function() { setYear(slider.value); });
+
+    playBtn.addEventListener('click', function() {
+      if (playInterval) {
+        clearInterval(playInterval);
+        playInterval = null;
+        playBtn.textContent = '▶ Play';
+      } else {
+        playBtn.textContent = '⏸ Pause';
+        playInterval = setInterval(function() {
+          var next = parseInt(slider.value) + 1;
+          if (next > parseInt(slider.max)) next = parseInt(slider.min);
+          setYear(next);
+        }, 1500);
+      }
+    });
+  </script>
+</body>
+</html>
