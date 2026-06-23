@@ -35,7 +35,7 @@
     .toggle-btn.on { background: #1E4D2B; }
     .toggle-btn.on.orange { background: rgba(255,0,0,0.5); }
     .toggle-btn.on.green { background: rgba(76,230,0,0.5); }
-    .toggle-btn.on.teal { background: #0d9488; }
+    .toggle-btn.on.teal { background: #00C5FF; }
     .toggle-btn.on.gold  { background: #C8C372; }
     .toggle-btn::after {
       content: ''; position: absolute; left: 2px; top: 2px;
@@ -151,6 +151,12 @@
               <span class="text-sm text-gray-700">RAWS</span>
             </label>
 
+            <label class="flex items-center gap-3 cursor-pointer select-none">
+              <button class="toggle-btn on teal" id="btn-snotel"></button>
+              <span class="w-3 h-3 rounded-full flex-shrink-0 opacity-50" style="background:#00C5FF;"></span>
+              <span class="text-sm text-gray-700">SNOTEL</span>
+            </label>
+
             <div class="h-px bg-gray-100 my-2"></div>
 
             <label class="flex items-center gap-3 cursor-pointer select-none">
@@ -194,6 +200,9 @@
             <p class="text-xs uppercase tracking-wide text-gray-400 mb-2">pH</p>
             <div id="sidebarPhHost"></div>
           </div>
+
+          <!-- Shown instead of siteCharts for sites with no lab sample (SNOTEL, or any plain network site) -->
+          <p class="hidden text-xs text-gray-400 italic py-2" id="noLabNote"></p>
         </div>
 
       </aside>
@@ -211,6 +220,7 @@
           <div class="px-4 py-2 text-xs text-gray-400 border-t">
             CoAgMET station data from <a href="https://coagmet.colostate.edu" target="_blank" class="underline hover:text-[#1E4D2B]">coagmet.colostate.edu</a>.
             RAWS stations from USFS site access records.
+            SNOTEL stations from USDA NRCS's <a href="https://wcc.sc.egov.usda.gov/awdbRestApi/swagger-ui/index.html" target="_blank" class="underline hover:text-[#1E4D2B]">Air &amp; Water Database (AWDB) REST API</a> — no lab soil sample, live snowpack and (where sensored) soil moisture/temperature only.
           </div>
         </div>
 
@@ -224,34 +234,49 @@
             <span class="text-xs px-2 py-1 rounded-full font-medium" id="dataPanelNetwork"
               style="background:#e0f2fe;color:#0369a1;"></span>
           </div>
+          <p class="hidden text-xs text-gray-400 mt-1" id="dataPanelMeta"></p>
 
-          <div class="overflow-x-auto mt-4">
-            <table class="w-full text-xs border-collapse" id="depthTable">
-              <thead>
-                <tr class="text-gray-400 border-b border-gray-100">
-                  <th colspan="10"></th>
-                  <th colspan="3" class="px-3 py-1 text-center text-gray-500 border-l border-gray-200 italic">Saxton-Rawls</th>
-                </tr>
-                <tr class="text-gray-500 tracking-wide border-b-2 border-gray-200">
-                  <th class="px-3 py-2 text-left">Depth</th>
-                  <th class="px-3 py-2 text-left">Texture</th>
-                  <th class="px-3 py-2 text-right">Sand %</th>
-                  <th class="px-3 py-2 text-right">Silt %</th>
-                  <th class="px-3 py-2 text-right">Clay %</th>
-                  <th class="px-3 py-2 text-right">pH</th>
-                  <th class="px-3 py-2 text-right">EC (mS/cm)</th>
-                  <th class="px-3 py-2 text-right">%C</th>
-                  <th class="px-3 py-2 text-right">%N</th>
-                  <th class="px-3 py-2 text-right">C:N</th>
-                  <th class="px-3 py-2 text-right border-l border-gray-200">WP (%)</th>
-                  <th class="px-3 py-2 text-right">FC (%)</th>
-                  <th class="px-3 py-2 text-right">Sat (%)</th>
-                </tr>
-              </thead>
-              <tbody id="depthTableBody"></tbody>
-            </table>
+          <div id="depthTableWrap">
+            <div class="overflow-x-auto mt-4">
+              <table class="w-full text-xs border-collapse" id="depthTable">
+                <thead>
+                  <tr class="text-gray-400 border-b border-gray-100">
+                    <th colspan="10"></th>
+                    <th colspan="3" class="px-3 py-1 text-center text-gray-500 border-l border-gray-200 italic">Saxton-Rawls</th>
+                  </tr>
+                  <tr class="text-gray-500 tracking-wide border-b-2 border-gray-200">
+                    <th class="px-3 py-2 text-left">Depth</th>
+                    <th class="px-3 py-2 text-left">Texture</th>
+                    <th class="px-3 py-2 text-right">Sand %</th>
+                    <th class="px-3 py-2 text-right">Silt %</th>
+                    <th class="px-3 py-2 text-right">Clay %</th>
+                    <th class="px-3 py-2 text-right">pH</th>
+                    <th class="px-3 py-2 text-right">EC (mS/cm)</th>
+                    <th class="px-3 py-2 text-right">%C</th>
+                    <th class="px-3 py-2 text-right">%N</th>
+                    <th class="px-3 py-2 text-right">C:N</th>
+                    <th class="px-3 py-2 text-right border-l border-gray-200">WP (%)</th>
+                    <th class="px-3 py-2 text-right">FC (%)</th>
+                    <th class="px-3 py-2 text-right">Sat (%)</th>
+                  </tr>
+                </thead>
+                <tbody id="depthTableBody"></tbody>
+              </table>
+            </div>
+            <p class="text-xs text-gray-400 mt-2">Saxton-Rawls: WP = Wilting Point, FC = Field Capacity, Sat = Saturation. All water values in %.</p>
           </div>
-          <p class="text-xs text-gray-400 mt-2">Saxton-Rawls: WP = Wilting Point, FC = Field Capacity, Sat = Saturation. All water values in %.</p>
+          <p class="hidden text-xs text-gray-400 italic mt-4" id="depthTableNote"></p>
+
+          <!-- Snowpack (SNOTEL only) -->
+          <div class="hidden mt-4 pt-3 border-t border-gray-100" id="snowSection">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Snowpack</span>
+            </div>
+            <div id="snowStatus" class="text-xs text-gray-400 text-center py-4 italic"></div>
+            <div style="position:relative;height:180px;" id="snowChartWrap" class="hidden">
+              <canvas id="snowChart"></canvas>
+            </div>
+          </div>
 
           <!-- Live Soil Moisture -->
           <div class="mt-4 pt-3 border-t border-gray-100" id="smSection">
@@ -602,6 +627,7 @@
 
     const coagmetLayer = L.layerGroup().addTo(map);
     const rawsLayer    = L.layerGroup().addTo(map);
+    const snotelLayer  = L.layerGroup().addTo(map);
     const soilLayer    = L.layerGroup().addTo(map);
 
     // Shared marker factory
@@ -743,13 +769,41 @@
       {id:"HYK01",name:"Holyoke",lat:40.4909,lon:-102.0890}
     ];
 
+    // ── Station count label (loaders run concurrently, so track counts in state) ──
+    const stationCounts = {};
+    const pendingNetworks = new Set(['raws', 'snotel']); // CoAgMET loads synchronously, never "pending"
+    const NETWORK_LABEL = { coagmet: 'CoAgMET', raws: 'RAWS', snotel: 'SNOTEL' };
+
+    function updateStationCountText() {
+      const loadedParts  = Object.keys(stationCounts).map(k => `${stationCounts[k]} ${NETWORK_LABEL[k]}`);
+      const pendingParts = [...pendingNetworks].map(k => NETWORK_LABEL[k]);
+
+      let text = loadedParts.join(' · ');
+      if (pendingParts.length) {
+        const loadingMsg = `Loading ${pendingParts.join(' and ')} data…`;
+        text = text ? `${text} · ${loadingMsg}` : loadingMsg;
+      } else if (text) {
+        text += ' stations';
+      }
+      document.getElementById('stationCount').textContent = text || 'Loading…';
+    }
+
+    function coagmetMeta(s) {
+      return s.meta && {
+        elevation: s.meta.elevation,
+        place: s.meta.location,
+        extra: s.meta.irrigation ? `Irrigation: ${s.meta.irrigation}` : null,
+        since: s.meta.firstObs
+      };
+    }
+
     function loadCoAgMET() {
       let n = 0;
       COAGMET_NETWORK.forEach(s => {
         const lbl = `${s.id} — ${s.name}`;
         const cn = circ([s.lat, s.lon], '#4CE600', 5, 0.55, 1)
           .bindTooltip(lbl, { direction:'top', sticky:true })
-          .on('click', () => selectNetMarker(cn, '#4CE600'))
+          .on('click', () => { selectNetMarker(cn, '#4CE600'); showNetworkOnlySite('CoAgMET', s.name, coagmetMeta(s)); })
           .addTo(coagmetLayer);
         if (COAGMET_SOIL[s.id]) {
           const soil = COAGMET_SOIL[s.id];
@@ -759,13 +813,21 @@
             iconSize: [10, 10], iconAnchor: [5, 5]
           })})
             .bindTooltip(`● ${lbl} (soil monitored)`, { direction:'top', sticky:true })
-            .on('click', () => { selectSMMMarker(cm); showSite(soil, s.name, [s.lat, s.lon], s.id); })
+            .on('click', () => { selectSMMMarker(cm); showSite(soil, s.name, [s.lat, s.lon], s.id, coagmetMeta(s)); })
             .addTo(soilLayer);
         }
         n++;
       });
-      document.getElementById('stationCount').textContent =
-        `${n} CoAgMET · loading RAWS…`;
+      stationCounts.coagmet = n;
+      updateStationCountText();
+
+      // Station metadata (elevation, location, irrigation, first obs) — cached daily by a
+      // GitHub Action since coagmet.colostate.edu's metadata.json has no CORS headers for a
+      // direct browser fetch. Mutates the COAGMET_NETWORK entries in place; click handlers
+      // above read s.meta at click time, so this can resolve after markers are built.
+      fetch('/soil/coagmet-metadata.json').then(r => r.json()).then(meta => {
+        COAGMET_NETWORK.forEach(s => { s.meta = meta[s.id.toLowerCase()] || null; });
+      }).catch(e => console.warn('CoAgMET metadata unavailable:', e));
     }
 
     // ── Load RAWS network (live from NIFC API, Colorado active stations) ─────
@@ -788,9 +850,15 @@
         const latlng  = [s['Latitude'] || s.lat, s['Longitude'] || s.lon];
         const nesdisId = s['NESS ID'] || null;
         if (nesdisId) rawsNesdisMap[name] = nesdisId;
+        const meta = {
+          elevation: s['Elevation'],
+          place: s['County'] ? `${s['County']} County, ${s['State']}` : null,
+          extra: s['Agency'] ? `Agency: ${s['Agency']}` : null,
+          since: fmtYYYYMMDD(s['Installed Date (yyyymmdd)'])
+        };
         const rn = circ(latlng, '#ff0000', 5, 0.55, 1)
           .bindTooltip(name, { direction:'top', sticky:true })
-          .on('click', () => selectNetMarker(rn, '#ff0000'))
+          .on('click', () => { selectNetMarker(rn, '#ff0000'); showNetworkOnlySite('RAWS', name, meta); })
           .addTo(rawsLayer);
         const soilKey = RAWS_SOIL_KEY[name] || name;
         if (RAWS_SOIL[soilKey]) {
@@ -801,20 +869,76 @@
             iconSize: [10, 10], iconAnchor: [5, 5]
           })})
             .bindTooltip(`● ${name} (soil monitored)`, { direction:'top', sticky:true })
-            .on('click', () => { selectSMMMarker(rm); showSite(soil, name, latlng, nesdisId); })
+            .on('click', () => { selectSMMMarker(rm); showSite(soil, name, latlng, nesdisId, meta); })
             .addTo(soilLayer);
         }
         rawsCount++;
       });
-      document.getElementById('stationCount').textContent =
-        `${document.getElementById('stationCount').textContent.split('·')[0].trim()} · ${rawsCount} RAWS stations`;
+      stationCounts.raws = rawsCount;
+      pendingNetworks.delete('raws');
+      updateStationCountText();
     }
 
+    // ── Load SNOTEL network (live from NRCS AWDB REST API, active CO stations) ──
+    const AWDB_BASE = 'https://wcc.sc.egov.usda.gov/awdbRestApi/services/v1';
+
+    async function loadSNOTEL() {
+      let stns = [];
+      try {
+        stns = await fetch(`${AWDB_BASE}/stations?stationTriplets=*:CO:SNTL&activeOnly=true`).then(r => r.json());
+      } catch(e) {
+        console.warn('AWDB SNOTEL API unavailable:', e);
+      }
+
+      // Fetch each station's actual sensor depths (varies by site — not all match)
+      // so we never guess a fixed depth set. Batched: the API 400s when combining
+      // a wildcard stationTriplets with returnStationElements on this many stations.
+      const BATCH = 20;
+      for (let i = 0; i < stns.length; i += BATCH) {
+        const batch = stns.slice(i, i + BATCH);
+        const triplets = batch.map(s => s.stationTriplet).join(',');
+        try {
+          const meta = await fetch(`${AWDB_BASE}/stations?stationTriplets=${triplets}&returnStationElements=true`).then(r => r.json());
+          const byTriplet = Object.fromEntries(meta.map(m => [m.stationTriplet, m.stationElements || []]));
+          batch.forEach(s => {
+            const els = byTriplet[s.stationTriplet] || [];
+            s.smsDepths = [...new Set(els.filter(e => e.elementCode === 'SMS').map(e => e.heightDepth))]
+              .sort((a, b) => Math.abs(a) - Math.abs(b));
+          });
+        } catch(e) {
+          console.warn('AWDB station-elements fetch failed for batch', i, e);
+          batch.forEach(s => { s.smsDepths = []; });
+        }
+      }
+
+      stns.forEach(s => {
+        const sn = circ([s.latitude, s.longitude], '#00C5FF', 5, 0.55, 1)
+          .bindTooltip(s.name, { direction:'top', sticky:true })
+          .on('click', () => { selectNetMarker(sn, '#00C5FF'); showSnotelSite(s); })
+          .addTo(snotelLayer);
+        if (s.smsDepths && s.smsDepths.length) {
+          const sm = L.marker([s.latitude, s.longitude], { icon: L.divIcon({
+            className: 'smm-dot',
+            html: '<div style="width:10px;height:10px;border-radius:50%;background:#00C5FF;box-shadow:0 0 2px 1px #00C5FF;"></div>',
+            iconSize: [10, 10], iconAnchor: [5, 5]
+          })})
+            .bindTooltip(`● ${s.name} (soil monitored)`, { direction:'top', sticky:true })
+            .on('click', () => { selectSMMMarker(sm); showSnotelSite(s); })
+            .addTo(soilLayer);
+        }
+      });
+      stationCounts.snotel = stns.length;
+      pendingNetworks.delete('snotel');
+      updateStationCountText();
+    }
+
+    updateStationCountText(); // show "Loading RAWS and SNOTEL data…" immediately
     loadCoAgMET();
     loadRAWS();
+    loadSNOTEL();
 
     // ── Layer toggles ────────────────────────────────────────────────────────
-    [['btn-coagmet', coagmetLayer], ['btn-raws', rawsLayer], ['btn-soil', soilLayer]].forEach(([id, layer]) => {
+    [['btn-coagmet', coagmetLayer], ['btn-raws', rawsLayer], ['btn-snotel', snotelLayer], ['btn-soil', soilLayer]].forEach(([id, layer]) => {
       document.getElementById(id).addEventListener('click', function() {
         this.classList.toggle('on');
         this.classList.contains('on') ? map.addLayer(layer) : map.removeLayer(layer);
@@ -844,10 +968,11 @@
 
     // ── Live soil moisture chart ─────────────────────────────────────────────
     let smChart = null;
+    let snowChart = null;
     let smCurrentSite = null;
 
     document.getElementById('smSpan').addEventListener('change', () => {
-      if (smCurrentSite) loadSoilMoisture(smCurrentSite.id, smCurrentSite.depths, smCurrentSite.network);
+      if (smCurrentSite) loadSoilMoisture(smCurrentSite.id, smCurrentSite.depths, smCurrentSite.network, smCurrentSite.smsDepths);
     });
 
     function fmtNifcDate(d) {
@@ -855,12 +980,33 @@
       return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
     }
 
+    // ── Station metadata line shown on the data panel for every network ───────
+    const fmtYYYYMMDD = s => (s && s.length === 8) ? `${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}` : null;
+
+    function metaLineText(m) {
+      if (!m) return '';
+      const parts = [];
+      if (m.elevation != null) parts.push(`${Math.round(m.elevation)} ft elevation`);
+      if (m.place) parts.push(m.place);
+      if (m.extra) parts.push(m.extra);
+      if (m.since) parts.push(`reporting since ${m.since}`);
+      return parts.join(' · ');
+    }
+
+    function setDataPanelMeta(m) {
+      const el = document.getElementById('dataPanelMeta');
+      const text = metaLineText(m);
+      el.textContent = text;
+      el.classList.toggle('hidden', !text);
+    }
+
     function buildSmChart(labels, datasets, depths) {
-      const d0  = depths[0];
-      const wp  = d0.wp, fc = d0.srFC, sat = d0.sat;
+      // depths is null for SNOTEL (no lab Saxton-Rawls sample) — skip the WP/FC/Sat zone shading
+      const d0  = depths ? depths[0] : null;
+      const wp  = d0 ? d0.wp : null, fc = d0 ? d0.srFC : null, sat = d0 ? d0.sat : null;
       const hasTmp = datasets.some(d => d.yAxisID === 'yTemp');
       const vwcVals = datasets.filter(d => d.yAxisID !== 'yTemp').flatMap(d => d.data).filter(v => v != null);
-      const yMax = Math.ceil(Math.max(...vwcVals, sat) * 1.08);
+      const yMax = Math.ceil(Math.max(...vwcVals, sat ?? 0) * 1.08);
 
       if (smChart) { smChart.destroy(); smChart = null; }
       const ctx = document.getElementById('soilMoistureChart').getContext('2d');
@@ -895,23 +1041,50 @@
               boxPadding: 5
             },
             annotation: {
-              annotations: {
+              annotations: depths ? {
                 wpZone:  { type:'box', yScaleID:'y', yMin:0,  yMax:wp,  backgroundColor:'rgba(250,85,85,0.3)',   borderWidth:0 },
                 fcZone:  { type:'box', yScaleID:'y', yMin:wp, yMax:fc,  backgroundColor:'rgba(141,237,142,0.3)', borderWidth:0 },
                 satZone: { type:'box', yScaleID:'y', yMin:fc, yMax:100, backgroundColor:'rgba(247,251,118,0.3)', borderWidth:0 }
-              }
+              } : {}
             }
           }
         }
       });
     }
 
-    async function loadSoilMoisture(stationId, depths, network) {
-      smCurrentSite = { id: stationId, depths, network };
+    function buildSnowChart(labels, datasets) {
+      if (snowChart) { snowChart.destroy(); snowChart = null; }
+      const ctx = document.getElementById('snowChart').getContext('2d');
+      snowChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            x: { ticks: { maxTicksLimit: 6, font:{size:9}, maxRotation:0 }, grid:{color:'rgba(0,0,0,0.04)'} },
+            y: { min: 0, title: { display:true, text:'inches', font:{size:9} }, ticks: { font:{size:9} }, grid: { color:'rgba(0,0,0,0.04)' } }
+          },
+          plugins: {
+            legend: { labels: { font:{size:9}, boxWidth:10, padding:8 } },
+            tooltip: { titleFont: { size:13, weight:'600' }, bodyFont: { size:12 }, padding: 10, boxPadding: 5 }
+          }
+        }
+      });
+    }
+
+    async function loadSoilMoisture(stationId, depths, network, smsDepths) {
+      smCurrentSite = { id: stationId, depths, network, smsDepths };
       const wrap   = document.getElementById('smChartWrap');
       const status = document.getElementById('smStatus');
       wrap.classList.add('hidden');
       status.textContent = '';
+
+      // Snowpack section only applies to SNOTEL — reset/hide for every other network
+      if (network !== 'SNOTEL') {
+        document.getElementById('snowSection').classList.add('hidden');
+      }
 
       if (!stationId) {
         status.textContent = 'No live data available for this site.';
@@ -951,7 +1124,77 @@
           wrap.classList.remove('hidden');
           buildSmChart(times, datasets, depths);
 
-        } else {
+        } else if (network === 'SNOTEL') {
+          // ── SNOTEL path: NRCS AWDB REST API, stationId is the station triplet ──
+          document.getElementById('snowSection').classList.remove('hidden');
+          const snowWrap   = document.getElementById('snowChartWrap');
+          const snowStatus = document.getElementById('snowStatus');
+          snowWrap.classList.add('hidden');
+          snowStatus.textContent = 'Loading…';
+
+          const end   = new Date();
+          const start = new Date(end - span * 86400000);
+          const fmtD  = d => d.toISOString().slice(0, 10);
+          // SMS/STO depths vary per station (e.g. -2/-8/-20 at most sites, but some go to -4 or -40) —
+          // pulled from this station's own metadata in loadSNOTEL, never hardcoded.
+          const depths = smsDepths || [];
+          const elements = ['WTEQ', 'SNWD', ...depths.flatMap(hd => [`SMS:${hd}`, `STO:${hd}`])].join(',');
+          const url   = `${AWDB_BASE}/data?stationTriplets=${stationId}&elements=${elements}&duration=DAILY&beginDate=${fmtD(start)}&endDate=${fmtD(end)}`;
+          const data    = await fetch(url).then(r => r.json());
+          const series  = data[0]?.data || [];
+
+          // NRCS omits heightDepth entirely for depth-less elements (WTEQ/SNWD), so it
+          // comes back as undefined, not null — normalize before comparing to our hd=null lookups.
+          const find = (code, hd) => series.find(s => s.stationElement.elementCode === code && (s.stationElement.heightDepth ?? null) === hd);
+          const labelsOf  = el => (el?.values || []).map(v => v.date);
+          const valuesOf  = el => (el?.values || []).map(v => v.value);
+          const base  = { backgroundColor:'transparent', borderWidth:2,   pointRadius:0, tension:0.3, spanGaps:true, yAxisID:'y' };
+          const tBase = { backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, tension:0.3, spanGaps:true, yAxisID:'yTemp', borderDash:[4,3] };
+
+          // Snowpack: SWE + snow depth, both already in inches
+          const wteq = find('WTEQ', null);
+          const snwd = find('SNWD', null);
+          const snowLabels = labelsOf(wteq).length ? labelsOf(wteq) : labelsOf(snwd);
+          const snowDatasets = [
+            wteq ? { backgroundColor:'transparent', borderWidth:2, pointRadius:0, tension:0.3, spanGaps:true, label:'SWE (in)', data:valuesOf(wteq), borderColor:'#00C5FF' } : null,
+            snwd ? { backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, tension:0.3, spanGaps:true, borderDash:[5,3], label:'Snow Depth (in)', data:valuesOf(snwd), borderColor:'#7DE0FF' } : null
+          ].filter(Boolean);
+
+          if (!snowDatasets.length) {
+            snowStatus.textContent = 'No snowpack data available for this site.';
+          } else {
+            snowStatus.textContent = '';
+            snowWrap.classList.remove('hidden');
+            buildSnowChart(snowLabels, snowDatasets);
+          }
+
+          // Soil moisture/temp: only present at SNOTEL sites with a soil sensor installed,
+          // built from this station's actual depths (1–5 depths seen across CO SNOTEL sites)
+          const vwcPalette = ['#32A5E2', '#2986B8', '#1C6F9C', '#164863', '#0B2E40'];
+          const tmpPalette = ['#D35400', '#B03A00', '#962F00', '#800B04', '#5C0703'];
+          const smLabels = depths.map(hd => labelsOf(find('SMS', hd))).find(l => l.length) || [];
+          const smDatasets = [
+            ...depths.map((hd, i) => {
+              const el = find('SMS', hd);
+              return el ? { ...base, label:`VWC ${Math.abs(hd)}"`, data:valuesOf(el), borderColor: vwcPalette[i % vwcPalette.length] } : null;
+            }),
+            ...depths.map((hd, i) => {
+              const el = find('STO', hd);
+              return el ? { ...tBase, label:`Temp ${Math.abs(hd)}"`, data:valuesOf(el), borderColor: tmpPalette[i % tmpPalette.length] } : null;
+            })
+          ].filter(Boolean);
+
+          if (!smDatasets.length) {
+            status.textContent = depths.length
+              ? 'Soil moisture sensor present but not currently reporting data.'
+              : 'No soil moisture sensor at this SNOTEL station.';
+          } else {
+            status.textContent = '';
+            wrap.classList.remove('hidden');
+            buildSmChart(smLabels, smDatasets, null);
+          }
+
+        } else if (network === 'RAWS') {
           // ── RAWS path: NIFC DATA4 endpoint, stationId is the NESS ID ─────────
           const now   = new Date();
           const start = new Date(now - span * 86400000);
@@ -1072,17 +1315,20 @@
       updateDepthNav();
     });
 
-    function showSite(soil, displayName, latlng, stationId) {
+    const NETWORK_BADGE_STYLE = {
+      CoAgMET: 'background:rgba(76,230,0,0.2);color:#2a7a00;',
+      RAWS:    'background:rgba(255,0,0,0.2);color:#990000;',
+      SNOTEL:  'background:rgba(0,197,255,0.2);color:#0077a3;'
+    };
+
+    function showSite(soil, displayName, latlng, stationId, meta) {
       currentSoil = soil;
       currentDepthIdx = 0;
-
-      const netColor = soil.network === 'CoAgMET'
-        ? 'background:rgba(76,230,0,0.2);color:#2a7a00;'
-        : 'background:rgba(255,0,0,0.2);color:#990000;';
 
       // Sidebar card
       document.getElementById('siteInfoName').textContent = displayName;
       document.getElementById('siteCharts').classList.remove('hidden');
+      document.getElementById('noLabNote').classList.add('hidden');
       document.getElementById('depthNav').classList.remove('hidden');
       updateDepthNav();
 
@@ -1092,8 +1338,12 @@
       document.getElementById('dataPanelTitle').textContent = displayName;
       document.getElementById('dataPanelSub').textContent =
         `${soil.depths.length} depth increments · 2025 sampling`;
-      document.getElementById('dataPanelNetwork').setAttribute('style', netColor);
+      document.getElementById('dataPanelNetwork').setAttribute('style', NETWORK_BADGE_STYLE[soil.network]);
       document.getElementById('dataPanelNetwork').textContent = soil.network;
+      document.getElementById('depthTableWrap').classList.remove('hidden');
+      document.getElementById('depthTableNote').classList.add('hidden');
+      document.getElementById('smSection').classList.remove('hidden');
+      setDataPanelMeta(meta);
 
       document.getElementById('depthTableBody').innerHTML = soil.depths.map(d => `
         <tr class="border-t border-gray-100 hover:bg-gray-50 transition-colors">
@@ -1114,6 +1364,69 @@
 
       panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       loadSoilMoisture(stationId, soil.depths, soil.network);
+    }
+
+    // ── SNOTEL site click: no lab sample, only live snowpack/soil sensor data ──
+    function showSnotelSite(station) {
+      currentSoil = null;
+      currentDepthIdx = 0;
+
+      // Sidebar card — no texture/pH, just a note that no lab sample exists
+      document.getElementById('siteInfoName').textContent = station.name;
+      document.getElementById('siteInfoDepthLabel').textContent =
+        `${Math.round(station.elevation)} ft · ${station.countyName} County`;
+      document.getElementById('siteCharts').classList.add('hidden');
+      document.getElementById('noLabNote').textContent = 'No lab soil sample available for SNOTEL sites — texture and pH are not measured here. See live sensor data in the panel below.';
+      document.getElementById('noLabNote').classList.remove('hidden');
+      document.getElementById('depthNav').classList.add('hidden');
+
+      // Data panel — elevation/county in place of the depth table, live charts below
+      const panel = document.getElementById('dataPanel');
+      panel.classList.remove('hidden');
+      document.getElementById('dataPanelTitle').textContent = station.name;
+      document.getElementById('dataPanelSub').textContent = `SNOTEL station ${station.stationTriplet}`;
+      document.getElementById('dataPanelNetwork').setAttribute('style', NETWORK_BADGE_STYLE.SNOTEL);
+      document.getElementById('dataPanelNetwork').textContent = 'SNOTEL';
+      document.getElementById('depthTableWrap').classList.add('hidden');
+      document.getElementById('depthTableNote').textContent = 'No lab soil sample for this SNOTEL station — live sensor data below.';
+      document.getElementById('depthTableNote').classList.remove('hidden');
+      document.getElementById('smSection').classList.remove('hidden');
+      setDataPanelMeta({
+        elevation: station.elevation,
+        place: station.countyName ? `${station.countyName} County` : null
+      });
+
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      loadSoilMoisture(station.stationTriplet, null, 'SNOTEL', station.smsDepths || []);
+    }
+
+    // ── Plain network-dot click (CoAgMET/RAWS site with no lab sample or sensor) ──
+    // Still surfaces whatever station metadata we have, instead of doing nothing.
+    function showNetworkOnlySite(network, displayName, meta) {
+      currentSoil = null;
+      currentDepthIdx = 0;
+
+      document.getElementById('siteInfoName').textContent = displayName;
+      document.getElementById('siteInfoDepthLabel').textContent = metaLineText(meta) || 'No additional data for this site.';
+      document.getElementById('siteCharts').classList.add('hidden');
+      document.getElementById('noLabNote').textContent = `No lab soil sample available for this ${network} site — texture and pH are not measured here.`;
+      document.getElementById('noLabNote').classList.remove('hidden');
+      document.getElementById('depthNav').classList.add('hidden');
+
+      const panel = document.getElementById('dataPanel');
+      panel.classList.remove('hidden');
+      document.getElementById('dataPanelTitle').textContent = displayName;
+      document.getElementById('dataPanelSub').textContent = `${network} station`;
+      document.getElementById('dataPanelNetwork').setAttribute('style', NETWORK_BADGE_STYLE[network]);
+      document.getElementById('dataPanelNetwork').textContent = network;
+      document.getElementById('depthTableWrap').classList.add('hidden');
+      document.getElementById('depthTableNote').textContent = `No lab soil sample or live sensor at this ${network} station.`;
+      document.getElementById('depthTableNote').classList.remove('hidden');
+      document.getElementById('smSection').classList.add('hidden');
+      document.getElementById('snowSection').classList.add('hidden');
+      setDataPanelMeta(meta);
+
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
   </script>
 </body>
