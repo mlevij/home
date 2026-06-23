@@ -99,25 +99,22 @@
       .main-flex { flex-direction: column; }
     }
 
-    /* Loading-message sweep: a bold overlay copy of the text, masked down to a
-       narrow band that slides left-to-right while any network is still loading. */
-    #stationCount { position: relative; display: inline-block; }
-    #stationCount.is-loading::after {
-      content: attr(data-label);
-      position: absolute;
-      inset: 0;
-      font-weight: 700;
-      color: inherit;
-      pointer-events: none;
-      -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 38%, black 48%, black 52%, transparent 62%, transparent 100%);
-              mask-image: linear-gradient(90deg, transparent 0%, transparent 38%, black 48%, black 52%, transparent 62%, transparent 100%);
-      -webkit-mask-size: 280% 100%;
-              mask-size: 280% 100%;
-      animation: stationCountSweep 1.6s linear infinite;
+    /* Loading-message sweep: a color highlight band slides left-to-right across just
+       the "Loading X data..." phrase. Single text layer (no duplicate bold overlay,
+       which ghosted since bold glyphs are wider than regular ones at the same size). */
+    .loading-sweep {
+      background-image: linear-gradient(90deg, #9ca3af 0%, #9ca3af 42%, #1f2937 50%, #9ca3af 58%, #9ca3af 100%);
+      background-size: 300% 100%;
+      background-position: 200% 0;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 600;
+      animation: loadingSweep 3.5s linear infinite;
     }
-    @keyframes stationCountSweep {
-      from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
-      to   { -webkit-mask-position: -180% 0; mask-position: -180% 0; }
+    @keyframes loadingSweep {
+      from { background-position: 200% 0; }
+      to   { background-position: -100% 0; }
     }
   </style>
 </head>
@@ -798,18 +795,22 @@
     function updateStationCountText() {
       const loadedParts  = Object.keys(stationCounts).map(k => `${stationCounts[k]} ${NETWORK_LABEL[k]}`);
       const pendingParts = [...pendingNetworks].map(k => NETWORK_LABEL[k]);
-
-      let text = loadedParts.join(' · ');
-      if (pendingParts.length) {
-        const loadingMsg = `Loading ${pendingParts.join(' and ')} data…`;
-        text = text ? `${text} · ${loadingMsg}` : loadingMsg;
-      } else if (text) {
-        text += ' stations';
-      }
       const el = document.getElementById('stationCount');
-      el.textContent = text || 'Loading…';
-      el.setAttribute('data-label', el.textContent);
-      el.classList.toggle('is-loading', pendingParts.length > 0);
+
+      if (pendingParts.length) {
+        // Only the "Loading X and Y data..." phrase gets the sweep — counts that have
+        // already loaded stay plain text so the animation doesn't run over the whole line.
+        const loadingMsg = `Loading ${pendingParts.join(' and ')} data…`;
+        const prefix = loadedParts.length ? `${loadedParts.join(' · ')} · ` : '';
+        el.textContent = '';
+        el.append(prefix);
+        const span = document.createElement('span');
+        span.className = 'loading-sweep';
+        span.textContent = loadingMsg;
+        el.append(span);
+      } else {
+        el.textContent = loadedParts.length ? `${loadedParts.join(' · ')} stations` : 'Loading…';
+      }
     }
 
     function coagmetMeta(s) {
