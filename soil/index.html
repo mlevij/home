@@ -98,6 +98,27 @@
       .sidebar { width: 100%; }
       .main-flex { flex-direction: column; }
     }
+
+    /* Loading-message sweep: a bold overlay copy of the text, masked down to a
+       narrow band that slides left-to-right while any network is still loading. */
+    #stationCount { position: relative; display: inline-block; }
+    #stationCount.is-loading::after {
+      content: attr(data-label);
+      position: absolute;
+      inset: 0;
+      font-weight: 700;
+      color: inherit;
+      pointer-events: none;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 38%, black 48%, black 52%, transparent 62%, transparent 100%);
+              mask-image: linear-gradient(90deg, transparent 0%, transparent 38%, black 48%, black 52%, transparent 62%, transparent 100%);
+      -webkit-mask-size: 280% 100%;
+              mask-size: 280% 100%;
+      animation: stationCountSweep 1.6s linear infinite;
+    }
+    @keyframes stationCountSweep {
+      from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+      to   { -webkit-mask-position: -180% 0; mask-position: -180% 0; }
+    }
   </style>
 </head>
 <body class="min-h-screen bg-gray-50">
@@ -785,7 +806,10 @@
       } else if (text) {
         text += ' stations';
       }
-      document.getElementById('stationCount').textContent = text || 'Loading…';
+      const el = document.getElementById('stationCount');
+      el.textContent = text || 'Loading…';
+      el.setAttribute('data-label', el.textContent);
+      el.classList.toggle('is-loading', pendingParts.length > 0);
     }
 
     function coagmetMeta(s) {
