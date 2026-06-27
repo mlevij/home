@@ -11,7 +11,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "1992-07-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 3600,
     "network": "Coag"
   },
@@ -27,7 +27,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "1992-03-17",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -43,7 +43,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "1992-06-04",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -59,7 +59,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "1997-02-24",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -75,7 +75,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "2010-10-12",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -139,7 +139,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "1992-01-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -155,7 +155,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2007-11-30",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -171,7 +171,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2015-05-08",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -187,7 +187,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2018-03-30",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -203,7 +203,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2019-07-25",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -235,7 +235,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2019-12-04",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -251,7 +251,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2014-07-25",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -267,7 +267,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2018-04-25",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -283,7 +283,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2010-11-30",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -299,7 +299,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2009-06-10",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -315,7 +315,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "1993-10-08",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -331,7 +331,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "2003-01-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -347,7 +347,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "1992-01-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -363,7 +363,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2022-02-04",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -379,7 +379,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2023-10-25",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -395,7 +395,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2023-05-18",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -427,7 +427,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2026-05-11",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -443,7 +443,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2018-05-30",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -459,7 +459,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "1992-10-28",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -475,7 +475,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2000-07-17",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -491,7 +491,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2019-11-19",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -507,7 +507,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2015-05-07",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -523,7 +523,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2005-12-19",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -539,7 +539,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "1996-02-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -587,7 +587,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2020-01-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -603,7 +603,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "1992-02-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -619,7 +619,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "1992-05-08",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -635,7 +635,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "1992-03-17",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -667,7 +667,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2005-03-17",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -683,7 +683,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2018-04-23",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -731,7 +731,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2007-11-30",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -747,7 +747,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2015-02-25",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -779,7 +779,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "2017-10-11",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -795,7 +795,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2009-06-10",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -811,7 +811,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "2001-09-27",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -827,7 +827,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2005-05-21",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -843,7 +843,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "2000-02-14",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -875,7 +875,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2019-03-19",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -907,7 +907,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "1997-03-27",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -923,7 +923,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2011-11-15",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -939,7 +939,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "1992-01-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -955,7 +955,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "1992-01-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -971,7 +971,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2018-04-20",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -987,7 +987,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "2024-04-04",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1019,7 +1019,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2012-01-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1035,7 +1035,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "2018-04-12",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1051,7 +1051,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "1996-05-13",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1067,7 +1067,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2018-04-30",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1083,7 +1083,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "1992-05-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1099,7 +1099,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "2015-01-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1115,7 +1115,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "1996-08-03",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1147,7 +1147,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2002-01-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1163,7 +1163,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2005-05-11",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1179,7 +1179,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2009-06-10",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1195,7 +1195,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2022-02-04",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1211,7 +1211,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "1992-03-04",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1227,7 +1227,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "2005-05-19",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1243,7 +1243,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2005-03-17",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1259,7 +1259,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2020-03-10",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1275,7 +1275,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "2012-02-10",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1291,7 +1291,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2005-03-17",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1323,7 +1323,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2010-10-29",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1339,7 +1339,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2015-02-24",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1355,7 +1355,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2024-06-05",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1371,7 +1371,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "2018-06-14",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1403,7 +1403,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "2019-09-25",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1419,7 +1419,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "1992-07-28",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1451,7 +1451,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2001-09-26",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1483,7 +1483,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2023-02-09",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1499,7 +1499,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2018-04-20",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1515,7 +1515,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "1992-03-17",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1531,7 +1531,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2022-03-31",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1563,7 +1563,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2010-10-13",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1579,7 +1579,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "1992-06-04",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1611,7 +1611,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2026-05-12",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1627,7 +1627,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2000-08-12",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1643,7 +1643,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2015-04-02",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1659,7 +1659,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2007-11-30",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1675,7 +1675,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2010-07-28",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1691,7 +1691,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2015-05-08",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1707,7 +1707,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2006-03-24",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1723,7 +1723,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2006-04-02",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1755,7 +1755,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "1997-12-31",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1819,7 +1819,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2010-08-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1835,7 +1835,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2005-04-13",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1883,7 +1883,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2012-04-11",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1931,7 +1931,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2015-04-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1947,7 +1947,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2025-10-09",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1963,7 +1963,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "1992-01-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1979,7 +1979,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2002-01-01",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 3600,
     "network": "Coag"
   },
@@ -2011,7 +2011,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "1996-05-08",
-    "lastObs": "2026-06-26",
+    "lastObs": "2026-06-27",
     "timestep": 300,
     "network": "Coag"
   }
