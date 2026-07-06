@@ -661,7 +661,11 @@
     const rawsLayer    = L.layerGroup().addTo(map);
     const snotelLayer  = L.layerGroup().addTo(map);
     const soilLayer    = L.layerGroup().addTo(map);
-    const zentraLayer  = L.layerGroup().addTo(map);
+    // CO Soil Health markers aren't put in a LayerGroup -- Leaflet's LayerGroup
+    // doesn't reference-count, so a marker shared between two groups gets
+    // stripped from the map when EITHER group is removed, not just when both
+    // are. Managed directly instead; see updateZentraVisibility().
+    const zentraMarkers = [];
 
     // Shared marker factory
     function circ(latlng, color, radius, opacity, weight) {
@@ -879,11 +883,26 @@
           iconSize: [10, 10], iconAnchor: [5, 5]
         })})
           .bindTooltip(`● ${site.name} (soil monitored)`, { direction:'top', sticky:true })
-          .on('click', () => { selectSMMMarker(zm); showZentraSite(site); })
-          .addTo(zentraLayer);
+          .on('click', () => { selectSMMMarker(zm); showZentraSite(site); });
+        zentraMarkers.push(zm);
       });
+      updateZentraVisibility(); // apply current toggle states -- markers start with no map membership at all
       stationCounts.zentra = ZENTRA_SITES.length;
       updateStationCountText();
+    }
+
+    // Visible if EITHER "CO Soil Health" or "Soil Moisture / Monitoring Sites" is
+    // on; hidden only when both are off -- matches how the other three networks'
+    // SMM markers behave (immune to their own network toggle), but CO Soil
+    // Health additionally gets its own independent show-control since every one
+    // of its sites is inherently soil-monitored.
+    function updateZentraVisibility() {
+      const visible = document.getElementById('btn-soil').classList.contains('on')
+                   || document.getElementById('btn-zentra').classList.contains('on');
+      zentraMarkers.forEach(m => {
+        if (visible && !map.hasLayer(m)) map.addLayer(m);
+        else if (!visible && map.hasLayer(m)) map.removeLayer(m);
+      });
     }
 
     // ── Load RAWS network (live from NIFC API, Colorado active stations) ─────
@@ -1002,19 +1021,12 @@
       });
     });
 
-    // CO Soil Health sites are inherently "soil monitored" (100% of them, unlike
-    // CoAgMET/RAWS where only some stations qualify) -- their layer should only be
-    // visible when BOTH its own toggle AND "Soil Moisture / Monitoring Sites" are on
-    function updateZentraLayerVisibility() {
-      const bothOn = document.getElementById('btn-soil').classList.contains('on')
-                  && document.getElementById('btn-zentra').classList.contains('on');
-      bothOn ? map.addLayer(zentraLayer) : map.removeLayer(zentraLayer);
-    }
+    // btn-soil also feeds CO Soil Health's independent OR-logic (see updateZentraVisibility)
+    document.getElementById('btn-soil').addEventListener('click', updateZentraVisibility);
     document.getElementById('btn-zentra').addEventListener('click', function() {
       this.classList.toggle('on');
-      updateZentraLayerVisibility();
+      updateZentraVisibility();
     });
-    document.getElementById('btn-soil').addEventListener('click', updateZentraLayerVisibility);
 
     // ── Site info display ────────────────────────────────────────────────────
     let selectedSMMMarker = null;
