@@ -186,7 +186,10 @@
 
             <label class="flex items-center gap-3 cursor-pointer select-none">
               <button class="toggle-btn on gold self-center" id="btn-soil"></button>
-              <span class="text-xs uppercase tracking-wide text-gray-400 leading-tight">Soil Moisture<br>Monitoring Sites</span>
+              <span class="flex flex-col">
+                <span class="text-xs uppercase tracking-wide text-gray-400 leading-tight">Soil Moisture<br>Monitoring Sites</span>
+                <span class="text-[10px] text-gray-400" id="smmCount"></span>
+              </span>
             </label>
           </div>
 
@@ -826,6 +829,11 @@
       } else {
         el.textContent = loadedParts.length ? `${loadedParts.join(' · ')} stations` : 'Loading…';
       }
+
+      // Every SMM marker across all networks ends up on soilLayer, so its current
+      // size is always the correct live total -- no separate tally to keep in sync.
+      const smmCount = soilLayer.getLayers().length;
+      document.getElementById('smmCount').textContent = smmCount ? `${smmCount} sites` : '';
     }
 
     function coagmetMeta(s) {
