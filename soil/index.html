@@ -37,6 +37,7 @@
     .toggle-btn.on.green { background: rgba(76,230,0,0.5); }
     .toggle-btn.on.teal { background: #00C5FF; }
     .toggle-btn.on.gold  { background: #C8C372; }
+    .toggle-btn.on.purple { background: rgba(155,89,182,0.5); }
     .toggle-btn::after {
       content: ''; position: absolute; left: 2px; top: 2px;
       width: 16px; height: 16px; border-radius: 50%; background: white;
@@ -173,6 +174,12 @@
               <button class="toggle-btn on teal" id="btn-snotel"></button>
               <span class="w-3 h-3 rounded-full flex-shrink-0 opacity-50" style="background:#00C5FF;"></span>
               <span class="text-sm text-gray-700">SNOTEL</span>
+            </label>
+
+            <label class="flex items-center gap-3 cursor-pointer select-none">
+              <button class="toggle-btn on purple" id="btn-zentra"></button>
+              <span class="w-3 h-3 rounded-full flex-shrink-0 opacity-50" style="background:#9B59B6;"></span>
+              <span class="text-sm text-gray-700">CO Soil Health</span>
             </label>
 
             <div class="h-px bg-gray-100 my-2"></div>
@@ -635,6 +642,13 @@
         {d:'12-20"',silt:32,  sand:26,  clay:42,  tex:'Clay',          pH:7.3, ec:2.6, n:null, c:null,cn:null, wp:25,srFC:38,sat:57,bagFC:34.5}]},
     };
 
+    // ── ZENTRA sites (live sensor only, no lab soil sample yet) ──────────────
+    // key must match soil_zentra.json's top-level keys. Elevation converted m->ft.
+    const ZENTRA_SITES = [
+      { key: 'ecrc',       name: 'ECRC',       lat: 40.404053,  lon: -103.1796282, elevation: 4311 },
+      { key: 'rp-pasture', name: 'RP-Pasture', lat: 40.5127717, lon: -102.6115333, elevation: 4071 },
+    ];
+
     // ── Leaflet map ──────────────────────────────────────────────────────────
     const map = L.map('map', { center: [39.0, -105.5], zoom: 7, maxZoom: 13 });
 
@@ -647,6 +661,7 @@
     const rawsLayer    = L.layerGroup().addTo(map);
     const snotelLayer  = L.layerGroup().addTo(map);
     const soilLayer    = L.layerGroup().addTo(map);
+    const zentraLayer  = L.layerGroup().addTo(map);
 
     // Shared marker factory
     function circ(latlng, color, radius, opacity, weight) {
@@ -789,8 +804,8 @@
 
     // ── Station count label (loaders run concurrently, so track counts in state) ──
     const stationCounts = {};
-    const pendingNetworks = new Set(['raws', 'snotel']); // CoAgMET loads synchronously, never "pending"
-    const NETWORK_LABEL = { coagmet: 'CoAgMET', raws: 'RAWS', snotel: 'SNOTEL' };
+    const pendingNetworks = new Set(['raws', 'snotel']); // CoAgMET/ZENTRA load synchronously, never "pending"
+    const NETWORK_LABEL = { coagmet: 'CoAgMET', raws: 'RAWS', snotel: 'SNOTEL', zentra: 'ZENTRA' };
 
     function updateStationCountText() {
       const loadedParts  = Object.keys(stationCounts).map(k => `${stationCounts[k]} ${NETWORK_LABEL[k]}`);
@@ -853,6 +868,22 @@
       fetch('/soil/coagmet-metadata.json').then(r => r.json()).then(meta => {
         COAGMET_NETWORK.forEach(s => { s.meta = meta[s.id.toLowerCase()] || null; });
       }).catch(e => console.warn('CoAgMET metadata unavailable:', e));
+    }
+
+    // ── Load ZENTRA sites (static list, no lab soil sample yet — live sensor only) ──
+    function loadZentraSites() {
+      ZENTRA_SITES.forEach(site => {
+        const zm = L.marker([site.lat, site.lon], { icon: L.divIcon({
+          className: 'smm-dot',
+          html: '<div style="width:10px;height:10px;border-radius:50%;background:#9B59B6;box-shadow:0 0 2px 1px #9B59B6;"></div>',
+          iconSize: [10, 10], iconAnchor: [5, 5]
+        })})
+          .bindTooltip(`● ${site.name} (soil monitored)`, { direction:'top', sticky:true })
+          .on('click', () => { selectSMMMarker(zm); showZentraSite(site); })
+          .addTo(zentraLayer);
+      });
+      stationCounts.zentra = ZENTRA_SITES.length;
+      updateStationCountText();
     }
 
     // ── Load RAWS network (live from NIFC API, Colorado active stations) ─────
@@ -961,9 +992,10 @@
     loadCoAgMET();
     loadRAWS();
     loadSNOTEL();
+    loadZentraSites();
 
     // ── Layer toggles ────────────────────────────────────────────────────────
-    [['btn-coagmet', coagmetLayer], ['btn-raws', rawsLayer], ['btn-snotel', snotelLayer], ['btn-soil', soilLayer]].forEach(([id, layer]) => {
+    [['btn-coagmet', coagmetLayer], ['btn-raws', rawsLayer], ['btn-snotel', snotelLayer], ['btn-soil', soilLayer], ['btn-zentra', zentraLayer]].forEach(([id, layer]) => {
       document.getElementById(id).addEventListener('click', function() {
         this.classList.toggle('on');
         this.classList.contains('on') ? map.addLayer(layer) : map.removeLayer(layer);
@@ -1264,6 +1296,39 @@
           status.textContent = '';
           wrap.classList.remove('hidden');
           buildSmChart(labels, datasets, depths);
+
+        } else if (network === 'Zentra') {
+          // ── ZENTRA path: local JSON built by the fetch/aggregate pipeline in
+          // the separate Zentra repo, committed via its own GitHub Action ──────
+          const data = await fetch(`/soil/soil_zentra.json`).then(r => r.json());
+          const st   = data[stationId];
+
+          if (!st || !st.time || !st.time.length) {
+            status.textContent = 'No live soil moisture data available for this site.';
+            return;
+          }
+
+          const labels = st.time;
+          const base  = { backgroundColor:'transparent', borderWidth:2,   pointRadius:0, tension:0.3, spanGaps:true, yAxisID:'y' };
+          const tBase = { backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, tension:0.3, spanGaps:true, yAxisID:'yTemp', borderDash:[4,3] };
+          // Same 2"/8"/20" depths as RAWS -- reusing its color convention for consistency
+          const datasets = [
+            { ...base,  label:'VWC 2"',   data:st.vwc2  || [], borderColor:'#32A5E2' },
+            { ...base,  label:'VWC 8"',   data:st.vwc8  || [], borderColor:'#2986B8', borderDash:[5,3] },
+            { ...base,  label:'VWC 20"',  data:st.vwc20 || [], borderColor:'#164863' },
+            { ...tBase, label:'Temp 2"',  data:st.temp2  || [], borderColor:'#D35400' },
+            { ...tBase, label:'Temp 8"',  data:st.temp8  || [], borderColor:'#B03A00' },
+            { ...tBase, label:'Temp 20"', data:st.temp20 || [], borderColor:'#800B04' }
+          ].filter(ds => ds.data.length && !ds.data.every(v => v == null));
+
+          if (!datasets.length) {
+            status.textContent = 'No soil moisture data available for this site.';
+            return;
+          }
+
+          status.textContent = '';
+          wrap.classList.remove('hidden');
+          buildSmChart(labels, datasets, depths);
         }
       } catch(e) {
         status.textContent = 'Could not load soil moisture data.';
@@ -1343,7 +1408,8 @@
     const NETWORK_BADGE_STYLE = {
       CoAgMET: 'background:rgba(76,230,0,0.2);color:#2a7a00;',
       RAWS:    'background:rgba(255,0,0,0.2);color:#990000;',
-      SNOTEL:  'background:rgba(0,197,255,0.2);color:#0077a3;'
+      SNOTEL:  'background:rgba(0,197,255,0.2);color:#0077a3;',
+      Zentra:  'background:rgba(155,89,182,0.2);color:#6c3483;'
     };
 
     function showSite(soil, displayName, latlng, stationId, meta) {
@@ -1423,6 +1489,35 @@
 
       panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       loadSoilMoisture(station.stationTriplet, null, 'SNOTEL', station.smsDepths || []);
+    }
+
+    function showZentraSite(site) {
+      currentSoil = null;
+      currentDepthIdx = 0;
+
+      // Sidebar card — no texture/pH, just a note that no lab sample exists yet
+      document.getElementById('siteInfoName').textContent = site.name;
+      document.getElementById('siteInfoDepthLabel').textContent = `${Math.round(site.elevation)} ft`;
+      document.getElementById('siteCharts').classList.add('hidden');
+      document.getElementById('noLabNote').textContent = 'No lab soil sample available yet for this ZENTRA site — see live sensor data in the panel below.';
+      document.getElementById('noLabNote').classList.remove('hidden');
+      document.getElementById('depthNav').classList.add('hidden');
+
+      // Data panel — elevation in place of the depth table, live charts below
+      const panel = document.getElementById('dataPanel');
+      panel.classList.remove('hidden');
+      document.getElementById('dataPanelTitle').textContent = site.name;
+      document.getElementById('dataPanelSub').textContent = 'ZENTRA sensor site';
+      document.getElementById('dataPanelNetwork').setAttribute('style', NETWORK_BADGE_STYLE.Zentra);
+      document.getElementById('dataPanelNetwork').textContent = 'ZENTRA';
+      document.getElementById('depthTableWrap').classList.add('hidden');
+      document.getElementById('depthTableNote').textContent = 'No lab soil sample for this ZENTRA site — live sensor data below.';
+      document.getElementById('depthTableNote').classList.remove('hidden');
+      document.getElementById('smSection').classList.remove('hidden');
+      setDataPanelMeta({ elevation: site.elevation });
+
+      panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      loadSoilMoisture(site.key, null, 'Zentra');
     }
 
     // ── Plain network-dot click (CoAgMET/RAWS site with no lab sample or sensor) ──
