@@ -661,11 +661,7 @@
     const rawsLayer    = L.layerGroup().addTo(map);
     const snotelLayer  = L.layerGroup().addTo(map);
     const soilLayer    = L.layerGroup().addTo(map);
-    // CO Soil Health markers aren't put in a LayerGroup -- Leaflet's LayerGroup
-    // doesn't reference-count, so a marker shared between two groups gets
-    // stripped from the map when EITHER group is removed, not just when both
-    // are. Managed directly instead; see updateZentraVisibility().
-    const zentraMarkers = [];
+    const zentraLayer  = L.layerGroup().addTo(map);
 
     // Shared marker factory
     function circ(latlng, color, radius, opacity, weight) {
@@ -875,34 +871,30 @@
     }
 
     // ── Load ZENTRA sites (static list, no lab soil sample yet — live sensor only) ──
+    // Two markers per site, exactly like CoAgMET/RAWS: a subdued "plain dot" (on
+    // zentraLayer, controlled only by its own toggle -- same look as every station
+    // in those networks) plus a brighter glowing marker (on soilLayer, controlled
+    // only by "Soil Moisture / Monitoring Sites"). Since every CO Soil Health site
+    // is inherently soil-monitored, both markers sit at the same point; the subdued
+    // one is what's left showing when SMM is off but the network itself is on.
     function loadZentraSites() {
       ZENTRA_SITES.forEach(site => {
+        const cn = circ([site.lat, site.lon], '#9B59B6', 5, 0.55, 1)
+          .bindTooltip(site.name, { direction:'top', sticky:true })
+          .on('click', () => { selectNetMarker(cn, '#9B59B6'); showZentraSite(site); })
+          .addTo(zentraLayer);
+
         const zm = L.marker([site.lat, site.lon], { icon: L.divIcon({
           className: 'smm-dot',
           html: '<div style="width:10px;height:10px;border-radius:50%;background:#9B59B6;box-shadow:0 0 2px 1px #9B59B6;"></div>',
           iconSize: [10, 10], iconAnchor: [5, 5]
         })})
           .bindTooltip(`● ${site.name} (soil monitored)`, { direction:'top', sticky:true })
-          .on('click', () => { selectSMMMarker(zm); showZentraSite(site); });
-        zentraMarkers.push(zm);
+          .on('click', () => { selectSMMMarker(zm); showZentraSite(site); })
+          .addTo(soilLayer);
       });
-      updateZentraVisibility(); // apply current toggle states -- markers start with no map membership at all
       stationCounts.zentra = ZENTRA_SITES.length;
       updateStationCountText();
-    }
-
-    // Visible if EITHER "CO Soil Health" or "Soil Moisture / Monitoring Sites" is
-    // on; hidden only when both are off -- matches how the other three networks'
-    // SMM markers behave (immune to their own network toggle), but CO Soil
-    // Health additionally gets its own independent show-control since every one
-    // of its sites is inherently soil-monitored.
-    function updateZentraVisibility() {
-      const visible = document.getElementById('btn-soil').classList.contains('on')
-                   || document.getElementById('btn-zentra').classList.contains('on');
-      zentraMarkers.forEach(m => {
-        if (visible && !map.hasLayer(m)) map.addLayer(m);
-        else if (!visible && map.hasLayer(m)) map.removeLayer(m);
-      });
     }
 
     // ── Load RAWS network (live from NIFC API, Colorado active stations) ─────
@@ -1014,18 +1006,11 @@
     loadZentraSites();
 
     // ── Layer toggles ────────────────────────────────────────────────────────
-    [['btn-coagmet', coagmetLayer], ['btn-raws', rawsLayer], ['btn-snotel', snotelLayer], ['btn-soil', soilLayer]].forEach(([id, layer]) => {
+    [['btn-coagmet', coagmetLayer], ['btn-raws', rawsLayer], ['btn-snotel', snotelLayer], ['btn-soil', soilLayer], ['btn-zentra', zentraLayer]].forEach(([id, layer]) => {
       document.getElementById(id).addEventListener('click', function() {
         this.classList.toggle('on');
         this.classList.contains('on') ? map.addLayer(layer) : map.removeLayer(layer);
       });
-    });
-
-    // btn-soil also feeds CO Soil Health's independent OR-logic (see updateZentraVisibility)
-    document.getElementById('btn-soil').addEventListener('click', updateZentraVisibility);
-    document.getElementById('btn-zentra').addEventListener('click', function() {
-      this.classList.toggle('on');
-      updateZentraVisibility();
     });
 
     // ── Site info display ────────────────────────────────────────────────────
