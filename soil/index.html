@@ -1308,17 +1308,22 @@
             return;
           }
 
-          const labels = st.time;
+          // ZENTRA readings are hourly -- slice to the selected day-span rather than
+          // showing the full accumulated history every time (labels/data are ascending,
+          // oldest-first, so the most recent `span` days are the last span*24 entries)
+          const sliceLen = span * 24;
+          const labels = st.time.slice(-sliceLen);
+          const slice  = arr => (arr || []).slice(-sliceLen);
           const base  = { backgroundColor:'transparent', borderWidth:2,   pointRadius:0, tension:0.3, spanGaps:true, yAxisID:'y' };
           const tBase = { backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, tension:0.3, spanGaps:true, yAxisID:'yTemp', borderDash:[4,3] };
           // Same 2"/8"/20" depths as RAWS -- reusing its color convention for consistency
           const datasets = [
-            { ...base,  label:'VWC 2"',   data:st.vwc2  || [], borderColor:'#32A5E2' },
-            { ...base,  label:'VWC 8"',   data:st.vwc8  || [], borderColor:'#2986B8', borderDash:[5,3] },
-            { ...base,  label:'VWC 20"',  data:st.vwc20 || [], borderColor:'#164863' },
-            { ...tBase, label:'Temp 2"',  data:st.temp2  || [], borderColor:'#D35400' },
-            { ...tBase, label:'Temp 8"',  data:st.temp8  || [], borderColor:'#B03A00' },
-            { ...tBase, label:'Temp 20"', data:st.temp20 || [], borderColor:'#800B04' }
+            { ...base,  label:'VWC 2"',   data:slice(st.vwc2),   borderColor:'#32A5E2' },
+            { ...base,  label:'VWC 8"',   data:slice(st.vwc8),   borderColor:'#2986B8', borderDash:[5,3] },
+            { ...base,  label:'VWC 20"',  data:slice(st.vwc20),  borderColor:'#164863' },
+            { ...tBase, label:'Temp 2"',  data:slice(st.temp2),  borderColor:'#D35400' },
+            { ...tBase, label:'Temp 8"',  data:slice(st.temp8),  borderColor:'#B03A00' },
+            { ...tBase, label:'Temp 20"', data:slice(st.temp20), borderColor:'#800B04' }
           ].filter(ds => ds.data.length && !ds.data.every(v => v == null));
 
           if (!datasets.length) {
