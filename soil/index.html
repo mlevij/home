@@ -805,7 +805,7 @@
     // ── Station count label (loaders run concurrently, so track counts in state) ──
     const stationCounts = {};
     const pendingNetworks = new Set(['raws', 'snotel']); // CoAgMET/ZENTRA load synchronously, never "pending"
-    const NETWORK_LABEL = { coagmet: 'CoAgMET', raws: 'RAWS', snotel: 'SNOTEL', zentra: 'ZENTRA' };
+    const NETWORK_LABEL = { coagmet: 'CoAgMET', raws: 'RAWS', snotel: 'SNOTEL', zentra: 'CO Soil Health' };
 
     function updateStationCountText() {
       const loadedParts  = Object.keys(stationCounts).map(k => `${stationCounts[k]} ${NETWORK_LABEL[k]}`);
@@ -995,12 +995,26 @@
     loadZentraSites();
 
     // ── Layer toggles ────────────────────────────────────────────────────────
-    [['btn-coagmet', coagmetLayer], ['btn-raws', rawsLayer], ['btn-snotel', snotelLayer], ['btn-soil', soilLayer], ['btn-zentra', zentraLayer]].forEach(([id, layer]) => {
+    [['btn-coagmet', coagmetLayer], ['btn-raws', rawsLayer], ['btn-snotel', snotelLayer], ['btn-soil', soilLayer]].forEach(([id, layer]) => {
       document.getElementById(id).addEventListener('click', function() {
         this.classList.toggle('on');
         this.classList.contains('on') ? map.addLayer(layer) : map.removeLayer(layer);
       });
     });
+
+    // CO Soil Health sites are inherently "soil monitored" (100% of them, unlike
+    // CoAgMET/RAWS where only some stations qualify) -- their layer should only be
+    // visible when BOTH its own toggle AND "Soil Moisture / Monitoring Sites" are on
+    function updateZentraLayerVisibility() {
+      const bothOn = document.getElementById('btn-soil').classList.contains('on')
+                  && document.getElementById('btn-zentra').classList.contains('on');
+      bothOn ? map.addLayer(zentraLayer) : map.removeLayer(zentraLayer);
+    }
+    document.getElementById('btn-zentra').addEventListener('click', function() {
+      this.classList.toggle('on');
+      updateZentraLayerVisibility();
+    });
+    document.getElementById('btn-soil').addEventListener('click', updateZentraLayerVisibility);
 
     // ── Site info display ────────────────────────────────────────────────────
     let selectedSMMMarker = null;
@@ -1504,7 +1518,7 @@
       document.getElementById('siteInfoName').textContent = site.name;
       document.getElementById('siteInfoDepthLabel').textContent = `${Math.round(site.elevation)} ft`;
       document.getElementById('siteCharts').classList.add('hidden');
-      document.getElementById('noLabNote').textContent = 'No lab soil sample available yet for this ZENTRA site — see live sensor data in the panel below.';
+      document.getElementById('noLabNote').textContent = 'No lab soil sample available yet for this CO Soil Health site — see live sensor data in the panel below.';
       document.getElementById('noLabNote').classList.remove('hidden');
       document.getElementById('depthNav').classList.add('hidden');
 
@@ -1512,11 +1526,11 @@
       const panel = document.getElementById('dataPanel');
       panel.classList.remove('hidden');
       document.getElementById('dataPanelTitle').textContent = site.name;
-      document.getElementById('dataPanelSub').textContent = 'ZENTRA sensor site';
+      document.getElementById('dataPanelSub').textContent = 'CO Soil Health site';
       document.getElementById('dataPanelNetwork').setAttribute('style', NETWORK_BADGE_STYLE.Zentra);
-      document.getElementById('dataPanelNetwork').textContent = 'ZENTRA';
+      document.getElementById('dataPanelNetwork').textContent = 'CO Soil Health';
       document.getElementById('depthTableWrap').classList.add('hidden');
-      document.getElementById('depthTableNote').textContent = 'No lab soil sample for this ZENTRA site — live sensor data below.';
+      document.getElementById('depthTableNote').textContent = 'No lab soil sample for this CO Soil Health site — live sensor data below.';
       document.getElementById('depthTableNote').classList.remove('hidden');
       document.getElementById('smSection').classList.remove('hidden');
       setDataPanelMeta({ elevation: site.elevation });
