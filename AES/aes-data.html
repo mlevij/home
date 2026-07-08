@@ -37,6 +37,7 @@
     .active-station { color:#1E4D2B !important; text-decoration: underline; }
     .mini-map { height: 700px; width: 100%; border-radius: 0rem; overflow: hidden; }
     .esri-popup__main-container {
+      min-width: 420px !important;
       max-width: 560px !important;
       min-height: 480px !important;
       max-height: 640px !important;
@@ -97,16 +98,17 @@
     }
 
     /* ── OM gauge ── */
-    .om-gauge { position: relative; width: 220px; height: 130px; margin: 0 auto; }
+    .om-gauge { position: relative; max-width: 220px; width: 100%; margin: 0 auto; }
     .om-gauge-wrap { align-self: flex-end; }
-    .om-gauge svg { overflow: visible; }
+    .om-gauge svg { overflow: visible; width: 100%; height: auto; }
     .om-gauge-value {
       position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%);
       font-size: 1.6rem; font-weight: 700; color: #1f2937;
     }
     .om-gauge-unit { font-size: 0.8rem; font-weight: 400; color: #6b7280; }
     .om-needle {
-      transform-origin: 110px 110px;
+      transform-box: fill-box;
+      transform-origin: 50% 94.4%;
       transition: transform 0.9s cubic-bezier(.4,0,.2,1);
     }
     .om-gauge-wrap:hover .om-gauge-tooltip { opacity: 0; }
@@ -114,7 +116,7 @@
       text-align: center; font-size: 0.7rem; color: #6b7280;
       margin-top: 4px; opacity: 0; transition: opacity 0.2s;
     }
-    .om-gauge-labels { display: flex; justify-content: space-between; font-size: 0.65rem; color: #9ca3af; width: 220px; margin: 0 auto; }
+    .om-gauge-labels { display: flex; justify-content: space-between; font-size: 0.65rem; color: #9ca3af; max-width: 220px; width: 100%; margin: 0 auto; }
 
     /* ── Legend slide ── */
     .map-and-legend { display: flex; overflow: hidden; }
@@ -212,7 +214,7 @@
     </div>
   </header>
 
-  <main class="container mx-auto px-4 py-6">
+  <main class="px-6 py-6">
     <div class="flex gap-6">
       <!-- Sidebar -->
       <aside class="sidebar">
@@ -341,7 +343,7 @@
           </div>
 
           <div class="card p-5" data-aos="fade-up">
-            <h3 class="text-lg font-semibold mb-3">pH (min) and OM %</h3>
+            <h3 class="text-lg font-semibold mb-3">Min pH and OM % (All Depths)</h3>
             <div class="flex flex-col sm:flex-row items-center justify-around gap-6" style="min-height:280px;">
               <div id="phScaleHostAD"></div>
               <div id="omGaugeHostAD" class="om-gauge-wrap flex flex-col items-center justify-center"></div>
@@ -605,22 +607,27 @@
       leftCol.style.cssText = 'flex:0 0 110px;';
 
       const profile = soilProfiles && mukey != null ? soilProfiles[String(mukey)] : null;
-      const allHorizons = profile?.horizons?.length ? profile.horizons : null;
-      const dominantCokey = allHorizons?.[0]?.cokey;
-      const horizons = allHorizons ? allHorizons.filter(h => h.cokey === dominantCokey) : null;
+      console.log('[soil profile] mukey:', mukey, '| soilProfiles loaded:', !!soilProfiles, '| key count:', soilProfiles ? Object.keys(soilProfiles).length : 0, '| has_497688:', soilProfiles ? ('497688' in soilProfiles) : false, '| profile found:', !!profile);
 
-      if (horizons) {
+      // Render horizon SVG from an array of {hzname, hzdept_r, hzdepb_r, soil_color}.
+      // forceGray=true ignores soil_color entirely -- used for SSURGO, whose horizons
+      // have no color data of their own (soil_color there is borrowed from the OSD
+      // type-location pedon by depth overlap, which NRCS staff flagged as misleading
+      // since a SSURGO component is an aggregate, not the same pedon as the OSD).
+      function renderProfileSVG(horizons, forceGray = false) {
         const maxDepth = Math.max(...horizons.map(h => h.hzdepb_r || 0)) || 200;
         const svgH = 300;
-        const scale = svgH / maxDepth;
+        const topPad = 6; // room for the "0" depth label's ascender, otherwise clipped at the SVG's own top edge
+        const scale = (svgH - topPad) / maxDepth;
         const barX = 35, barW = 38;
-
         let svgContent = '';
         horizons.forEach(h => {
-          const y1 = (h.hzdept_r || 0) * scale;
-          const y2 = (h.hzdepb_r || 0) * scale;
+          const y1 = topPad + (h.hzdept_r || 0) * scale;
+          const y2 = topPad + (h.hzdepb_r || 0) * scale;
           const bh = Math.max(y2 - y1, 1);
-          const color = h.soil_color || '#808080';
+          // Strip alpha channel — SVG fill doesn't support 8-char #RRGGBBAA hex
+          const rawColor = forceGray ? '#808080' : (h.soil_color || '#808080');
+          const color = rawColor.length === 9 ? rawColor.slice(0, 7) : rawColor;
           const midY = y1 + bh / 2;
           svgContent += `<rect x="${barX}" y="${y1.toFixed(1)}" width="${barW}" height="${bh.toFixed(1)}" fill="${color}" stroke="#fff" stroke-width="0.5"/>`;
           svgContent += `<text x="${barX - 3}" y="${(midY + 4).toFixed(1)}" text-anchor="end" font-size="9" fill="#374151" font-family="sans-serif">${h.hzname || ''}</text>`;
@@ -628,20 +635,60 @@
           svgContent += `<text x="${barX + barW + 6}" y="${(y1 + 4).toFixed(1)}" text-anchor="start" font-size="8" fill="#9ca3af" font-family="sans-serif">${h.hzdept_r}</text>`;
         });
         const last = horizons[horizons.length - 1];
-        const yBottom = ((last.hzdepb_r || 0) * scale).toFixed(1);
+        const yBottom = (topPad + (last.hzdepb_r || 0) * scale).toFixed(1);
         svgContent += `<line x1="${barX + barW}" y1="${yBottom}" x2="${barX + barW + 4}" y2="${yBottom}" stroke="#9ca3af" stroke-width="0.5"/>`;
         svgContent += `<text x="${barX + barW + 6}" y="${(parseFloat(yBottom) + 4).toFixed(1)}" text-anchor="start" font-size="8" fill="#9ca3af" font-family="sans-serif">${last.hzdepb_r}</text>`;
+        return `<svg width="110" height="${svgH}" style="overflow:visible;display:block;">${svgContent}</svg>`;
+      }
 
+      if (profile) {
+        const compLabel = profile.compname
+          ? `${profile.compname}${profile.comppct_r != null ? ` (${profile.comppct_r}%)` : ''}`
+          : '';
+
+        const useOSD = profile.has_osd && profile.osd?.length;
+        const hasSsurgo = profile.ssurgo?.length;
+        const osdSVG = useOSD ? renderProfileSVG(profile.osd) : '';
+        const ssurgoSVG = hasSsurgo ? renderProfileSVG(profile.ssurgo, true) : '';
         leftCol.innerHTML = `
-          <div style="font-size:11px;font-weight:600;color:#374151;margin-bottom:4px;">Soil Profile</div>
-          <svg width="110" height="${svgH}" style="overflow:visible;display:block;">${svgContent}</svg>
-          <div style="font-size:9px;color:#9ca3af;margin-top:2px;text-align:center;">depth (cm)</div>
+          <div id="prof-title-${mukey}" style="font-size:11px;font-weight:600;color:#374151;margin-bottom:2px;">${useOSD ? 'OSD' : hasSsurgo ? 'SSURGO' : ''} Soil Profile</div>
+          ${compLabel ? `<div style="font-size:9px;color:#6b7280;margin-bottom:3px;">${compLabel}</div>` : ''}
+          ${useOSD && hasSsurgo ? `
+            <div style="overflow:hidden;perspective:400px;perspective-origin:50% 0%;width:110px;height:375px;">
+              <div id="prof-${mukey}" style="position:relative;transform-style:preserve-3d;transition:transform 0.5s ease;width:110px;height:320px;">
+                <div style="position:absolute;width:110px;height:320px;top:0;background:white;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(55px);">
+                  ${osdSVG}
+                  <div style="font-size:9px;color:#9ca3af;margin-top:2px;text-align:center;">depth (cm)</div>
+                </div>
+                <div style="position:absolute;width:110px;height:320px;top:0;background:white;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(90deg) translateZ(55px);">
+                  ${ssurgoSVG}
+                  <div style="font-size:9px;color:#9ca3af;margin-top:2px;text-align:center;">depth (cm)</div>
+                </div>
+              </div>
+            </div>
+            <div style="text-align:center;margin-top:4px;">
+              <button data-showing="osd"
+                onclick="(function(b){var s=document.getElementById('prof-${mukey}');var t=document.getElementById('prof-title-${mukey}');var a=b.querySelector('.prof-arrow');var l=b.querySelector('.prof-label');if(b.dataset.showing==='osd'){s.style.transform='rotateY(-90deg)';a.style.transform='rotate(90deg)';a.style.order='-1';l.textContent='OSD';t.textContent='SSURGO Soil Profile';b.dataset.showing='ssurgo';}else{s.style.transform='rotateY(0deg)';a.style.transform='rotate(-90deg)';a.style.order='1';l.textContent='SSURGO';t.textContent='OSD Soil Profile';b.dataset.showing='osd';}})(this)"
+                style="font-size:10px;color:#1E4D2B;background:none;border:none;padding:0;cursor:pointer;text-decoration:underline;display:inline-flex;align-items:center;gap:3px;">
+                <span class="prof-label">SSURGO</span><svg class="prof-arrow" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;transform:rotate(-90deg);flex-shrink:0;order:1;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+            </div>
+          ` : useOSD ? `
+            ${osdSVG}
+            <div style="font-size:9px;color:#9ca3af;margin-top:2px;text-align:center;">depth (cm)</div>
+          ` : hasSsurgo ? `
+            <button onclick="this.nextElementSibling.style.display='block';this.style.display='none';"
+              style="font-size:10px;color:#1E4D2B;background:none;border:none;padding:0;cursor:pointer;text-decoration:underline;margin-top:4px;text-align:left;">
+              No OSD for this map unit. Click to see SSURGO data.
+            </button>
+            <div style="display:none;">
+              ${ssurgoSVG}
+              <div style="font-size:9px;color:#9ca3af;margin-top:2px;text-align:center;">depth (cm)</div>
+            </div>
+          ` : '<div style="font-size:11px;color:#9ca3af;font-style:italic;">No profile data</div>'}
         `;
       } else {
-        leftCol.innerHTML = `
-          <div style="font-size:11px;font-weight:600;color:#374151;margin-bottom:4px;">Soil Profile</div>
-          <div style="font-size:11px;color:#9ca3af;font-style:italic;">No profile data</div>
-        `;
+        leftCol.innerHTML = '<div style="font-size:11px;font-weight:600;color:#374151;margin-bottom:4px;">Soil Profile</div><div style="font-size:11px;color:#9ca3af;font-style:italic;">No profile data</div>';
       }
 
       // ── Right: attribute table + links ──────────────────────────────────
@@ -1245,7 +1292,7 @@
 
       host.innerHTML = `
         <div class="om-gauge">
-          <svg viewBox="0 0 220 130" width="220" height="130">
+          <svg viewBox="0 0 220 130" width="100%">
             <defs>
               <linearGradient id="${gradId}" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stop-color="#D9782D"/>
