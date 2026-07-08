@@ -642,14 +642,34 @@
       }
 
       if (profile) {
-        const compLabel = profile.compname
-          ? `${profile.compname}${profile.comppct_r != null ? ` (${profile.comppct_r}%)` : ''}`
-          : '';
+        // New schema (profile.has_osd / profile.osd / profile.ssurgo) vs. the
+        // older flat profile.horizons (dominant component only, SSURGO-derived) --
+        // the live JSON may still be on the old schema if a regen is pending, so
+        // support both rather than assume the newer one built alongside this code.
+        const hasNewSchema = profile.osd !== undefined || profile.ssurgo !== undefined;
+        let compLabel, useOSD, hasSsurgo, osdHorizons, ssurgoHorizons;
 
-        const useOSD = profile.has_osd && profile.osd?.length;
-        const hasSsurgo = profile.ssurgo?.length;
-        const osdSVG = useOSD ? renderProfileSVG(profile.osd) : '';
-        const ssurgoSVG = hasSsurgo ? renderProfileSVG(profile.ssurgo, true) : '';
+        if (hasNewSchema) {
+          compLabel = profile.compname
+            ? `${profile.compname}${profile.comppct_r != null ? ` (${profile.comppct_r}%)` : ''}`
+            : '';
+          useOSD = profile.has_osd && profile.osd?.length;
+          hasSsurgo = profile.ssurgo?.length;
+          osdHorizons = profile.osd;
+          ssurgoHorizons = profile.ssurgo;
+        } else if (profile.horizons?.length) {
+          const dominantCokey = profile.horizons[0].cokey;
+          ssurgoHorizons = profile.horizons.filter(h => h.cokey === dominantCokey);
+          const first = ssurgoHorizons[0];
+          compLabel = first?.compname
+            ? `${first.compname}${first.comppct_r != null ? ` (${first.comppct_r}%)` : ''}`
+            : '';
+          useOSD = false;
+          hasSsurgo = ssurgoHorizons.length > 0;
+        }
+
+        const osdSVG = useOSD ? renderProfileSVG(osdHorizons) : '';
+        const ssurgoSVG = hasSsurgo ? renderProfileSVG(ssurgoHorizons, true) : '';
         leftCol.innerHTML = `
           <div id="prof-title-${mukey}" style="font-size:11px;font-weight:600;color:#374151;margin-bottom:2px;">${useOSD ? 'OSD' : hasSsurgo ? 'SSURGO' : ''} Soil Profile</div>
           ${compLabel ? `<div style="font-size:9px;color:#6b7280;margin-bottom:3px;">${compLabel}</div>` : ''}
