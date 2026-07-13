@@ -611,9 +611,9 @@
 
       // Render horizon SVG from an array of {hzname, hzdept_r, hzdepb_r, soil_color}.
       // forceGray=true ignores soil_color entirely -- used for SSURGO, whose horizons
-      // have no color data of their own (soil_color there is borrowed from the OSD
-      // type-location pedon by depth overlap, which NRCS staff flagged as misleading
-      // since a SSURGO component is an aggregate, not the same pedon as the OSD).
+      // have no color data of their own (soil_color there is only an approximation,
+      // borrowed from the OSD type-location pedon by depth overlap; a SSURGO
+      // component is an aggregate, not the same pedon as the OSD).
       function renderProfileSVG(horizons, forceGray = false) {
         const maxDepth = Math.max(...horizons.map(h => h.hzdepb_r || 0)) || 200;
         const svgH = 300;
