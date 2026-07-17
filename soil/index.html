@@ -932,29 +932,38 @@
     // ── SNOTEL soil data (texture/pH/WP/FC/Sat) ──────────────────────────
     // Keyed by stationId (numeric string, e.g. '335'), matching AWDB's own
     // station.stationId field directly -- no name-matching needed, unlike RAWS.
-    // Two sources, per depth record (src field tells you which):
-    //   'measured' -- 16 stations with real KSSL lab pedons, from 'SNOTEL Soil
-    //     Data CO SMM.xlsx' Sensor_Summary sheet (already containment-snapped to
-    //     sensor depth). WP/FC/Sat here are actual lab measurements.
-    //   'modeled'  -- everyone else with a soil moisture sensor (SMS), via SSURGO:
-    //     dominant map-unit component's horizons, containment-snapped to this
-    //     station's real sensor depths (smsDepths from AWDB, same as loadSNOTEL()
-    //     fetches live), WP/FC/Sat computed via Saxton-Rawls (2006) Eq. 1/2/5 from
-    //     that horizon's sand/clay/OM -- verified directly against the published
-    //     paper (Saxton & Rawls, 2006, Table 1), not just against the R script's
-    //     port of it. Sat is NOT read from SSURGO's own wsatiated_r (mixing that
-    //     with our own SR-computed WP/FC produced physically impossible Sat<FC
-    //     rows for some horizons). Horizons with OM > 8%w (organic/histic surface
-    //     layers, e.g. Wild Basin's 2" horizon at 85% OM) get NO wp/srFC/sat at
-    //     all -- the paper explicitly excluded OM > 8% samples from its entire
-    //     regression dataset, so applying it there isn't just imprecise, it's
-    //     outside where the equations mean anything (this used to silently clamp
-    //     to a plausible-looking 80%/95%, not a real value).
+    // Every entry here is 'src':'modeled' -- there is currently no genuine
+    // lab-characterized soil sample for any SNOTEL site (NRCS publishes live
+    // sensor measurements, not soil characterization). An earlier version of
+    // this comment claimed 16 stations had real KSSL lab pedons from 'SNOTEL
+    // Soil Data CO SMM.xlsx' Sensor_Summary -- the user later clarified that
+    // sheet was ALSO derived from SSURGO (via a separate, earlier pipeline),
+    // not real lab data. Rebuilt all stations uniformly via SSURGO instead of
+    // mixing two different SSURGO derivations of unknown-to-differing formula
+    // fidelity: dominant map-unit component's horizons, containment-snapped to
+    // this station's real sensor depths (smsDepths from AWDB, same as
+    // loadSNOTEL() fetches live), WP/FC/Sat computed via Saxton-Rawls (2006)
+    // Eq. 1/2/5 from that horizon's sand/clay/OM -- verified directly against
+    // the published paper (Saxton & Rawls, 2006, Table 1). Sat is NOT read
+    // from SSURGO's own wsatiated_r (mixing that with our own SR-computed
+    // WP/FC produced physically impossible Sat<FC rows for some horizons).
+    // Horizons with OM > 8%w (organic/histic surface layers, e.g. Wild Basin's
+    // 2" horizon at 85% OM) get NO wp/srFC/sat at all -- the paper explicitly
+    // excluded OM > 8% samples from its entire regression dataset, so applying
+    // it there isn't just imprecise, it's outside where the equations mean
+    // anything (this used to silently clamp to a plausible-looking 80%/95%,
+    // not a real value).
     // Stations with no soil moisture sensor at all (most CO SNOTEL stations --
     // only 53 of 118 have one) aren't included here; there's no sensor depth to
     // key a row to. Stations with a sensor but no SSURGO mapunit match at their
-    // exact coordinates (Brumley/369, Buckskin Joe/938, Grizzly Peak/505) are
-    // also omitted for now.
+    // exact coordinates (Brumley/369, Buckskin Joe/938, Grizzly Peak/505,
+    // Hoosier Pass/531, Jackwhacker Gulch/935, Michigan Creek/937, Rough And
+    // Tumble/939) are also omitted -- several of these fall inside National
+    // Forest land (mostly Pike & San Isabel) where real SSURGO coverage exists
+    // nearby (within ~5km) but not at the station's exact point (likely a
+    // survey-boundary sliver or unmapped feature right at that coordinate) --
+    // user chose to leave these out rather than fall back to a nearest-mapunit
+    // approximation.
     // 'Cottonwood Pass' (sheet ID 1281) omitted -- it's a SNOTEL-Lite (SNTLT)
     // station, not regular SNOTEL (SNTL), so it was never in this site's SNOTEL
     // station list.
@@ -974,11 +983,9 @@
         {d:'8"',tex:'SL',sand:65.9,silt:19.1,clay:15.0,pH:6.8,ec:0.0,c:1.16,caco3:0,wp:10.5,srFC:19.6,sat:42.9,cf:0,src:'modeled'},
         {d:'20"',tex:'SL',sand:65.9,silt:19.1,clay:15.0,pH:7.0,ec:0.0,c:0.44,caco3:0,wp:9.5,srFC:18.0,sat:40.0,cf:0,src:'modeled'}]},
       '387': { name:'Cascade #2', network:'SNOTEL', depths:[
-        {d:'2"',sand:50.1,silt:34.5,clay:15.4,pH:5.2,ec:1.87,c:0.21,wp:10.1,srFC:27.6,sat:51.7,cf:5.3,src:'measured'},
-        {d:'4"',sand:50.1,silt:35.9,clay:14,pH:5.3,ec:0.82,c:0.09,wp:6.6,srFC:24.5,sat:50.9,cf:8.8,src:'measured'},
-        {d:'8"',sand:50.1,silt:35.9,clay:14,pH:5.3,ec:0.82,c:0.09,wp:6.6,srFC:24.5,sat:50.9,cf:8.8,src:'measured'},
-        {d:'20"',sand:53.9,silt:33.8,clay:12.3,pH:5.5,ec:0.29,c:0.01,wp:5.6,srFC:19.1,sat:48.7,cf:6.2,src:'measured'},
-        {d:'40"',sand:66.3,silt:24.9,clay:8.8,pH:5.6,ec:0.17,c:0.47,wp:3.4,srFC:11.4,sat:43.8,cf:16.3,src:'measured'}]},
+        {d:'2"',tex:'ST-L',sand:43.0,silt:38.5,clay:18.5,pH:5.6,ec:0.0,c:1.16,caco3:0,wp:12.6,srFC:26.1,sat:44.3,cf:43,src:'modeled'},
+        {d:'8"',tex:'STV-SL',sand:65.9,silt:19.1,clay:15.0,pH:5.5,ec:0.0,c:0.15,caco3:0,wp:9.0,srFC:17.3,sat:38.9,cf:73,src:'modeled'},
+        {d:'20"',tex:'STX-SCL',sand:55.8,silt:17.7,clay:26.5,pH:5.5,ec:0.0,c:0.15,caco3:0,wp:16.0,srFC:26.0,sat:39.9,cf:73,src:'modeled'}]},
       '415': { name:'Copper Mountain', network:'SNOTEL', depths:[
         {d:'2"',tex:'L',sand:40.0,silt:45.0,clay:15.0,pH:5.3,ec:0.0,c:1.16,caco3:0,wp:10.6,srFC:25.2,sat:44.5,cf:0,src:'modeled'},
         {d:'4"',tex:'GR-SIL',sand:20.0,silt:65.0,clay:15.0,pH:4.8,ec:0.0,c:0.44,caco3:0,wp:10.0,srFC:28.5,sat:41.8,cf:0,src:'modeled'},
@@ -994,17 +1001,9 @@
         {d:'8"',tex:'MK-SICL',sand:19.0,silt:53.0,clay:28.0,pH:6.4,ec:0.0,c:6.09,caco3:0,cf:0,src:'modeled'},
         {d:'20"',tex:'GRV-CL',sand:28.0,silt:40.0,clay:32.0,pH:6.8,ec:0.0,c:1.74,caco3:0,wp:20.3,srFC:35.2,sat:48.9,cf:6,src:'modeled'}]},
       '485': { name:'Fremont Pass', network:'SNOTEL', depths:[
-        {d:'2"',sand:15,silt:33.9,clay:51.1,pH:4.8,c:3.11,wp:34.3,srFC:37.2,sat:56.2,cf:0.9,src:'measured'},
-        {d:'4"',sand:15,silt:33.9,clay:51.1,pH:4.8,c:0.75,wp:34.3,srFC:37.2,sat:56.2,cf:0.9,src:'measured'},
-        {d:'8"',sand:57.5,silt:31.9,clay:10.6,pH:4.9,c:0.15,wp:4.3,srFC:12.4,sat:29.8,cf:15.4,src:'measured'},
-        {d:'20"',sand:58.3,silt:25.2,clay:16.5,pH:5.6,c:0.01,wp:6.3,srFC:10.3,sat:21.1,cf:24.4,src:'measured'},
-        {d:'40"',sand:58.7,silt:22.9,clay:18.4,pH:5.9,c:0.01,wp:6.9,cf:0,src:'measured'}]},
-      '531': { name:'Hoosier Pass', network:'SNOTEL', depths:[
-        {d:'2"',tex:'Moderately decomposed plant material',sand:52.4,silt:36.5,clay:11.1,pH:5.0,c:5.41,wp:9.3,srFC:44.1,sat:59.2,cf:10.6,src:'measured'},
-        {d:'4"',tex:'Gravelly Sandy loam',sand:52.4,silt:36.5,clay:11.1,pH:4.7,c:0.05,wp:9.3,srFC:44.1,sat:59.2,cf:10.6,src:'measured'},
-        {d:'8"',tex:'Gravelly Sandy loam',sand:52.4,silt:36.5,clay:11.1,pH:4.7,c:0.05,wp:9.3,srFC:44.1,sat:59.2,cf:10.6,src:'measured'},
-        {d:'20"',tex:'Very cobbly Sandy loam',sand:64.4,silt:30.4,clay:5.2,pH:5.1,c:0.15,wp:4.2,srFC:19,sat:44.5,cf:20.5,src:'measured'},
-        {d:'40"',tex:'Very cobbly Sandy loam',sand:71.3,silt:25.2,clay:3.5,pH:5.2,c:0.09,wp:3.5,cf:0,src:'measured'}]},
+        {d:'2"',tex:'CBV-SIL',sand:20.0,silt:65.0,clay:15.0,pH:5.3,ec:0.0,c:0.58,caco3:0,wp:10.1,srFC:28.8,sat:42.6,cf:32,src:'modeled'},
+        {d:'8"',tex:'CBV-LCOS',sand:80.0,silt:15.0,clay:5.0,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:3.2,srFC:9.5,sat:41.7,cf:30,src:'modeled'},
+        {d:'20"',tex:'STX-SL',sand:65.0,silt:21.0,clay:14.0,pH:4.8,ec:0.0,c:0.29,caco3:0,wp:8.7,srFC:17.3,sat:39.5,cf:56,src:'modeled'}]},
       '556': { name:'Kiln', network:'SNOTEL', depths:[
         {d:'2"',tex:'GR-SIL',sand:20.0,silt:65.0,clay:15.0,pH:7.0,ec:0.0,c:0.44,caco3:0,wp:10.0,srFC:28.5,sat:41.8,cf:0,src:'modeled'},
         {d:'4"',tex:'GR-SIL',sand:20.0,silt:65.0,clay:15.0,pH:7.0,ec:0.0,c:0.44,caco3:0,wp:10.0,srFC:28.5,sat:41.8,cf:0,src:'modeled'},
@@ -1016,10 +1015,9 @@
         {d:'8"',tex:'CB-SIL',sand:30.0,silt:59.0,clay:11.0,pH:6.3,ec:0.0,c:0.44,caco3:0,wp:7.6,srFC:24.4,sat:40.6,cf:25,src:'modeled'},
         {d:'20"',tex:'CB-FSL',sand:55.0,silt:33.0,clay:12.0,pH:6.3,ec:0.0,c:0.29,caco3:0,wp:7.6,srFC:18.4,sat:39.6,cf:25,src:'modeled'}]},
       '586': { name:'Lizard Head Pass', network:'SNOTEL', depths:[
-        {d:'2"',sand:18.5,silt:45,clay:36.5,pH:5.8,ec:0.67,c:0.41,wp:27.9,srFC:36.2,sat:53.6,cf:20.0,src:'measured'},
-        {d:'4"',sand:18.5,silt:45,clay:36.5,pH:5.8,ec:0.67,c:0.41,wp:27.9,srFC:36.2,sat:53.6,cf:20.0,src:'measured'},
-        {d:'8"',sand:18.5,silt:45,clay:36.5,pH:5.8,ec:0.67,c:0.41,wp:27.9,srFC:36.2,sat:53.6,cf:20.0,src:'measured'},
-        {d:'20"',sand:35.2,silt:43.1,clay:21.7,pH:6,ec:0.14,c:0.23,wp:10.1,srFC:24.6,sat:42.3,cf:34.1,src:'measured'}]},
+        {d:'2"',tex:'L',sand:41.6,silt:37.4,clay:21.0,pH:6.7,ec:0.0,c:0.87,caco3:0,wp:13.6,srFC:27.0,sat:43.2,cf:8,src:'modeled'},
+        {d:'8"',tex:'L',sand:41.6,silt:37.4,clay:21.0,pH:6.7,ec:0.0,c:0.44,caco3:0,wp:13.2,srFC:26.2,sat:41.4,cf:8,src:'modeled'},
+        {d:'20"',tex:'STX-SCL',sand:55.8,silt:17.7,clay:26.5,pH:6.5,ec:0.0,c:0.15,caco3:0,wp:16.0,srFC:26.0,sat:39.9,cf:80,src:'modeled'}]},
       '589': { name:'Lone Cone', network:'SNOTEL', depths:[
         {d:'2"',tex:'GR-L',sand:41.4,silt:37.1,clay:21.5,pH:6.7,ec:0.0,c:0.87,caco3:0,wp:13.9,srFC:27.3,sat:43.3,cf:5,src:'modeled'},
         {d:'8"',tex:'GRV-L',sand:39.8,silt:37.7,clay:22.5,pH:6.7,ec:0.0,c:0.44,caco3:0,wp:14.1,srFC:27.3,sat:41.7,cf:10,src:'modeled'},
@@ -1033,21 +1031,17 @@
         {d:'8"',tex:'SL',sand:65.9,silt:19.1,clay:15.0,pH:6.8,ec:0.0,c:1.16,caco3:0,wp:10.5,srFC:19.6,sat:42.9,cf:0,src:'modeled'},
         {d:'20"',tex:'SL',sand:65.9,silt:19.1,clay:15.0,pH:7.0,ec:0.0,c:0.44,caco3:0,wp:9.5,srFC:18.0,sat:40.0,cf:0,src:'modeled'}]},
       '682': { name:'Park Reservoir', network:'SNOTEL', depths:[
-        {d:'2"',sand:18.7,silt:43,clay:38.3,pH:4.8,ec:0.65,c:0.1,wp:21.1,srFC:41.1,sat:53.2,cf:0,src:'measured'},
-        {d:'4"',sand:18.7,silt:43,clay:38.3,pH:4.8,ec:0.65,c:0.1,wp:21.1,srFC:41.1,sat:53.2,cf:0,src:'measured'},
-        {d:'8"',sand:17.2,silt:44.3,clay:38.5,pH:5.2,ec:0.13,c:0.06,wp:19.7,srFC:32.4,sat:46.0,cf:0,src:'measured'},
-        {d:'20"',sand:35,silt:29.2,clay:35.8,pH:5.6,ec:0.06,c:0.1,wp:15.8,srFC:23,sat:39.2,cf:0,src:'measured'}]},
+        {d:'2"',tex:'CB-L',sand:42.7,silt:38.3,clay:19.0,pH:6.1,ec:0.0,c:0.44,caco3:0,wp:12.0,srFC:25.0,sat:41.1,cf:25,src:'modeled'},
+        {d:'8"',tex:'CB-L',sand:42.7,silt:38.3,clay:19.0,pH:6.1,ec:0.0,c:0.44,caco3:0,wp:12.0,srFC:25.0,sat:41.1,cf:25,src:'modeled'},
+        {d:'20"',tex:'CBV-L',sand:39.2,silt:37.3,clay:23.5,pH:5.8,ec:0.0,c:0.15,caco3:0,wp:14.4,srFC:27.4,sat:40.7,cf:46,src:'modeled'}]},
       '688': { name:'Phantom Valley', network:'SNOTEL', depths:[
-        {d:'2"',sand:31.2,silt:53,clay:15.8,pH:5.6,c:0.1,wp:10.4,cf:0,src:'measured'},
-        {d:'4"',sand:54.6,silt:30.9,clay:14.5,pH:5.3,c:0.04,wp:6.3,srFC:14,sat:40.4,cf:7.8,src:'measured'},
-        {d:'8"',sand:54.6,silt:30.9,clay:14.5,pH:5.3,c:0.04,wp:6.3,srFC:14,sat:40.4,cf:7.8,src:'measured'},
-        {d:'20"',sand:58.3,silt:27.3,clay:14.4,pH:5.5,c:0.01,wp:7.2,srFC:16.7,sat:43.8,cf:8.4,src:'measured'},
-        {d:'40"',sand:36.9,silt:37.7,clay:25.4,pH:5.5,c:0.01,wp:12.9,srFC:23.7,sat:38.9,cf:0.6,src:'measured'}]},
+        {d:'2"',tex:'STV-L',sand:44.3,silt:40.7,clay:15.0,pH:5.6,ec:0.0,c:0.73,caco3:0,wp:10.1,srFC:23.3,sat:42.1,cf:75,src:'modeled'},
+        {d:'8"',tex:'CBV-L',sand:45.4,silt:41.6,clay:13.0,pH:6.1,ec:0.0,c:0.29,caco3:0,wp:8.3,srFC:21.2,sat:39.7,cf:50,src:'modeled'},
+        {d:'20"',tex:'CBV-L',sand:45.4,silt:41.6,clay:13.0,pH:6.1,ec:0.0,c:0.29,caco3:0,wp:8.3,srFC:21.2,sat:39.7,cf:50,src:'modeled'}]},
       '701': { name:'Porphyry Creek', network:'SNOTEL', depths:[
-        {d:'2"',sand:37.7,silt:47.6,clay:14.7,pH:5.5,c:1.23,wp:34.2,srFC:49.7,sat:63.8,cf:5.4,src:'measured'},
-        {d:'4"',sand:37.7,silt:47.6,clay:14.7,pH:5.5,c:1.23,wp:34.2,srFC:49.7,sat:63.8,cf:5.4,src:'measured'},
-        {d:'8"',sand:52.2,silt:35.9,clay:11.9,pH:5.2,c:0.02,wp:9.4,srFC:23.2,sat:40.8,cf:13.6,src:'measured'},
-        {d:'20"',sand:47.9,silt:38.6,clay:13.5,pH:5.1,c:0.04,wp:9.8,srFC:33.7,sat:56.6,cf:17.8,src:'measured'}]},
+        {d:'2"',tex:'GRX-LS',sand:84.3,silt:9.2,clay:6.5,pH:6.5,ec:0.0,c:0.15,caco3:0,wp:3.5,srFC:8.7,sat:40.5,cf:5,src:'modeled'},
+        {d:'8"',tex:'GRX-LS',sand:84.3,silt:9.2,clay:6.5,pH:6.5,ec:0.0,c:0.15,caco3:0,wp:3.5,srFC:8.7,sat:40.5,cf:5,src:'modeled'},
+        {d:'20"',tex:'GRV-LS',sand:84.3,silt:9.2,clay:6.5,pH:6.5,ec:0.0,c:0.15,caco3:0,wp:3.5,srFC:8.7,sat:40.5,cf:5,src:'modeled'}]},
       '709': { name:'Rabbit Ears', network:'SNOTEL', depths:[
         {d:'2"',tex:'GR-SL',sand:55.0,silt:31.0,clay:14.0,pH:5.5,ec:0.0,c:0.93,caco3:0,wp:9.7,srFC:20.9,sat:42.5,cf:15,src:'modeled'},
         {d:'8"',tex:'GRV-SL',sand:57.0,silt:27.0,clay:16.0,pH:5.5,ec:0.0,c:0.46,caco3:0,wp:10.2,srFC:20.5,sat:40.4,cf:18,src:'modeled'},
@@ -1059,10 +1053,9 @@
         {d:'20"',tex:'STX-SCL',sand:55.8,silt:17.7,clay:26.5,pH:5.5,ec:0.0,c:0.15,caco3:0,wp:16.0,srFC:26.0,sat:39.9,cf:73,src:'modeled'},
         {d:'40"',tex:'UWB',cf:0,src:'modeled'}]},
       '737': { name:'Schofield Pass', network:'SNOTEL', depths:[
-        {d:'2"',sand:11.2,silt:64.1,clay:24.7,pH:4.6,ec:1.02,c:0.3,wp:27.5,srFC:74.3,sat:76.2,cf:8.1,src:'measured'},
-        {d:'4"',sand:11.2,silt:64.1,clay:24.7,pH:4.6,ec:1.02,c:0.3,wp:27.5,srFC:74.3,sat:76.2,cf:8.1,src:'measured'},
-        {d:'8"',sand:11.5,silt:66.8,clay:21.7,pH:5,ec:0.33,c:0.19,wp:17.3,srFC:60.6,sat:73.2,cf:7.2,src:'measured'},
-        {d:'20"',sand:11.4,silt:69.2,clay:19.4,pH:5.3,c:0.04,wp:14.8,srFC:51.6,sat:71.3,cf:10.6,src:'measured'}]},
+        {d:'2"',tex:'L',sand:40.0,silt:45.0,clay:15.0,pH:5.3,ec:0.0,c:1.16,caco3:0,wp:10.6,srFC:25.2,sat:44.5,cf:0,src:'modeled'},
+        {d:'8"',tex:'GR-SIL',sand:20.0,silt:65.0,clay:15.0,pH:4.8,ec:0.0,c:0.44,caco3:0,wp:10.0,srFC:28.5,sat:41.8,cf:0,src:'modeled'},
+        {d:'20"',tex:'CBV-FSL',sand:60.0,silt:30.0,clay:10.0,pH:4.8,ec:0.0,c:0.29,caco3:0,wp:6.3,srFC:16.3,sat:39.6,cf:31,src:'modeled'}]},
       '762': { name:'Slumgullion', network:'SNOTEL', depths:[
         {d:'2"',tex:'GR-SL',sand:67.4,silt:19.6,clay:13.0,pH:5.6,ec:0.0,c:0.15,caco3:0,wp:7.8,srFC:15.9,sat:39.0,cf:0,src:'modeled'},
         {d:'8"',tex:'GRV-SL',sand:67.4,silt:19.6,clay:13.0,pH:5.8,ec:0.0,c:0.15,caco3:0,wp:7.8,srFC:15.9,sat:39.0,cf:10,src:'modeled'},
@@ -1095,26 +1088,9 @@
         {d:'8"',tex:'SL',sand:65.7,silt:22.8,clay:11.5,pH:5.2,ec:0.0,c:0.44,caco3:0,wp:7.4,srFC:16.1,sat:40.3,cf:3,src:'modeled'},
         {d:'20"',tex:'GR-SL',sand:65.7,silt:22.8,clay:11.5,pH:5.7,ec:0.0,c:0.29,caco3:0,wp:7.2,srFC:15.8,sat:39.6,cf:4,src:'modeled'}]},
       '914': { name:'Medano Pass', network:'SNOTEL', depths:[
-        {d:'2"',sand:79.8,silt:15.3,clay:4.9,pH:5.6,c:0.03,wp:6.5,cf:0,src:'measured'},
-        {d:'4"',sand:79.8,silt:15.3,clay:4.9,pH:5.6,c:0.03,wp:6.5,cf:0,src:'measured'},
-        {d:'8"',sand:79.8,silt:15.3,clay:4.9,pH:5.6,c:0.03,wp:6.5,cf:0,src:'measured'},
-        {d:'20"',sand:81.9,silt:14.4,clay:3.7,pH:6.2,c:0.26,wp:4.4,srFC:8.4,sat:33.6,cf:10.0,src:'measured'}]},
-      '935': { name:'Jackwhacker Gulch', network:'SNOTEL', depths:[
-        {d:'2"',tex:'Extremely cobbly Loam',sand:25.4,silt:56.8,clay:17.8,pH:4.3,c:3.79,wp:37.3,srFC:58.5,sat:79.2,cf:22.8,src:'measured'},
-        {d:'4"',tex:'Extremely cobbly Sandy loam',sand:57.3,silt:32.8,clay:9.9,pH:4.3,c:0.03,wp:8.6,srFC:27.9,sat:57.7,cf:37.2,src:'measured'},
-        {d:'8"',tex:'Extremely cobbly Sandy loam',sand:57.3,silt:32.8,clay:9.9,pH:4.3,c:0.03,wp:8.6,srFC:27.9,sat:57.7,cf:37.2,src:'measured'},
-        {d:'20"',tex:'Extremely cobbly Sandy clay loam',sand:68.1,silt:20.5,clay:11.4,pH:4.7,c:0.62,wp:6.8,srFC:12.9,sat:39.2,cf:25.5,src:'measured'}]},
-      '937': { name:'Michigan Creek', network:'SNOTEL', depths:[
-        {d:'2"',tex:'Moderately decomposed plant material',sand:20.3,silt:56.5,clay:23.2,pH:5.9,c:8.32,wp:12.9,srFC:29.8,sat:59.6,cf:5.2,src:'measured'},
-        {d:'4"',tex:'Silty clay loam',sand:25.9,silt:46.2,clay:27.9,pH:5.5,c:1.03,wp:15.1,srFC:36.5,sat:63.8,cf:10.1,src:'measured'},
-        {d:'8"',tex:'Extremely cobbly Clay loam',sand:31.1,silt:49.6,clay:19.3,pH:5.6,c:0.48,wp:12.4,srFC:32,sat:58.9,cf:22.6,src:'measured'},
-        {d:'20"',tex:'Extremely cobbly Loam',sand:35.5,silt:50,clay:14.5,pH:5.7,c:0.17,wp:9.7,cf:0,src:'measured'},
-        {d:'40"',tex:'Extremely cobbly Loam',sand:39.5,silt:48.3,clay:12.2,pH:5.6,c:0.1,wp:9,cf:0,src:'measured'}]},
-      '939': { name:'Rough And Tumble', network:'SNOTEL', depths:[
-        {d:'2"',tex:'Loam',sand:32.1,silt:49.7,clay:18.2,pH:5.5,c:0.12,wp:14.2,srFC:28.4,sat:53.2,cf:8.9,src:'measured'},
-        {d:'4"',tex:'Clay loam',sand:36.7,silt:43.3,clay:20,pH:6,c:1.03,wp:9.4,srFC:18.9,sat:45.7,cf:13.0,src:'measured'},
-        {d:'8"',tex:'Clay loam',sand:36.7,silt:43.3,clay:20,pH:6,c:1.03,wp:9.4,srFC:18.9,sat:45.7,cf:13.0,src:'measured'},
-        {d:'20"',tex:'Very gravelly Clay',sand:43.1,silt:32.7,clay:24.2,pH:6.4,c:0.17,wp:10.7,srFC:19.5,sat:38.1,cf:22.3,src:'measured'}]},
+        {d:'2"',tex:'CB-SL',sand:67.0,silt:20.0,clay:13.0,pH:7.2,ec:0.0,c:0.87,caco3:0,wp:8.9,srFC:17.6,sat:41.9,cf:21,src:'modeled'},
+        {d:'8"',tex:'STV-SL',sand:65.0,silt:19.0,clay:16.0,pH:7.2,ec:0.0,c:0.73,caco3:0,wp:10.5,srFC:19.4,sat:41.2,cf:40,src:'modeled'},
+        {d:'20"',tex:'STX-SL',sand:67.0,silt:23.0,clay:10.0,pH:7.2,ec:0.0,c:0.29,caco3:0,wp:6.2,srFC:14.7,sat:39.7,cf:56,src:'modeled'}]},
       '940': { name:'Lost Dog', network:'SNOTEL', depths:[
         {d:'2"',tex:'GR-L',sand:44.0,silt:41.0,clay:15.0,pH:5.1,ec:0.0,c:1.16,caco3:0,wp:10.6,srFC:24.3,sat:44.3,cf:7,src:'modeled'},
         {d:'4"',tex:'GR-L',sand:44.0,silt:41.0,clay:15.0,pH:5.1,ec:0.0,c:1.16,caco3:0,wp:10.6,srFC:24.3,sat:44.3,cf:7,src:'modeled'},
@@ -1128,10 +1104,11 @@
         {d:'20"',tex:'BYX-SL',sand:65.9,silt:19.1,clay:15.0,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:9.5,srFC:18.0,sat:40.0,cf:78,src:'modeled'},
         {d:'40"',tex:'BYX-LS',sand:83.5,silt:9.0,clay:7.5,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:4.7,srFC:10.1,sat:41.3,cf:73,src:'modeled'}]},
       '1014': { name:'Middle Fork Camp', network:'SNOTEL', depths:[
-        {d:'2"',tex:'Gravelly Sandy loam',sand:71.4,silt:22.5,clay:6.0,pH:5.3,ec:0.05,c:0.06,wp:7.3,cf:0,src:'measured'},
-        {d:'4"',tex:'Very gravelly Sandy loam',sand:91.6,silt:5.8,clay:2.6,pH:5.2,ec:0.02,c:0.06,wp:2.3,cf:0,src:'measured'},
-        {d:'8"',tex:'Very gravelly Sandy loam',sand:91.6,silt:5.8,clay:2.6,pH:5.2,ec:0.02,c:0.06,wp:2.3,cf:0,src:'measured'},
-        {d:'20"',tex:'Very cobbly Loamy sand',sand:90.3,silt:8.5,clay:1.2,pH:5.4,ec:0.01,c:0.11,wp:1.8,cf:0,src:'measured'}]},
+        {d:'2"',tex:'GR-SL',sand:65.9,silt:19.1,clay:15.0,pH:6.5,ec:0.0,c:0.87,caco3:0,wp:10.1,srFC:18.9,sat:41.8,cf:6,src:'modeled'},
+        {d:'4"',tex:'GR-SL',sand:65.9,silt:19.1,clay:15.0,pH:6.5,ec:0.0,c:0.87,caco3:0,wp:10.1,srFC:18.9,sat:41.8,cf:6,src:'modeled'},
+        {d:'8"',tex:'GR-SL',sand:65.9,silt:19.1,clay:15.0,pH:6.5,ec:0.0,c:0.87,caco3:0,wp:10.1,srFC:18.9,sat:41.8,cf:6,src:'modeled'},
+        {d:'20"',tex:'GRV-LS',sand:83.5,silt:9.0,clay:7.5,pH:6.5,ec:0.0,c:0.44,caco3:0,wp:4.7,srFC:10.1,sat:41.3,cf:6,src:'modeled'},
+        {d:'40"',tex:'GRV-LS',sand:83.5,silt:9.0,clay:7.5,pH:6.5,ec:0.0,c:0.44,caco3:0,wp:4.7,srFC:10.1,sat:41.3,cf:6,src:'modeled'}]},
       '1030': { name:'Arapaho Ridge', network:'SNOTEL', depths:[
         {d:'2"',tex:'MPM',pH:5.0,ec:0.0,c:40.6,caco3:0,cf:0,src:'modeled'},
         {d:'8"',tex:'CBV-L',sand:44.0,silt:41.0,clay:15.0,pH:5.7,ec:0.0,c:1.16,caco3:0,wp:10.6,srFC:24.3,sat:44.3,cf:27,src:'modeled'},
@@ -1145,11 +1122,9 @@
         {d:'8"',tex:'GRV-SL',sand:65.1,silt:18.9,clay:16.0,pH:5.0,ec:0.0,c:0.44,caco3:0,wp:10.1,srFC:18.7,sat:40.0,cf:24,src:'modeled'},
         {d:'20"',tex:'CBX-SCL',sand:61.4,silt:18.6,clay:20.0,pH:5.0,ec:0.0,c:0.29,caco3:0,wp:12.3,srFC:21.4,sat:39.6,cf:67,src:'modeled'}]},
       '1059': { name:'Cochetopa Pass', network:'SNOTEL', depths:[
-        {d:'2"',sand:36.8,silt:51,clay:12.2,pH:5.6,c:0.25,wp:15,cf:0,src:'measured'},
-        {d:'4"',sand:36.8,silt:51,clay:12.2,pH:5.6,c:0.25,wp:15,cf:0,src:'measured'},
-        {d:'8"',sand:36.8,silt:51,clay:12.2,pH:5.6,c:0.25,wp:15,cf:0,src:'measured'},
-        {d:'20"',sand:41.9,silt:22.6,clay:35.5,pH:6.4,c:0.35,wp:18.1,srFC:32.2,sat:46.8,cf:16.5,src:'measured'},
-        {d:'40"',sand:41.9,silt:22.6,clay:35.5,pH:6.4,c:0.35,wp:18.1,srFC:32.2,sat:46.8,cf:16.5,src:'measured'}]},
+        {d:'2"',tex:'HPM',sand:30.0,silt:59.0,clay:11.0,pH:5.6,ec:0.5,c:49.3,caco3:0,cf:0,src:'modeled'},
+        {d:'8"',tex:'CB-SIL',sand:30.0,silt:59.0,clay:11.0,pH:6.3,ec:0.0,c:0.44,caco3:0,wp:7.6,srFC:24.4,sat:40.6,cf:25,src:'modeled'},
+        {d:'20"',tex:'CB-FSL',sand:55.0,silt:33.0,clay:12.0,pH:6.3,ec:0.0,c:0.29,caco3:0,wp:7.6,srFC:18.4,sat:39.6,cf:25,src:'modeled'}]},
       '1060': { name:'Sharkstooth', network:'SNOTEL', depths:[
         {d:'2"',tex:'FLX-L',sand:39.2,silt:37.3,clay:23.5,pH:5.8,ec:0.0,c:0.87,caco3:0,wp:15.1,srFC:28.6,sat:43.6,cf:78,src:'modeled'},
         {d:'8"',tex:'FLX-L',sand:39.2,silt:37.3,clay:23.5,pH:5.8,ec:0.0,c:0.87,caco3:0,wp:15.1,srFC:28.6,sat:43.6,cf:78,src:'modeled'},
@@ -1161,17 +1136,13 @@
         {d:'20"',tex:'STX-SL',sand:65.0,silt:21.0,clay:14.0,pH:4.8,ec:0.0,c:0.29,caco3:0,wp:8.7,srFC:17.3,sat:39.5,cf:56,src:'modeled'},
         {d:'40"',tex:'CBX-SL',sand:65.0,silt:25.0,clay:10.0,pH:5.3,ec:0.0,c:0.29,caco3:0,wp:6.3,srFC:15.1,sat:39.7,cf:39,src:'modeled'}]},
       '1123': { name:'Long Draw Resv', network:'SNOTEL', depths:[
-        {d:'2"',sand:68.1,silt:22.7,clay:9.2,pH:4.9,c:0.03,wp:5.3,srFC:22.3,sat:46.4,cf:9.6,src:'measured'},
-        {d:'4"',sand:68.1,silt:22.7,clay:9.2,pH:4.9,c:0.03,wp:5.3,srFC:22.3,sat:46.4,cf:9.6,src:'measured'},
-        {d:'8"',sand:77.6,silt:17.4,clay:5,pH:5.1,c:0.38,wp:2.7,srFC:18.1,sat:44.9,cf:10.5,src:'measured'},
-        {d:'20"',sand:96.9,silt:3.1,pH:5.5,c:0.01,wp:0.7,cf:0,src:'measured'},
-        {d:'40"',sand:98.4,silt:1.6,pH:5.6,c:0.01,wp:0.6,cf:0,src:'measured'}]},
+        {d:'2"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:43.6,cf:31,src:'modeled'},
+        {d:'8"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:43.6,cf:31,src:'modeled'},
+        {d:'20"',tex:'CBV-SL',sand:70.0,silt:24.0,clay:6.0,pH:5.6,ec:0.0,c:0.29,caco3:0,wp:3.8,srFC:11.9,sat:40.2,cf:31,src:'modeled'}]},
       '1141': { name:'Upper Taylor', network:'SNOTEL', depths:[
-        {d:'2"',sand:57.2,silt:30.5,clay:12.3,pH:5.6,c:0.02,wp:7.6,srFC:28.5,sat:47.5,cf:13.1,src:'measured'},
-        {d:'4"',sand:57.2,silt:30.5,clay:12.3,pH:5.6,c:0.02,wp:7.6,srFC:28.5,sat:47.5,cf:13.1,src:'measured'},
-        {d:'8"',sand:57.2,silt:30.5,clay:12.3,pH:5.6,c:0.02,wp:7.6,srFC:28.5,sat:47.5,cf:13.1,src:'measured'},
-        {d:'20"',sand:84.5,silt:11.3,clay:4.2,pH:5.7,c:0.08,wp:3.2,cf:0,src:'measured'},
-        {d:'40"',sand:89.2,silt:8.8,clay:2,pH:6,c:0.01,wp:2.3,cf:0,src:'measured'}]},
+        {d:'2"',tex:'SL',sand:65.7,silt:22.8,clay:11.5,pH:6.1,ec:0.0,c:1.16,caco3:0,wp:8.5,srFC:17.8,sat:43.4,cf:0,src:'modeled'},
+        {d:'8"',tex:'SL',sand:65.7,silt:22.8,clay:11.5,pH:6.1,ec:0.0,c:1.16,caco3:0,wp:8.5,srFC:17.8,sat:43.4,cf:0,src:'modeled'},
+        {d:'20"',tex:'COSL',sand:66.6,silt:21.9,clay:11.5,pH:6.1,ec:0.0,c:0.29,caco3:0,wp:7.1,srFC:15.6,sat:39.6,cf:0,src:'modeled'}]},
       '1185': { name:'Black Mesa', network:'SNOTEL', depths:[
         {d:'4"',tex:'CBV-SIL',sand:27.1,silt:54.4,clay:18.5,pH:6.1,ec:0.0,c:0.44,caco3:0,wp:11.9,srFC:28.2,sat:42.0,cf:58,src:'modeled'},
         {d:'8"',tex:'CBV-SIL',sand:27.1,silt:54.4,clay:18.5,pH:6.1,ec:0.0,c:0.44,caco3:0,wp:11.9,srFC:28.2,sat:42.0,cf:58,src:'modeled'},
