@@ -1,0 +1,4947 @@
+{
+  "CoAgMET": {
+    "AKR02": {
+      "huc06": "102500",
+      "huc06_name": "Akron",
+      "huc08": "10250002",
+      "huc08_name": "Akron",
+      "huc10": "1025000204",
+      "huc10_name": "Surveyor Creek-Rock Creek",
+      "huc12": "102500020403",
+      "huc12_name": "Akron Reservoir-Surveyor Creek",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Washington"
+    },
+    "ALT01": {
+      "huc06": "101900",
+      "huc06_name": "Ault",
+      "huc08": "10190007",
+      "huc08_name": "Ault",
+      "huc10": "1019000710",
+      "huc10_name": "Coalbank Creek-Cache la Poudre River",
+      "huc12": "101900071007",
+      "huc12_name": "Eaton Draw",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Weld"
+    },
+    "AVN01": {
+      "huc06": "110200",
+      "huc06_name": "Avondale",
+      "huc08": "11020005",
+      "huc08_name": "Avondale",
+      "huc10": "1102000503",
+      "huc10_name": "Chicosa Creek-Arkansas River",
+      "huc12": "110200050301",
+      "huc12_name": "Boone Creek-Arkansas River",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Pueblo"
+    },
+    "BLA01": {
+      "huc06": "130100",
+      "huc06_name": "Blanca",
+      "huc08": "13010002",
+      "huc08_name": "Blanca",
+      "huc10": "1301000206",
+      "huc10_name": "Sangre de Cristo Creek-Trinchera Creek",
+      "huc12": "130100020609",
+      "huc12_name": "Outlet Trinchera Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Costilla"
+    },
+    "BNV01": {
+      "huc06": "110200",
+      "huc06_name": "Buena Vista",
+      "huc08": "11020001",
+      "huc08_name": "Buena Vista",
+      "huc10": "1102000107",
+      "huc10_name": "Trout Creek-Arkansas River",
+      "huc12": "110200010702",
+      "huc12_name": "Maxwell Creek-Arkansas River",
+      "land_use": [
+        "Emergent Herbaceous Wetlands"
+      ],
+      "county": "Chaffee"
+    },
+    "BRG01": {
+      "huc06": "101900",
+      "huc06_name": "Briggsdale",
+      "huc08": "10190009",
+      "huc08_name": "Briggsdale",
+      "huc10": "1019000905",
+      "huc10_name": "Lower Crow Creek",
+      "huc12": "101900090503",
+      "huc12_name": "Bidwell Lake-Crow Creek",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Weld"
+    },
+    "BRL02": {
+      "huc06": "102500",
+      "huc06_name": "Burlington South",
+      "huc08": "10250012",
+      "huc08_name": "Burlington South",
+      "huc10": "1025001201",
+      "huc10_name": "Headwaters Middle Beaver Creek",
+      "huc12": "102500120103",
+      "huc12_name": "102500120103",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Kit Carson"
+    },
+    "BRL03": {
+      "huc06": "102500",
+      "huc06_name": "Burlington 3",
+      "huc08": "10250013",
+      "huc08_name": "Burlington 3",
+      "huc10": "1025001301",
+      "huc10_name": "Upper Little Beaver Creek",
+      "huc12": "102500130101",
+      "huc12_name": "102500130101",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Kit Carson"
+    },
+    "CBL01": {
+      "huc06": "140100",
+      "huc06_name": "Carbondale",
+      "huc08": "14010004",
+      "huc08_name": "Carbondale",
+      "huc10": "1401000407",
+      "huc10_name": "Cyrstal River",
+      "huc12": "140100040709",
+      "huc12_name": "Edgerton Creek-Crystal River",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Pitkin"
+    },
+    "CBN01": {
+      "huc06": "140100",
+      "huc06_name": "Collbran",
+      "huc08": "14010005",
+      "huc08_name": "Collbran",
+      "huc10": "1401000513",
+      "huc10_name": "Big Creek-Plateau Creek",
+      "huc12": "140100051302",
+      "huc12_name": "Big Creek",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Mesa"
+    },
+    "CCR01": {
+      "huc06": "101900",
+      "huc06_name": "Cherry Creek Res",
+      "huc08": "10190003",
+      "huc08_name": "Cherry Creek Res",
+      "huc10": "1019000303",
+      "huc10_name": "Cherry Creek-South Platte River",
+      "huc12": "101900030303",
+      "huc12_name": "Cherry Creek Lake-Cherry Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Arapahoe"
+    },
+    "CHT01": {
+      "huc06": "101900",
+      "huc06_name": "Chatfield at South Platte Res",
+      "huc08": "10190002",
+      "huc08_name": "Chatfield at South Platte Res",
+      "huc10": "1019000209",
+      "huc10_name": "Little Dry Creek-South Platte River",
+      "huc12": "101900020901",
+      "huc12_name": "Dutch Creek-South Platte River",
+      "land_use": [
+        "Developed, Low Intensity"
+      ],
+      "county": "Arapahoe"
+    },
+    "CKP01": {
+      "huc06": "101900",
+      "huc06_name": "Cherokee Park",
+      "huc08": "10190007",
+      "huc08_name": "Cherokee Park",
+      "huc10": "1019000707",
+      "huc10_name": "Rabbit Creek-North Fork Cache la Poudre River",
+      "huc12": "101900070704",
+      "huc12_name": "Milton Seaman Reservoir-North Fork Cache La Poudre River",
+      "land_use": [
+        "Emergent Herbaceous Wetlands"
+      ],
+      "county": "Larimer"
+    },
+    "CLK01": {
+      "huc06": "140500",
+      "huc06_name": "Clark",
+      "huc08": "14050001",
+      "huc08_name": "Clark",
+      "huc10": "1405000102",
+      "huc10_name": "Headwaters Elk River",
+      "huc12": "140500010209",
+      "huc12_name": "Greenville Creek-Elk River",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Routt"
+    },
+    "CNN01": {
+      "huc06": "110200",
+      "huc06_name": "Canon City",
+      "huc08": "11020002",
+      "huc08_name": "Canon City",
+      "huc10": "1102000204",
+      "huc10_name": "Eightmile Creek-Arkansas River",
+      "huc12": "110200020407",
+      "huc12_name": "Sixmile Creek-Arkansas River",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Fremont"
+    },
+    "COW01": {
+      "huc06": "101800",
+      "huc06_name": "Cowdrey",
+      "huc08": "10180001",
+      "huc08_name": "Cowdrey",
+      "huc10": "1018000105",
+      "huc10_name": "Michigan River",
+      "huc12": "101800010507",
+      "huc12_name": "Lower Michigan River",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Jackson"
+    },
+    "CTR01": {
+      "huc06": "130100",
+      "huc06_name": "Center",
+      "huc08": "13010003",
+      "huc08_name": "Center",
+      "huc10": "1301000306",
+      "huc10_name": "Sand Creek-San Luis Creek",
+      "huc12": "130100030603",
+      "huc12_name": "Short Creek-San Luis Creek",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Rio Grande"
+    },
+    "CTR02": {
+      "huc06": "130100",
+      "huc06_name": "Center #2",
+      "huc08": "13010004",
+      "huc08_name": "Center #2",
+      "huc10": "1301000406",
+      "huc10_name": "Russell Creek-La Garita Creek",
+      "huc12": "130100040611",
+      "huc12_name": "Outlet La Garita Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Saguache"
+    },
+    "CTZ01": {
+      "huc06": "140801",
+      "huc06_name": "Cortez",
+      "huc08": "14080107",
+      "huc08_name": "Cortez",
+      "huc10": "1408010703",
+      "huc10_name": "Lower Mancos River",
+      "huc12": "140801070302",
+      "huc12_name": "Fisher Creek-Navajo Wash",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Montezuma"
+    },
+    "CYA01": {
+      "huc06": "140802",
+      "huc06_name": "Canyon of the Ancients",
+      "huc08": "14080202",
+      "huc08_name": "Canyon of the Ancients",
+      "huc10": "1408020202",
+      "huc10_name": "Yellow Jacket Canyon",
+      "huc12": "140802020204",
+      "huc12_name": "Sandstone Canyon",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Montezuma"
+    },
+    "DEN01": {
+      "huc06": "101900",
+      "huc06_name": "Denver",
+      "huc08": "10190003",
+      "huc08_name": "Denver",
+      "huc10": "1019000303",
+      "huc10_name": "Cherry Creek-South Platte River",
+      "huc12": "101900030304",
+      "huc12_name": "Cherry Creek-South Platte River",
+      "land_use": [
+        "Developed, Medium Intensity"
+      ],
+      "county": "Denver"
+    },
+    "DLR01": {
+      "huc06": "140802",
+      "huc06_name": "Dolores",
+      "huc08": "14080202",
+      "huc08_name": "Dolores",
+      "huc10": "1408020201",
+      "huc10_name": "Upper McElmo Creek",
+      "huc12": "140802020101",
+      "huc12_name": "Simon Draw",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Montezuma"
+    },
+    "DRG01": {
+      "huc06": "140801",
+      "huc06_name": "Durango",
+      "huc08": "14080104",
+      "huc08_name": "Durango",
+      "huc10": "1408010409",
+      "huc10_name": "Middle Animas Valley",
+      "huc12": "140801040903",
+      "huc12_name": "Indian Creek-Animas River",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "La Plata"
+    },
+    "DVC01": {
+      "huc06": "140802",
+      "huc06_name": "Dove Creek",
+      "huc08": "14080203",
+      "huc08_name": "Dove Creek",
+      "huc10": "1408020303",
+      "huc10_name": "Monument Canyon",
+      "huc12": "140802030302",
+      "huc12_name": "Tucker Canyon-Monument Canyon",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Dolores"
+    },
+    "EAC01": {
+      "huc06": "101900",
+      "huc06_name": "Eastern Adams County",
+      "huc08": "10190013",
+      "huc08_name": "Eastern Adams County",
+      "huc10": "1019001303",
+      "huc10_name": "Middle Beaver Creek",
+      "huc12": "101900130303",
+      "huc12_name": "Wetzel Creek",
+      "land_use": [
+        "Developed, Open Space"
+      ],
+      "county": "Adams"
+    },
+    "EGL01": {
+      "huc06": "140100",
+      "huc06_name": "Eagle",
+      "huc08": "14010003",
+      "huc08_name": "Eagle",
+      "huc10": "1401000304",
+      "huc10_name": "Brush Creek",
+      "huc12": "140100030405",
+      "huc12_name": "Abrams Creek-Brush Creek",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Eagle"
+    },
+    "EKT01": {
+      "huc06": "140200",
+      "huc06_name": "Eckert",
+      "huc08": "14020005",
+      "huc08_name": "Eckert",
+      "huc10": "1402000501",
+      "huc10_name": "Tongue Creek-Gunnison River",
+      "huc12": "140200050111",
+      "huc12_name": "Surface Creek",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Delta"
+    },
+    "FCC01": {
+      "huc06": "101900",
+      "huc06_name": "Christman Field",
+      "huc08": "10190007",
+      "huc08_name": "Christman Field",
+      "huc10": "1019000708",
+      "huc10_name": "Horsetooth Reservoir-Cache la Poudre River",
+      "huc12": "101900070805",
+      "huc12_name": "City of Fort Collins-Cache la Poudre River",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Larimer"
+    },
+    "FCL01": {
+      "huc06": "101900",
+      "huc06_name": "Fort Collins",
+      "huc08": "10190007",
+      "huc08_name": "Fort Collins",
+      "huc10": "1019000708",
+      "huc10_name": "Horsetooth Reservoir-Cache la Poudre River",
+      "huc12": "101900070805",
+      "huc12_name": "City of Fort Collins-Cache la Poudre River",
+      "land_use": [
+        "Developed, Medium Intensity"
+      ],
+      "county": "Larimer"
+    },
+    "FRT03": {
+      "huc06": "140100",
+      "huc06_name": "CSU Fruita Exp Station",
+      "huc08": "14010005",
+      "huc08_name": "CSU Fruita Exp Station",
+      "huc10": "1401000516",
+      "huc10_name": "Big Salt Wash-Colorado River",
+      "huc12": "140100051608",
+      "huc12_name": "Little Salt Wash",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Mesa"
+    },
+    "FTC01": {
+      "huc06": "101900",
+      "huc06_name": "Fort Collins AERC",
+      "huc08": "10190007",
+      "huc08_name": "Fort Collins AERC",
+      "huc10": "1019000708",
+      "huc10_name": "Horsetooth Reservoir-Cache la Poudre River",
+      "huc12": "101900070805",
+      "huc12_name": "City of Fort Collins-Cache la Poudre River",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Larimer"
+    },
+    "FTC03": {
+      "huc06": "101900",
+      "huc06_name": "CSU - ARDEC",
+      "huc08": "10190007",
+      "huc08_name": "CSU - ARDEC",
+      "huc10": "1019000709",
+      "huc10_name": "Boxelder Creek",
+      "huc12": "101900070905",
+      "huc12_name": "Lower Boxelder Creek",
+      "land_use": [
+        "Developed, Open Space"
+      ],
+      "county": "Larimer"
+    },
+    "FTL01": {
+      "huc06": "101900",
+      "huc06_name": "Fort Lupton",
+      "huc08": "10190003",
+      "huc08_name": "Fort Lupton",
+      "huc10": "1019000304",
+      "huc10_name": "Big Dry Creek-South Platte River",
+      "huc12": "101900030409",
+      "huc12_name": "City of Brighton-South Platte River",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Weld"
+    },
+    "FWL01": {
+      "huc06": "110200",
+      "huc06_name": "Fowler",
+      "huc08": "11020005",
+      "huc08_name": "Fowler",
+      "huc10": "1102000503",
+      "huc10_name": "Chicosa Creek-Arkansas River",
+      "huc12": "110200050308",
+      "huc12_name": "Town of Fowler-Arkansas River",
+      "land_use": [
+        "Developed, Low Intensity"
+      ],
+      "county": "Otero"
+    },
+    "GBY01": {
+      "huc06": "140100",
+      "huc06_name": "Granby",
+      "huc08": "14010001",
+      "huc08_name": "Granby",
+      "huc10": "1401000103",
+      "huc10_name": "Headwaters Colorado River",
+      "huc12": "140100010309",
+      "huc12_name": "Smith Creek-Colorado River",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Grand"
+    },
+    "GLY04": {
+      "huc06": "101900",
+      "huc06_name": "Greeley 4",
+      "huc08": "10190007",
+      "huc08_name": "Greeley 4",
+      "huc10": "1019000710",
+      "huc10_name": "Coalbank Creek-Cache la Poudre River",
+      "huc12": "101900071008",
+      "huc12_name": "Outlet Cache la Poudre River",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Weld"
+    },
+    "GUN01": {
+      "huc06": "140200",
+      "huc06_name": "Gunnison",
+      "huc08": "14020002",
+      "huc08_name": "Gunnison",
+      "huc10": "1402000201",
+      "huc10_name": "Ohio Creek",
+      "huc12": "140200020106",
+      "huc12_name": "Lower Ohio Creek",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Gunnison"
+    },
+    "GYP01": {
+      "huc06": "140100",
+      "huc06_name": "Gypsum",
+      "huc08": "14010003",
+      "huc08_name": "Gypsum",
+      "huc10": "1401000306",
+      "huc10_name": "Lower Eagle River",
+      "huc12": "140100030605",
+      "huc12_name": "Spring Creek-Eagle River",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Eagle"
+    },
+    "HEB01": {
+      "huc06": "101800",
+      "huc06_name": "Hebron",
+      "huc08": "10180001",
+      "huc08_name": "Hebron",
+      "huc10": "1018000101",
+      "huc10_name": "Grizzly Creek",
+      "huc12": "101800010105",
+      "huc12_name": "Outlet Buffalo Creek",
+      "land_use": [
+        "Developed, Open Space"
+      ],
+      "county": null
+    },
+    "HLY01": {
+      "huc06": "110200",
+      "huc06_name": "Holly",
+      "huc08": "11020009",
+      "huc08_name": "Holly",
+      "huc10": "1102000919",
+      "huc10_name": "Cheyenne Creek-Arkansas River",
+      "huc12": "110200091902",
+      "huc12_name": "110200091902-Arkansas River",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Prowers"
+    },
+    "HLY02": {
+      "huc06": "110200",
+      "huc06_name": "Holly #2",
+      "huc08": "11020009",
+      "huc08_name": "Holly #2",
+      "huc10": "1102000917",
+      "huc10_name": "Granada Creek-Arkansas River",
+      "huc12": "110200091701",
+      "huc12_name": "Verhoeff Reservoir",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Prowers"
+    },
+    "HNE01": {
+      "huc06": "110200",
+      "huc06_name": "Hoehne",
+      "huc08": "11020010",
+      "huc08_name": "Hoehne",
+      "huc10": "1102001006",
+      "huc10_name": "Frijole Creek-Purgatoire River",
+      "huc12": "110200100609",
+      "huc12_name": "Gagliardi Reservoir-Purgatoire River",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Las Animas"
+    },
+    "HXT01": {
+      "huc06": "102500",
+      "huc06_name": "Haxtun",
+      "huc08": "10250005",
+      "huc08_name": "Haxtun",
+      "huc10": "1025000502",
+      "huc10_name": "Upper Frenchman Creek",
+      "huc12": "102500050205",
+      "huc12_name": "City of Haxtun-North Fork Frenchman Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Phillips"
+    },
+    "HYD01": {
+      "huc06": "140500",
+      "huc06_name": "Hayden",
+      "huc08": "14050001",
+      "huc08_name": "Hayden",
+      "huc10": "1405000111",
+      "huc10_name": "Dry Creek-Yampa River",
+      "huc12": "140500011104",
+      "huc12_name": "Goose Creek-Yampa River",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Routt"
+    },
+    "HYK02": {
+      "huc06": "102500",
+      "huc06_name": "Holyoke",
+      "huc08": "10250005",
+      "huc08_name": "Holyoke",
+      "huc10": "1025000502",
+      "huc10_name": "Upper Frenchman Creek",
+      "huc12": "102500050210",
+      "huc12_name": "McGuires Slough",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Phillips"
+    },
+    "IDL01": {
+      "huc06": "102500",
+      "huc06_name": "Idalia",
+      "huc08": "10250001",
+      "huc08_name": "Idalia",
+      "huc10": "1025000107",
+      "huc10_name": "Spring Canyon-Arikaree River",
+      "huc12": "102500010706",
+      "huc12_name": "Sand Creek-Arikaree River",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Yuma"
+    },
+    "IGN01": {
+      "huc06": "140801",
+      "huc06_name": "Ignacio",
+      "huc08": "14080101",
+      "huc08_name": "Ignacio",
+      "huc10": "1408010115",
+      "huc10_name": "Lower Los Pinos River",
+      "huc12": "140801011502",
+      "huc12_name": "Rock Creek-Los Pinos River",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "La Plata"
+    },
+    "IGN02": {
+      "huc06": "140801",
+      "huc06_name": "Ignacio 2",
+      "huc08": "14080101",
+      "huc08_name": "Ignacio 2",
+      "huc10": "1408010115",
+      "huc10_name": "Lower Los Pinos River",
+      "huc12": "140801011505",
+      "huc12_name": "Outlet Spring Creek",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "La Plata"
+    },
+    "ILF01": {
+      "huc06": "101900",
+      "huc06_name": "Iliff",
+      "huc08": "10190012",
+      "huc08_name": "Iliff",
+      "huc10": "1019001210",
+      "huc10_name": "Lewis Creek-South Platte River",
+      "huc12": "101900121005",
+      "huc12_name": "Town of Iliff-South Platte River",
+      "land_use": [
+        "Developed, Low Intensity"
+      ],
+      "county": "Logan"
+    },
+    "JFN01": {
+      "huc06": "101900",
+      "huc06_name": "Jefferson",
+      "huc08": "10190001",
+      "huc08_name": "Jefferson",
+      "huc10": "1019000104",
+      "huc10_name": "Headwates Tarryall Creek",
+      "huc12": "101900010404",
+      "huc12_name": "Michigan Creek",
+      "land_use": [
+        "Emergent Herbaceous Wetlands"
+      ],
+      "county": "Park"
+    },
+    "KLN01": {
+      "huc06": "140801",
+      "huc06_name": "Kline",
+      "huc08": "14080105",
+      "huc08_name": "Kline",
+      "huc10": "1408010501",
+      "huc10_name": "Headwaters La Plata River",
+      "huc12": "140801050108",
+      "huc12_name": "Red Mesa",
+      "land_use": [
+        "Developed, Open Space"
+      ],
+      "county": "La Plata"
+    },
+    "KRK01": {
+      "huc06": "102500",
+      "huc06_name": "Kirk",
+      "huc08": "10250001",
+      "huc08_name": "Kirk",
+      "huc10": "1025000107",
+      "huc10_name": "Spring Canyon-Arikaree River",
+      "huc12": "102500010702",
+      "huc12_name": "Spring Canyon",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Yuma"
+    },
+    "KRM01": {
+      "huc06": "140100",
+      "huc06_name": "Kremmling",
+      "huc08": "14010001",
+      "huc08_name": "Kremmling",
+      "huc10": "1401000106",
+      "huc10_name": "Troublesome Creek-Colorado River",
+      "huc12": "140100010605",
+      "huc12_name": "Waste Creek-Troublesome Creek",
+      "land_use": [
+        "Emergent Herbaceous Wetlands"
+      ],
+      "county": "Grand"
+    },
+    "KSY01": {
+      "huc06": "101900",
+      "huc06_name": "Kersey 1",
+      "huc08": "10190003",
+      "huc08_name": "Kersey 1",
+      "huc10": "1019000308",
+      "huc10_name": "Outlet Box Elder Creek",
+      "huc12": "101900030806",
+      "huc12_name": "Box Elder Creek",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Weld"
+    },
+    "KSY02": {
+      "huc06": "101900",
+      "huc06_name": "Kersey 2",
+      "huc08": "10190003",
+      "huc08_name": "Kersey 2",
+      "huc10": "1019000308",
+      "huc10_name": "Outlet Box Elder Creek",
+      "huc12": "101900030806",
+      "huc12_name": "Box Elder Creek",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Weld"
+    },
+    "LAM01": {
+      "huc06": "110200",
+      "huc06_name": "Lamar #1",
+      "huc08": "11020009",
+      "huc08_name": "Lamar #1",
+      "huc10": "1102000913",
+      "huc10_name": "Clay Creek",
+      "huc12": "110200091306",
+      "huc12_name": "Outlet Clay Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Prowers"
+    },
+    "LAM03": {
+      "huc06": "110200",
+      "huc06_name": "Lamar #3",
+      "huc08": "11020009",
+      "huc08_name": "Lamar #3",
+      "huc10": "1102000910",
+      "huc10_name": "Dry Creek-Arkansas River",
+      "huc12": "110200091006",
+      "huc12_name": "Lower Dry Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Prowers"
+    },
+    "LAM04": {
+      "huc06": "110200",
+      "huc06_name": "Lamar #4",
+      "huc08": "11020009",
+      "huc08_name": "Lamar #4",
+      "huc10": "1102000914",
+      "huc10_name": "Neenoshe Reservoir-Arkansas River",
+      "huc12": "110200091403",
+      "huc12_name": "Prince Reservoir",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Prowers"
+    },
+    "LAR01": {
+      "huc06": "101800",
+      "huc06_name": "Larand",
+      "huc08": "10180001",
+      "huc08_name": "Larand",
+      "huc10": "1018000104",
+      "huc10_name": "Illinois River",
+      "huc12": "101800010408",
+      "huc12_name": "Owl Ridge-Illinois River",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Jackson"
+    },
+    "LBN01": {
+      "huc06": "140802",
+      "huc06_name": "Lebanon",
+      "huc08": "14080202",
+      "huc08_name": "Lebanon",
+      "huc10": "1408020201",
+      "huc10_name": "Upper McElmo Creek",
+      "huc12": "140802020103",
+      "huc12_name": "Hartman Canyon",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Montezuma"
+    },
+    "LCN01": {
+      "huc06": "101900",
+      "huc06_name": "Lucerne",
+      "huc08": "10190007",
+      "huc08_name": "Lucerne",
+      "huc10": "1019000710",
+      "huc10_name": "Coalbank Creek-Cache la Poudre River",
+      "huc12": "101900071007",
+      "huc12_name": "Eaton Draw",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Weld"
+    },
+    "LJR01": {
+      "huc06": "130100",
+      "huc06_name": "LaJara",
+      "huc08": "13010002",
+      "huc08_name": "LaJara",
+      "huc10": "1301000204",
+      "huc10_name": "La Jara Creek",
+      "huc12": "130100020411",
+      "huc12_name": "Outlet La Jara Creek",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Conejos"
+    },
+    "LJT01": {
+      "huc06": "110200",
+      "huc06_name": "LaJunta",
+      "huc08": "11020008",
+      "huc08_name": "LaJunta",
+      "huc10": "1102000805",
+      "huc10_name": "Lower Horse Creek",
+      "huc12": "110200080504",
+      "huc12_name": "Outlet Horse Creek",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Bent"
+    },
+    "LMS02": {
+      "huc06": "110200",
+      "huc06_name": "Las Animas 2",
+      "huc08": "11020010",
+      "huc08_name": "Las Animas 2",
+      "huc10": "1102001019",
+      "huc10_name": "Outlet Purgatoire River",
+      "huc12": "110200101904",
+      "huc12_name": "Outlet Purgatoire River",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Bent"
+    },
+    "LSL01": {
+      "huc06": "101900",
+      "huc06_name": "La Salle",
+      "huc08": "10190003",
+      "huc08_name": "La Salle",
+      "huc10": "1019000305",
+      "huc10_name": "Beebe Seep Canal",
+      "huc12": "101900030505",
+      "huc12_name": "Lower Latham Reservoir",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Weld"
+    },
+    "MCL01": {
+      "huc06": "110200",
+      "huc06_name": "McClave (was Las Animas #1)",
+      "huc08": "11020009",
+      "huc08_name": "McClave (was Las Animas #1)",
+      "huc10": "1102000910",
+      "huc10_name": "Dry Creek-Arkansas River",
+      "huc12": "110200091002",
+      "huc12_name": "Limestone Creek",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Bent"
+    },
+    "MKR01": {
+      "huc06": "140500",
+      "huc06_name": "Meeker",
+      "huc08": "14050005",
+      "huc08_name": "Meeker",
+      "huc10": "1405000504",
+      "huc10_name": "Strawberry Creek-White River",
+      "huc12": "140500050401",
+      "huc12_name": "Flag Creek",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Rio Blanco"
+    },
+    "MNC01": {
+      "huc06": "140801",
+      "huc06_name": "Mancos",
+      "huc08": "14080107",
+      "huc08_name": "Mancos",
+      "huc10": "1408010701",
+      "huc10_name": "Upper Mancos River",
+      "huc12": "140801070108",
+      "huc12_name": "East Rim-Mancos River",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Montezuma"
+    },
+    "MTR01": {
+      "huc06": "140200",
+      "huc06_name": "Montrose",
+      "huc08": "14020006",
+      "huc08_name": "Montrose",
+      "huc10": "1402000606",
+      "huc10_name": "Lower Uncompahgre River",
+      "huc12": "140200060604",
+      "huc12_name": "East Mesa",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Montrose"
+    },
+    "NWD01": {
+      "huc06": "140300",
+      "huc06_name": "Norwood",
+      "huc08": "14030003",
+      "huc08_name": "Norwood",
+      "huc10": "1403000304",
+      "huc10_name": "Naturita Creek",
+      "huc12": "140300030405",
+      "huc12_name": "Headwaters Maverick Draw",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "San Miguel"
+    },
+    "ORM02": {
+      "huc06": "140100",
+      "huc06_name": "CSU Orchard Mesa Research Sta",
+      "huc08": "14010005",
+      "huc08_name": "CSU Orchard Mesa Research Sta",
+      "huc10": "1401000515",
+      "huc10_name": "Sink Creek-Colorado River",
+      "huc12": "140100051503",
+      "huc12_name": "Indian Wash-Colorado River",
+      "land_use": [
+        "Developed, Open Space"
+      ],
+      "county": "Mesa"
+    },
+    "OTH01": {
+      "huc06": "140200",
+      "huc06_name": "Olathe",
+      "huc08": "14020006",
+      "huc08_name": "Olathe",
+      "huc10": "1402000606",
+      "huc10_name": "Lower Uncompahgre River",
+      "huc12": "140200060605",
+      "huc12_name": "Loutsenhizer Arroyo",
+      "land_use": [
+        "Developed, Low Intensity"
+      ],
+      "county": "Montrose"
+    },
+    "PAI01": {
+      "huc06": "102500",
+      "huc06_name": "Paoli",
+      "huc08": "10250002",
+      "huc08_name": "Paoli",
+      "huc10": "1025000210",
+      "huc10_name": "Patent Creek-Buffalo Creek",
+      "huc12": "102500021001",
+      "huc12_name": "Rockland Cemetery",
+      "land_use": [
+        "Developed, Open Space"
+      ],
+      "county": "Yuma"
+    },
+    "PBW01": {
+      "huc06": "110200",
+      "huc06_name": "Pueblo West",
+      "huc08": "11020002",
+      "huc08_name": "Pueblo West",
+      "huc10": "1102000208",
+      "huc10_name": "Pueblo Reservoir-Arkansas River",
+      "huc12": "110200020804",
+      "huc12_name": "Boggs Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Pueblo"
+    },
+    "PGS01": {
+      "huc06": "140801",
+      "huc06_name": "Pagosa Springs",
+      "huc08": "14080101",
+      "huc08_name": "Pagosa Springs",
+      "huc10": "1408010104",
+      "huc10_name": "Pagosa Springs-San Juan River",
+      "huc12": "140801010404",
+      "huc12_name": "Fawn Gulch-San Juan River",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Archuleta"
+    },
+    "PKH01": {
+      "huc06": "101900",
+      "huc06_name": "Peckham",
+      "huc08": "10190003",
+      "huc08_name": "Peckham",
+      "huc10": "1019000306",
+      "huc10_name": "Little Dry Creek-South Platte River",
+      "huc12": "101900030606",
+      "huc12_name": "City of Evans-South Platte River",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Weld"
+    },
+    "PKN01": {
+      "huc06": "110200",
+      "huc06_name": "Punkin Center",
+      "huc08": "11020012",
+      "huc08_name": "Punkin Center",
+      "huc10": "1102001202",
+      "huc10_name": "South Rush Creek",
+      "huc12": "110200120206",
+      "huc12_name": "Middle South Rush Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Lincoln"
+    },
+    "PNR01": {
+      "huc06": "110200",
+      "huc06_name": "Penrose",
+      "huc08": "11020002",
+      "huc08_name": "Penrose",
+      "huc10": "1102000206",
+      "huc10_name": "Red Creek-Arkansas River",
+      "huc12": "110200020603",
+      "huc12_name": "Willow Spring Creek-Arkansas River",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Fremont"
+    },
+    "RFD01": {
+      "huc06": "110200",
+      "huc06_name": "CSU Expt Stn Rocky Ford",
+      "huc08": "11020005",
+      "huc08_name": "CSU Expt Stn Rocky Ford",
+      "huc10": "1102000507",
+      "huc10_name": "Dye Reservoir-Arkansas River",
+      "huc12": "110200050705",
+      "huc12_name": "Dye Reservoir-Arkansas River",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Otero"
+    },
+    "SAN01": {
+      "huc06": "130201",
+      "huc06_name": "San Acacio",
+      "huc08": "13020101",
+      "huc08_name": "San Acacio",
+      "huc10": "1302010102",
+      "huc10_name": "Latir Creek-Rio Grande",
+      "huc12": "130201010201",
+      "huc12_name": "Mesita Hill-Rio Grande",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Costilla"
+    },
+    "SBT01": {
+      "huc06": "102500",
+      "huc06_name": "Seibert",
+      "huc08": "10250003",
+      "huc08_name": "Seibert",
+      "huc10": "1025000305",
+      "huc10_name": "Spring Creek",
+      "huc12": "102500030501",
+      "huc12_name": "102500030501",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Kit Carson"
+    },
+    "SCM01": {
+      "huc06": "110200",
+      "huc06_name": "Sand Creek Massacre HS",
+      "huc08": "11020011",
+      "huc08_name": "Sand Creek Massacre HS",
+      "huc10": "1102001108",
+      "huc10_name": "1102001108-Big Sandy Creek",
+      "huc12": "110200110803",
+      "huc12_name": "110200110803-Big Sandy Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Kiowa"
+    },
+    "SLD01": {
+      "huc06": "110200",
+      "huc06_name": "Salida",
+      "huc08": "11020001",
+      "huc08_name": "Salida",
+      "huc10": "1102000107",
+      "huc10_name": "Trout Creek-Arkansas River",
+      "huc12": "110200010709",
+      "huc12_name": "Tabeguache Creek-Arkansas River",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Chaffee"
+    },
+    "SLT01": {
+      "huc06": "140100",
+      "huc06_name": "Silt",
+      "huc08": "14010005",
+      "huc08_name": "Silt",
+      "huc10": "1401000506",
+      "huc10_name": "Garfield Creek-Colorado River",
+      "huc12": "140100050604",
+      "huc12_name": "Dry Creek-Colorado River",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Garfield"
+    },
+    "STG01": {
+      "huc06": "102500",
+      "huc06_name": "Sterling",
+      "huc08": "10250002",
+      "huc08_name": "Sterling",
+      "huc10": "1025000203",
+      "huc10_name": "Coyote Creek",
+      "huc12": "102500020301",
+      "huc12_name": "Headwaters Coyote Creek",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Logan"
+    },
+    "STN01": {
+      "huc06": "102500",
+      "huc06_name": "Stratton",
+      "huc08": "10250003",
+      "huc08_name": "Stratton",
+      "huc10": "1025000307",
+      "huc10_name": "Landsman Creek",
+      "huc12": "102500030705",
+      "huc12_name": "Middle Landsman Creek",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Kit Carson"
+    },
+    "TWC01": {
+      "huc06": "140802",
+      "huc06_name": "Towaoc",
+      "huc08": "14080201",
+      "huc08_name": "Towaoc",
+      "huc10": "1408020102",
+      "huc10_name": "Marble Wash-San Juan River",
+      "huc12": "140802010208",
+      "huc12_name": "Coyote Wash",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Montezuma"
+    },
+    "WCF01": {
+      "huc06": "110200",
+      "huc06_name": "Westcliffe",
+      "huc08": "11020001",
+      "huc08_name": "Westcliffe",
+      "huc10": "1102000112",
+      "huc10_name": "Headwaters Grape Creek",
+      "huc12": "110200011210",
+      "huc12_name": "Taylor Creek",
+      "land_use": [
+        "Pasture/Hay"
+      ],
+      "county": "Custer"
+    },
+    "WFD01": {
+      "huc06": "140100",
+      "huc06_name": "Wolford Mtn Reservoir",
+      "huc08": "14010001",
+      "huc08_name": "Wolford Mtn Reservoir",
+      "huc10": "1401000107",
+      "huc10_name": "Muddy Creek",
+      "huc12": "140100010708",
+      "huc12_name": "Lower Muddy Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Grand"
+    },
+    "WLS01": {
+      "huc06": "110400",
+      "huc06_name": "Walsh",
+      "huc08": "11040004",
+      "huc08_name": "Walsh",
+      "huc10": "1104000403",
+      "huc10_name": "Upper Sand Arroyo Creek",
+      "huc12": "110400040303",
+      "huc12_name": "Burchfield Lake-Sand Arroyo Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Baca"
+    },
+    "WRY02": {
+      "huc06": "102500",
+      "huc06_name": "Wray 2",
+      "huc08": "10250002",
+      "huc08_name": "Wray 2",
+      "huc10": "1025000209",
+      "huc10_name": "Rush Creek-North Fork Republican River",
+      "huc12": "102500020905",
+      "huc12_name": "Rush Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Yuma"
+    },
+    "YJK01": {
+      "huc06": "140802",
+      "huc06_name": "Yellow Jacket",
+      "huc08": "14080202",
+      "huc08_name": "Yellow Jacket",
+      "huc10": "1408020202",
+      "huc10_name": "Yellow Jacket Canyon",
+      "huc12": "140802020202",
+      "huc12_name": "Dawson Draw-Yellowjacket Canyon",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Montezuma"
+    },
+    "YUC01": {
+      "huc06": "140801",
+      "huc06_name": "Yucca House",
+      "huc08": "14080107",
+      "huc08_name": "Yucca House",
+      "huc10": "1408010703",
+      "huc10_name": "Lower Mancos River",
+      "huc12": "140801070302",
+      "huc12_name": "Fisher Creek-Navajo Wash",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Montezuma"
+    },
+    "YUM02": {
+      "huc06": "102500",
+      "huc06_name": "Yuma",
+      "huc08": "10250002",
+      "huc08_name": "Yuma",
+      "huc10": "1025000207",
+      "huc10_name": "Chief Creek",
+      "huc12": "102500020703",
+      "huc12_name": "City of Yuma",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Yuma"
+    }
+  },
+  "RAWS": {
+    "ALAMOSA": {
+      "huc06": "130100",
+      "huc06_name": "CO DIVISION OF FIRE",
+      "huc08": "13010002",
+      "huc08_name": "CO DIVISION OF FIRE",
+      "huc10": "1301000202",
+      "huc10_name": "Rock Creek",
+      "huc12": "130100020207",
+      "huc12_name": "Outlet Rock Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Alamosa"
+    },
+    "ARF1 PORTABLE": {
+      "huc06": "140100",
+      "huc06_name": "ARF Portable",
+      "huc08": "14010001",
+      "huc08_name": "ARF Portable",
+      "huc10": "1401000102",
+      "huc10_name": "Fraser River",
+      "huc12": "140100010209",
+      "huc12_name": "Tenmile Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Boulder"
+    },
+    "ARF2 PORTABLE": {
+      "huc06": "140100",
+      "huc06_name": "ARF Portable",
+      "huc08": "14010001",
+      "huc08_name": "ARF Portable",
+      "huc10": "1401000102",
+      "huc10_name": "Fraser River",
+      "huc12": "140100010205",
+      "huc12_name": "Meadows Creek-Ranch Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Grand"
+    },
+    "ARSENAL": {
+      "huc06": "101900",
+      "huc06_name": "RockyMtn Arsenal NWR",
+      "huc08": "10190003",
+      "huc08_name": "RockyMtn Arsenal NWR",
+      "huc10": "1019000304",
+      "huc10_name": "Big Dry Creek-South Platte River",
+      "huc12": "101900030402",
+      "huc12_name": "Derby Lake-South Platte River",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Adams"
+    },
+    "BAILEY": {
+      "huc06": "101900",
+      "huc06_name": "SOUTH PLATTE",
+      "huc08": "10190002",
+      "huc08_name": "SOUTH PLATTE",
+      "huc10": "1019000203",
+      "huc10_name": "Outlet North Fork South Platte River",
+      "huc12": "101900020304",
+      "huc12_name": "Roland Gulch-North Fork South Platte River",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Jefferson"
+    },
+    "BEAR CREEK": {
+      "huc06": "110200",
+      "huc06_name": "BEAR CREEK",
+      "huc08": "11020001",
+      "huc08_name": "BEAR CREEK",
+      "huc10": "1102000109",
+      "huc10_name": "Big Cottonwood Creek-Arkansas River",
+      "huc12": "110200010901",
+      "huc12_name": "Bear Creek",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Fremont"
+    },
+    "BEULAH": {
+      "huc06": "110200",
+      "huc06_name": "Sheriff's Department",
+      "huc08": "11020002",
+      "huc08_name": "Sheriff's Department",
+      "huc10": "1102000211",
+      "huc10_name": "Headwaters Saint Charles River",
+      "huc12": "110200021103",
+      "huc12_name": "Squirrel Creek",
+      "land_use": [
+        "Developed, Low Intensity"
+      ],
+      "county": "Pueblo"
+    },
+    "LUJAN": {
+      "huc06": "140200",
+      "huc06_name": "TAYLOR RIVER",
+      "huc08": "14020003",
+      "huc08_name": "TAYLOR RIVER",
+      "huc10": "1402000305",
+      "huc10_name": "Cochetopa Creek",
+      "huc12": "140200030507",
+      "huc12_name": "West Pass Creek",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Gunnison"
+    },
+    "NEEDLE CREEK": {
+      "huc06": "140200",
+      "huc06_name": "TAYLOR RIVER RD",
+      "huc08": "14020003",
+      "huc08_name": "TAYLOR RIVER RD",
+      "huc10": "1402000304",
+      "huc10_name": "Middle Tomichi Creek",
+      "huc12": "140200030401",
+      "huc12_name": "Owens Creek-Tomichi Creek",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Gunnison"
+    },
+    "BLACK CANYON": {
+      "huc06": "140200",
+      "huc06_name": "WASHINGTON D.C.",
+      "huc08": "14020002",
+      "huc08_name": "WASHINGTON D.C.",
+      "huc10": "1402000211",
+      "huc10_name": "Black Canyon of the Gunnison",
+      "huc12": "140200021101",
+      "huc12_name": "Grizzly Gulch-Gunnison River",
+      "land_use": [
+        "Deciduous Forest"
+      ],
+      "county": "Montrose"
+    },
+    "BLACK MOUNTAIN": {
+      "huc06": "110200",
+      "huc06_name": "SAN CARLOS RD",
+      "huc08": "11020006",
+      "huc08_name": "SAN CARLOS RD",
+      "huc10": "1102000601",
+      "huc10_name": "Headwaters Huerfano River",
+      "huc12": "110200060104",
+      "huc12_name": "Headwaters Muddy Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Huerfano"
+    },
+    "SILVER JACK": {
+      "huc06": "140200",
+      "huc06_name": "Ouray RD",
+      "huc08": "14020002",
+      "huc08_name": "Ouray RD",
+      "huc10": "1402000209",
+      "huc10_name": "Cimarron River",
+      "huc12": "140200020902",
+      "huc12_name": "Upper Cimarron River",
+      "land_use": [
+        "Deciduous Forest"
+      ],
+      "county": "Gunnison"
+    },
+    "BOSQUE": {
+      "huc06": "110200",
+      "huc06_name": "CSFS",
+      "huc08": "11020010",
+      "huc08_name": "CSFS",
+      "huc10": "1102001001",
+      "huc10_name": "Headwaters Purgatoire River",
+      "huc12": "110200100107",
+      "huc12_name": "Lower South Fork Purgatoire River",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Las Animas"
+    },
+    "BOULDER COUNTY EAST": {
+      "huc06": "101900",
+      "huc06_name": "Fort Collins Zone",
+      "huc08": "10190005",
+      "huc08_name": "Fort Collins Zone",
+      "huc10": "1019000506",
+      "huc10_name": "Coal Creek-Boulder Creek",
+      "huc12": "101900050605",
+      "huc12_name": "Bullhead Gulch-Boulder Creek",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Boulder"
+    },
+    "BOULDER COUNTY FIRE QD1": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190005",
+      "huc08_name": null,
+      "huc10": "1019000502",
+      "huc10_name": "North Saint Vrain Creek",
+      "huc12": "101900050204",
+      "huc12_name": "Outlet North Saint Vrain Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Boulder"
+    },
+    "BOULDER FLATIRON": {
+      "huc06": "101900",
+      "huc06_name": "Fort Collins Zone",
+      "huc08": "10190005",
+      "huc08_name": "Fort Collins Zone",
+      "huc10": "1019000505",
+      "huc10_name": "South Boulder Creek",
+      "huc12": "101900050504",
+      "huc12_name": "Lower South Boulder Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Boulder"
+    },
+    "BUCKEYE": {
+      "huc06": "101900",
+      "huc06_name": "LARIMER SHERIFF",
+      "huc08": "10190007",
+      "huc08_name": "LARIMER SHERIFF",
+      "huc10": "1019000709",
+      "huc10_name": "Boxelder Creek",
+      "huc12": "101900070905",
+      "huc12_name": "Lower Boxelder Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Larimer"
+    },
+    "BUCKLES": {
+      "huc06": "140801",
+      "huc06_name": "Pagosa",
+      "huc08": "14080101",
+      "huc08_name": "Pagosa",
+      "huc10": "1408010106",
+      "huc10_name": "Navajo River",
+      "huc12": "140801010607",
+      "huc12_name": "Coyote Creek",
+      "land_use": [
+        "Aspen and Shrub"
+      ],
+      "county": "Archuleta"
+    },
+    "CALICO": {
+      "huc06": "140500",
+      "huc06_name": null,
+      "huc08": "14050002",
+      "huc08_name": null,
+      "huc10": "1405000206",
+      "huc10_name": "Hells Canyon-Yampa River",
+      "huc12": "140500020603",
+      "huc12_name": "Sawmill Canyon-Yampa River",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Moffat"
+    },
+    "CARPENTER PEAK": {
+      "huc06": "101900",
+      "huc06_name": "SOUTH PLATTE RD",
+      "huc08": "10190002",
+      "huc08_name": "SOUTH PLATTE RD",
+      "huc10": "1019000207",
+      "huc10_name": "Chatfield Lake-South Platte River",
+      "huc12": "101900020703",
+      "huc12_name": "Chatfield Lake-South Platte River",
+      "land_use": [
+        "Low Shrub"
+      ],
+      "county": "Douglas"
+    },
+    "CARPENTER RIDGE": {
+      "huc06": "140300",
+      "huc06_name": "MOAB",
+      "huc08": "14030002",
+      "huc08_name": "MOAB",
+      "huc10": "1403000211",
+      "huc10_name": "West Paradox Creek-Dolores River",
+      "huc12": "140300021102",
+      "huc12_name": "Willow Basin Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Montrose"
+    },
+    "CCDBLMFTS1": {
+      "huc06": "110200",
+      "huc06_name": null,
+      "huc08": "11020002",
+      "huc08_name": null,
+      "huc10": "1102000202",
+      "huc10_name": "Outlet Fourmile Creek",
+      "huc12": "110200020206",
+      "huc12_name": "City Creek-Wilson Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Fremont"
+    },
+    "CHAPIN": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080107",
+      "huc08_name": null,
+      "huc10": "1408010702",
+      "huc10_name": "Middle Mancos River",
+      "huc12": "140801070206",
+      "huc12_name": "Headwaters Navajo Canyon",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Montezuma"
+    },
+    "CHEESMAN": {
+      "huc06": "101900",
+      "huc06_name": "SOUTH PLATTE RD",
+      "huc08": "10190002",
+      "huc08_name": "SOUTH PLATTE RD",
+      "huc10": "1019000204",
+      "huc10_name": "Lost Creek-South Platte River",
+      "huc12": "101900020404",
+      "huc12_name": "Cheesman Lake-South Platte River",
+      "land_use": [
+        "Mountain Shrub"
+      ],
+      "county": "Douglas"
+    },
+    "COLORADO CITY": {
+      "huc06": "110200",
+      "huc06_name": "PUEBLO COUNTY",
+      "huc08": "11020002",
+      "huc08_name": "PUEBLO COUNTY",
+      "huc10": "1102000210",
+      "huc10_name": "Greenhorn Creek",
+      "huc12": "110200021002",
+      "huc12_name": "Upper Greenhorn Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Pueblo"
+    },
+    "COPPER GULCH": {
+      "huc06": "110200",
+      "huc06_name": "WASHINGTON D.C.",
+      "huc08": "11020001",
+      "huc08_name": "WASHINGTON D.C.",
+      "huc10": "1102000113",
+      "huc10_name": "Outlet Grape Creek",
+      "huc12": "110200011305",
+      "huc12_name": "McClure Gulch-Pine Gulch",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Fremont"
+    },
+    "CORRAL CREEK": {
+      "huc06": "101900",
+      "huc06_name": "CLEAR CREEK",
+      "huc08": "10190002",
+      "huc08_name": "CLEAR CREEK",
+      "huc10": "1019000208",
+      "huc10_name": "Bear Creek",
+      "huc12": "101900020801",
+      "huc12_name": "Vance Creek",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Jefferson"
+    },
+    "COSUA_PORT1": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080105",
+      "huc08_name": null,
+      "huc10": "1408010501",
+      "huc10_name": "Headwaters La Plata River",
+      "huc12": "140801050110",
+      "huc12_name": "Johnny Pond Arroyo-La Plata River",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "La Plata"
+    },
+    "COTTONWOOD BASIN": {
+      "huc06": "140200",
+      "huc06_name": "WASHINGTON D.C.",
+      "huc08": "14020005",
+      "huc08_name": "WASHINGTON D.C.",
+      "huc10": "1402000502",
+      "huc10_name": "Roubideau Creek",
+      "huc12": "140200050202",
+      "huc12_name": "Potter Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Montrose"
+    },
+    "COUMA_PORT1": {
+      "huc06": "140802",
+      "huc06_name": null,
+      "huc08": "14080202",
+      "huc08_name": null,
+      "huc10": "1408020203",
+      "huc10_name": "Middle McElmo Creek",
+      "huc12": "140802020301",
+      "huc12_name": "Mud Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Montezuma"
+    },
+    "CRDBLMFTS QD": {
+      "huc06": "140401",
+      "huc06_name": null,
+      "huc08": "14040106",
+      "huc08_name": null,
+      "huc10": "1404010610",
+      "huc10_name": "Conway Draw-Green River",
+      "huc12": "140401061003",
+      "huc12_name": "Upper Conway Draw",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Moffat"
+    },
+    "CROW CREEK": {
+      "huc06": "101900",
+      "huc06_name": "CO DIVISION OF FIRE",
+      "huc08": "10190009",
+      "huc08_name": "CO DIVISION OF FIRE",
+      "huc10": "1019000905",
+      "huc10_name": "Lower Crow Creek",
+      "huc12": "101900090501",
+      "huc12_name": "Howard Creek-Crow Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Weld"
+    },
+    "SANBORN PARK": {
+      "huc06": "140300",
+      "huc06_name": "NORWOOD RD",
+      "huc08": "14030003",
+      "huc08_name": "NORWOOD RD",
+      "huc10": "1403000303",
+      "huc10_name": "Beaver Creek-San Miguel River",
+      "huc12": "140300030307",
+      "huc12_name": "Craig Draw-San Miguel River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Montrose"
+    },
+    "DEEP CREEK": {
+      "huc06": "140100",
+      "huc06_name": "RIFLE RD",
+      "huc08": "14010005",
+      "huc08_name": "RIFLE RD",
+      "huc10": "1401000502",
+      "huc10_name": "Elk Creek",
+      "huc12": "140100050201",
+      "huc12_name": "Deep Creek",
+      "land_use": [
+        "Forest & Brush"
+      ],
+      "county": "Garfield"
+    },
+    "DEMAREE": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010005",
+      "huc08_name": null,
+      "huc10": "1401000518",
+      "huc10_name": "East Salt Creek",
+      "huc12": "140100051804",
+      "huc12_name": "Dry Canyon Wash",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Garfield"
+    },
+    "TAYLOR PARK": {
+      "huc06": "140200",
+      "huc06_name": "TAYLOR RIVER RD",
+      "huc08": "14020001",
+      "huc08_name": "TAYLOR RIVER RD",
+      "huc10": "1402000101",
+      "huc10_name": "Taylor River",
+      "huc12": "140200010103",
+      "huc12_name": "Middle Taylor River",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Gunnison"
+    },
+    "DFPC PORTABLE 1": {
+      "huc06": "140500",
+      "huc06_name": "CO DIVISION OF FIRE",
+      "huc08": "14050007",
+      "huc08_name": "CO DIVISION OF FIRE",
+      "huc10": "1405000704",
+      "huc10_name": "Red Wash-White River",
+      "huc12": "140500070407",
+      "huc12_name": "Gillam Draw-White River",
+      "land_use": [
+        "Woody Wetlands"
+      ],
+      "county": "Rio Blanco"
+    },
+    "DFPC PORTABLE 2": {
+      "huc06": "101900",
+      "huc06_name": "CO DIVISION OF FIRE",
+      "huc08": "10190002",
+      "huc08_name": "CO DIVISION OF FIRE",
+      "huc10": "1019000208",
+      "huc10_name": "Bear Creek",
+      "huc12": "101900020802",
+      "huc12_name": "Headwaters Bear Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Clear Creek"
+    },
+    "DINOSAUR NM SUCCESS": {
+      "huc06": "140500",
+      "huc06_name": null,
+      "huc08": "14050002",
+      "huc08_name": null,
+      "huc10": "1405000206",
+      "huc10_name": "Hells Canyon-Yampa River",
+      "huc12": "140500020615",
+      "huc12_name": "Sand Canyon",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Moffat"
+    },
+    "DOLORES D5 PORTABLE": {
+      "huc06": "140300",
+      "huc06_name": "Dolores Ranger Dist.",
+      "huc08": "14030002",
+      "huc08_name": "Dolores Ranger Dist.",
+      "huc10": "1403000203",
+      "huc10_name": "McPhee Reservoir-Dolores River",
+      "huc12": "140300020307",
+      "huc12_name": "House Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Montezuma"
+    },
+    "BIG HORN": {
+      "huc06": "130100",
+      "huc06_name": "CONEOS PK RD",
+      "huc08": "13010005",
+      "huc08_name": "CONEOS PK RD",
+      "huc10": "1301000504",
+      "huc10_name": "Outlet Conejos River",
+      "huc12": "130100050404",
+      "huc12_name": "Bighorn Creek",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Conejos"
+    },
+    "DRAGON ROAD": {
+      "huc06": "140500",
+      "huc06_name": "WASHINGTON D.C.",
+      "huc08": "14050007",
+      "huc08_name": "WASHINGTON D.C.",
+      "huc10": "1405000703",
+      "huc10_name": "Outlet Douglas Creek",
+      "huc12": "140500070302",
+      "huc12_name": "Big Horse Draw",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Rio Blanco"
+    },
+    "DRY CREEK BASIN": {
+      "huc06": "140300",
+      "huc06_name": "Tres Rios FO",
+      "huc08": "14030003",
+      "huc08_name": "Tres Rios FO",
+      "huc10": "1403000305",
+      "huc10_name": "Dry Creek",
+      "huc12": "140300030503",
+      "huc12_name": "West Fork Dry Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "San Miguel"
+    },
+    "DRY GULCH": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010001",
+      "huc08_name": null,
+      "huc10": "1401000109",
+      "huc10_name": "Sheephorn Creek-Colorado River",
+      "huc12": "140100010904",
+      "huc12_name": "Cottonwood Creek-Sheephorn Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Grand"
+    },
+    "BLUE PARK": {
+      "huc06": "130100",
+      "huc06_name": "CREEDE",
+      "huc08": "13010001",
+      "huc08_name": "CREEDE",
+      "huc10": "1301000110",
+      "huc10_name": "Shallow Creek-Rio Grande",
+      "huc12": "130100011008",
+      "huc12_name": "Blue Creek-Rio Grande",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Mineral"
+    },
+    "DUMONT": {
+      "huc06": "101900",
+      "huc06_name": "CLEAR CREEK",
+      "huc08": "10190004",
+      "huc08_name": "CLEAR CREEK",
+      "huc10": "1019000402",
+      "huc10_name": "Middle Clear Creek",
+      "huc12": "101900040202",
+      "huc12_name": "Mill Creek-Clear Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Clear Creek"
+    },
+    "ESTES PARK": {
+      "huc06": "101900",
+      "huc06_name": "RMP",
+      "huc08": "10190006",
+      "huc08_name": "RMP",
+      "huc10": "1019000602",
+      "huc10_name": "Headwaters Big Thompson River",
+      "huc12": "101900060207",
+      "huc12_name": "Lake Estes-Big Thompson River",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Larimer"
+    },
+    "FOUR MILE": {
+      "huc06": "110200",
+      "huc06_name": null,
+      "huc08": "11020002",
+      "huc08_name": null,
+      "huc10": "1102000202",
+      "huc10_name": "Outlet Fourmile Creek",
+      "huc12": "110200020208",
+      "huc12_name": "Garden Park-Fourmile Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Fremont"
+    },
+    "FRANKTOWN": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190003",
+      "huc08_name": null,
+      "huc10": "1019000301",
+      "huc10_name": "Headwaters Cherry Creek",
+      "huc12": "101900030106",
+      "huc12_name": "Russellville Gulch-Cherry Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Douglas"
+    },
+    "FT. CARSON": {
+      "huc06": "110200",
+      "huc06_name": "PIKES PEAK RD",
+      "huc08": "11020002",
+      "huc08_name": "PIKES PEAK RD",
+      "huc10": "1102000207",
+      "huc10_name": "Turkey Creek",
+      "huc12": "110200020701",
+      "huc12_name": "Headwaters Turkey Creek",
+      "land_use": [
+        "Low Shrub"
+      ],
+      "county": "El Paso"
+    },
+    "GJDBLMFTS QD": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010005",
+      "huc08_name": null,
+      "huc10": "1401000518",
+      "huc10_name": "East Salt Creek",
+      "huc12": "140100051801",
+      "huc12_name": "Hay Canyon",
+      "land_use": [
+        "Deciduous Forest"
+      ],
+      "county": "Rio Blanco"
+    },
+    "GMF1 MONTROSE QD": {
+      "huc06": "140200",
+      "huc06_name": "MONTROSE",
+      "huc08": "14020005",
+      "huc08_name": "MONTROSE",
+      "huc10": "1402000502",
+      "huc10_name": "Roubideau Creek",
+      "huc12": "140200050202",
+      "huc12_name": "Potter Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Montrose"
+    },
+    "GRANADA": {
+      "huc06": "110200",
+      "huc06_name": "CO DIVISION OF FIRE",
+      "huc08": "11020009",
+      "huc08_name": "CO DIVISION OF FIRE",
+      "huc10": "1102000917",
+      "huc10_name": "Granada Creek-Arkansas River",
+      "huc12": "110200091705",
+      "huc12_name": "Town of Granada-Arkansas River",
+      "land_use": [
+        "Cultivated Crops"
+      ],
+      "county": "Prowers"
+    },
+    "GRAND MESA": {
+      "huc06": "140200",
+      "huc06_name": "Grand Valley RD",
+      "huc08": "14020005",
+      "huc08_name": "Grand Valley RD",
+      "huc10": "1402000501",
+      "huc10_name": "Tongue Creek-Gunnison River",
+      "huc12": "140200050108",
+      "huc12_name": "Ward Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Delta"
+    },
+    "GRAND VALLEY PORTABLE 2": {
+      "huc06": "140200",
+      "huc06_name": "GRAND VALLEY RD",
+      "huc08": "14020005",
+      "huc08_name": "GRAND VALLEY RD",
+      "huc10": "1402000507",
+      "huc10_name": "Kannah Creek-Gunnison River",
+      "huc12": "140200050703",
+      "huc12_name": "North Fork Kannah Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Mesa"
+    },
+    "GREAT DIVIDE": {
+      "huc06": "140500",
+      "huc06_name": "WASHINGTON D.C.",
+      "huc08": "14050003",
+      "huc08_name": "WASHINGTON D.C.",
+      "huc10": "1405000308",
+      "huc10_name": "Powder Wash-Little Snake River",
+      "huc12": "140500030803",
+      "huc12_name": "Upper Bighole Gulch",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Moffat"
+    },
+    "GUNNISON FO PORTABLE": {
+      "huc06": "140300",
+      "huc06_name": null,
+      "huc08": "14030004",
+      "huc08_name": null,
+      "huc10": "1403000402",
+      "huc10_name": "Roc Creek",
+      "huc12": "140300040203",
+      "huc12_name": "Roc Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Montrose"
+    },
+    "GUNNISON PORTABLE #1": {
+      "huc06": "140200",
+      "huc06_name": "Gunnison",
+      "huc08": "14020002",
+      "huc08_name": "Gunnison",
+      "huc10": "1402000207",
+      "huc10_name": "Soap Creek-Blue Mesa Reservoir",
+      "huc12": "140200020701",
+      "huc12_name": "East Elk Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Gunnison"
+    },
+    "GUNSIGHT": {
+      "huc06": "140100",
+      "huc06_name": "WASHINGTON D.C.",
+      "huc08": "14010001",
+      "huc08_name": "WASHINGTON D.C.",
+      "huc10": "1401000106",
+      "huc10_name": "Troublesome Creek-Colorado River",
+      "huc12": "140100010604",
+      "huc12_name": "Rabbit Ears Creek-Troublesome Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Grand"
+    },
+    "GYPSUM": {
+      "huc06": "140100",
+      "huc06_name": "WASHINGTON D.C.",
+      "huc08": "14010003",
+      "huc08_name": "WASHINGTON D.C.",
+      "huc10": "1401000306",
+      "huc10_name": "Lower Eagle River",
+      "huc12": "140100030606",
+      "huc12_name": "Outlet Eagle River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Eagle"
+    },
+    "HANGMAN": {
+      "huc06": "140100",
+      "huc06_name": "EAGLE RD",
+      "huc08": "14010001",
+      "huc08_name": "EAGLE RD",
+      "huc10": "1401000111",
+      "huc10_name": "Cabin Creek",
+      "huc12": "140100011102",
+      "huc12_name": "Cabin Creek",
+      "land_use": [
+        "Deciduous Forest, Mixed Forest"
+      ],
+      "county": "Eagle"
+    },
+    "HARBISON MEADOW": {
+      "huc06": "140100",
+      "huc06_name": "SULPHUR Ranger Dist",
+      "huc08": "14010001",
+      "huc08_name": "SULPHUR Ranger Dist",
+      "huc10": "1401000103",
+      "huc10_name": "Headwaters Colorado River",
+      "huc12": "140100010303",
+      "huc12_name": "Onahu Creek-Colorado River",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Grand"
+    },
+    "HEIL RANCH": {
+      "huc06": "101900",
+      "huc06_name": "Fort Collins Zone",
+      "huc08": "10190005",
+      "huc08_name": "Fort Collins Zone",
+      "huc10": "1019000503",
+      "huc10_name": "Left Hand Creek",
+      "huc12": "101900050303",
+      "huc12_name": "Middle Left Hand Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Boulder"
+    },
+    "HUNTER CREEK": {
+      "huc06": "140500",
+      "huc06_name": "WASHINGTON D.C.",
+      "huc08": "14050006",
+      "huc08_name": "WASHINGTON D.C.",
+      "huc10": "1405000602",
+      "huc10_name": "Outlet Piceance Creek",
+      "huc12": "140500060203",
+      "huc12_name": "Lower Black Sulphur Creek",
+      "land_use": [
+        "Developed, Open Space"
+      ],
+      "county": "Rio Blanco"
+    },
+    "HUNTSMAN MESA": {
+      "huc06": "140200",
+      "huc06_name": "WASHINGTON D.C.",
+      "huc08": "14020002",
+      "huc08_name": "WASHINGTON D.C.",
+      "huc10": "1402000205",
+      "huc10_name": "Cebolla Creek",
+      "huc12": "140200020511",
+      "huc12_name": "Outlet Cebolla Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Gunnison"
+    },
+    "INDEPENDENCE MOUNTAIN": {
+      "huc06": "101800",
+      "huc06_name": null,
+      "huc08": "10180001",
+      "huc08_name": null,
+      "huc10": "1018000107",
+      "huc10_name": "Pinkham Creek-North Platte River",
+      "huc12": "101800010703",
+      "huc12_name": "California Gulch-North Platte River",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Jackson"
+    },
+    "JACKS CANYON": {
+      "huc06": "140200",
+      "huc06_name": "WASHINGTON D.C.",
+      "huc08": "14020005",
+      "huc08_name": "WASHINGTON D.C.",
+      "huc10": "1402000504",
+      "huc10_name": "Big Dominguez Creek",
+      "huc12": "140200050404",
+      "huc12_name": "Rocky Pitch Gulch-Big Dominguez Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Mesa"
+    },
+    "JAY": {
+      "huc06": "140200",
+      "huc06_name": "WASHINGTON D.C.",
+      "huc08": "14020004",
+      "huc08_name": "WASHINGTON D.C.",
+      "huc10": "1402000405",
+      "huc10_name": "Outlet North Fork Gunnison River",
+      "huc12": "140200040506",
+      "huc12_name": "Outlet Leroux Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Delta"
+    },
+    "JONES HILL": {
+      "huc06": "101900",
+      "huc06_name": "FAIRPLAY",
+      "huc08": "10190001",
+      "huc08_name": "FAIRPLAY",
+      "huc10": "1019000102",
+      "huc10_name": "South Fork South Platte River",
+      "huc12": "101900010205",
+      "huc12_name": "Antero Reservoir-South Fork South Platte River",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Park"
+    },
+    "KENOSHA PASS": {
+      "huc06": "101900",
+      "huc06_name": "SOUTH PARK",
+      "huc08": "10190001",
+      "huc08_name": "SOUTH PARK",
+      "huc10": "1019000104",
+      "huc10_name": "Headwates Tarryall Creek",
+      "huc12": "101900010403",
+      "huc12_name": "Jefferson Creek",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Park"
+    },
+    "KEYSER RIDGE": {
+      "huc06": "140100",
+      "huc06_name": "Sulphur District",
+      "huc08": "14010001",
+      "huc08_name": "Sulphur District",
+      "huc10": "1401000104",
+      "huc10_name": "Williams Fork",
+      "huc12": "140100010404",
+      "huc12_name": "Upper Williams Fork",
+      "land_use": [
+        "Mixed Conifer, Sparse"
+      ],
+      "county": "Grand"
+    },
+    "LAKE GEORGE": {
+      "huc06": "101900",
+      "huc06_name": "SOUTH PARK RD",
+      "huc08": "10190001",
+      "huc08_name": "SOUTH PARK RD",
+      "huc10": "1019000106",
+      "huc10_name": "Elevenmile Canyon-South Platte River",
+      "huc12": "101900010605",
+      "huc12_name": "Elevenmile Canyon-South Platte River",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Park"
+    },
+    "LITTLE DOLORES": {
+      "huc06": "140300",
+      "huc06_name": null,
+      "huc08": "14030001",
+      "huc08_name": null,
+      "huc10": "1403000103",
+      "huc10_name": "Little Dolores River",
+      "huc12": "140300010307",
+      "huc12_name": "Toms Canyon-Little Dolores River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Mesa"
+    },
+    "LODGE POLE FLATS": {
+      "huc06": "110200",
+      "huc06_name": "LODGE POLE FLATS",
+      "huc08": "11020001",
+      "huc08_name": "LODGE POLE FLATS",
+      "huc10": "1102000102",
+      "huc10_name": "Headwaters Arkansas River",
+      "huc12": "110200010208",
+      "huc12_name": "Box Creek",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Lake"
+    },
+    "LODORE": {
+      "huc06": "140401",
+      "huc06_name": "WASHINGTON D.C.",
+      "huc08": "14040106",
+      "huc08_name": "WASHINGTON D.C.",
+      "huc10": "1404010610",
+      "huc10_name": "Conway Draw-Green River",
+      "huc12": "140401061004",
+      "huc12_name": "Lower Conway Draw",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Moffat"
+    },
+    "WILLOW CREEK": {
+      "huc06": "101800",
+      "huc06_name": "NORTH PARK RD",
+      "huc08": "10180001",
+      "huc08_name": "NORTH PARK RD",
+      "huc10": "1018000104",
+      "huc10_name": "Illinois River",
+      "huc12": "101800010403",
+      "huc12_name": "East Branch Willow Creek-Willow Creek",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Jackson"
+    },
+    "LOOKOUT MOUNTAIN": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190004",
+      "huc08_name": null,
+      "huc10": "1019000404",
+      "huc10_name": "Lower Clear Creek",
+      "huc12": "101900040402",
+      "huc12_name": "Clear Creek Canyon-Clear Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Jefferson"
+    },
+    "LOST PARK": {
+      "huc06": "101900",
+      "huc06_name": "LOST PARK",
+      "huc08": "10190002",
+      "huc08_name": "LOST PARK",
+      "huc10": "1019000204",
+      "huc10_name": "Lost Creek-South Platte River",
+      "huc12": "101900020401",
+      "huc12_name": "Headwaters Lost Creek",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Park"
+    },
+    "DRY LAKE": {
+      "huc06": "140500",
+      "huc06_name": "HAHNS PEAK RD",
+      "huc08": "14050001",
+      "huc08_name": "HAHNS PEAK RD",
+      "huc10": "1405000104",
+      "huc10_name": "Oak Creek-Yampa River",
+      "huc12": "140500010408",
+      "huc12_name": "Soda Creek",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Routt"
+    },
+    "MANCHESTER": {
+      "huc06": "101900",
+      "huc06_name": "PIKES PEAK DISTRICT",
+      "huc08": "10190002",
+      "huc08_name": "PIKES PEAK DISTRICT",
+      "huc10": "1019000201",
+      "huc10_name": "Trout Creek-West Creek",
+      "huc12": "101900020104",
+      "huc12_name": "West Creek",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Teller"
+    },
+    "MESA MTN": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080101",
+      "huc08_name": null,
+      "huc10": "1408010118",
+      "huc10_name": "Pump Canyon",
+      "huc12": "140801011802",
+      "huc12_name": "Upper Pump Canyon",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "La Plata"
+    },
+    "MOCKINGBIRD": {
+      "huc06": "140802",
+      "huc06_name": null,
+      "huc08": "14080202",
+      "huc08_name": null,
+      "huc10": "1408020202",
+      "huc10_name": "Yellow Jacket Canyon",
+      "huc12": "140802020204",
+      "huc12_name": "Sandstone Canyon",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Montezuma"
+    },
+    "MOREFIELD": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080107",
+      "huc08_name": null,
+      "huc10": "1408010702",
+      "huc10_name": "Middle Mancos River",
+      "huc12": "140801070203",
+      "huc12_name": "Morfield Canyon",
+      "land_use": [
+        "Developed, Low Intensity"
+      ],
+      "county": "Montezuma"
+    },
+    "PORCUPINE CR.": {
+      "huc06": "140100",
+      "huc06_name": "YAMPA RD",
+      "huc08": "14010001",
+      "huc08_name": "YAMPA RD",
+      "huc10": "1401000110",
+      "huc10_name": "Rock Creek",
+      "huc12": "140100011001",
+      "huc12_name": "Headwaters Rock Creek",
+      "land_use": [
+        "Forest & Brush"
+      ],
+      "county": "Routt"
+    },
+    "NORTH STERLING": {
+      "huc06": "101900",
+      "huc06_name": "CO DIVISION OF FIRE",
+      "huc08": "10190012",
+      "huc08_name": "CO DIVISION OF FIRE",
+      "huc10": "1019001208",
+      "huc10_name": "Cedar Creek",
+      "huc12": "101900120809",
+      "huc12_name": "Outlet Cedar Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Logan"
+    },
+    "NORWOOD PORTABLE #1": {
+      "huc06": "140200",
+      "huc06_name": null,
+      "huc08": "14020006",
+      "huc08_name": null,
+      "huc10": "1402000604",
+      "huc10_name": "Happy Canyon Creek-Uncompahgre River",
+      "huc12": "140200060403",
+      "huc12_name": "Happy Canyon Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Mesa"
+    },
+    "NUCLA": {
+      "huc06": "140300",
+      "huc06_name": null,
+      "huc08": "14030003",
+      "huc08_name": null,
+      "huc10": "1403000307",
+      "huc10_name": "Cottonwood Creek-San Miguel River",
+      "huc12": "140300030704",
+      "huc12_name": "Turtle Draw-San Miguel River",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Montrose"
+    },
+    "PICKLE GULCH": {
+      "huc06": "101900",
+      "huc06_name": "CLEAR CREEK",
+      "huc08": "10190004",
+      "huc08_name": "CLEAR CREEK",
+      "huc10": "1019000402",
+      "huc10_name": "Middle Clear Creek",
+      "huc12": "101900040206",
+      "huc12_name": "North Clear Creek",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Gilpin"
+    },
+    "PINE RIDGE": {
+      "huc06": "140100",
+      "huc06_name": "WASHINGTON D.C.",
+      "huc08": "14010005",
+      "huc08_name": "WASHINGTON D.C.",
+      "huc10": "1401000514",
+      "huc10_name": "Jerry Creek-Colorado River",
+      "huc12": "140100051407",
+      "huc12_name": "Roberts Canyon-Colorado River",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Mesa"
+    },
+    "PINION CANYON": {
+      "huc06": "110200",
+      "huc06_name": "COMANCHE GRASSLANDS",
+      "huc08": "11020005",
+      "huc08_name": "COMANCHE GRASSLANDS",
+      "huc10": "1102000506",
+      "huc10_name": "Timpas Creek",
+      "huc12": "110200050603",
+      "huc12_name": "Big Arroyo-Timpas Creek",
+      "land_use": [
+        "Pinyon and Juniper"
+      ],
+      "county": "Otero"
+    },
+    "PINTO": {
+      "huc06": "140500",
+      "huc06_name": "WASHINGTON D.C.",
+      "huc08": "14050006",
+      "huc08_name": "WASHINGTON D.C.",
+      "huc10": "1405000603",
+      "huc10_name": "Yellow Creek",
+      "huc12": "140500060307",
+      "huc12_name": "Pinto Gulch-Yellow Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Rio Blanco"
+    },
+    "POLHEMUS": {
+      "huc06": "101900",
+      "huc06_name": "SOUTH PLATTE RD",
+      "huc08": "10190002",
+      "huc08_name": "SOUTH PLATTE RD",
+      "huc10": "1019000201",
+      "huc10_name": "Trout Creek-West Creek",
+      "huc12": "101900020105",
+      "huc12_name": "Horse Creek-Trout Creek",
+      "land_use": [
+        "Barren"
+      ],
+      "county": "Douglas"
+    },
+    "DEVIL MTN.": {
+      "huc06": "140801",
+      "huc06_name": "PAGOSA RD",
+      "huc08": "14080102",
+      "huc08_name": "PAGOSA RD",
+      "huc10": "1408010203",
+      "huc10_name": "Devil Creek",
+      "huc12": "140801020302",
+      "huc12_name": "Outlet Devil Creek",
+      "land_use": [
+        "Forest & Brush"
+      ],
+      "county": "Archuleta"
+    },
+    "PSF1 SOUTH PLATTE QD": {
+      "huc06": "101900",
+      "huc06_name": "SOUTH PLATTE RD",
+      "huc08": "10190002",
+      "huc08_name": "SOUTH PLATTE RD",
+      "huc10": "1019000203",
+      "huc10_name": "Outlet North Fork South Platte River",
+      "huc12": "101900020303",
+      "huc12_name": "Buffalo Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Jefferson"
+    },
+    "PSF2 SALIDA QD": {
+      "huc06": "110200",
+      "huc06_name": "SALIDA",
+      "huc08": "11020001",
+      "huc08_name": "SALIDA",
+      "huc10": "1102000107",
+      "huc10_name": "Trout Creek-Arkansas River",
+      "huc12": "110200010707",
+      "huc12_name": "Threemile Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Chaffee"
+    },
+    "PSF3 CANON CITY QD": {
+      "huc06": "110200",
+      "huc06_name": "SAN CARLOS RD",
+      "huc08": "11020002",
+      "huc08_name": "SAN CARLOS RD",
+      "huc10": "1102000203",
+      "huc10_name": "Hardscrabble Creek",
+      "huc12": "110200020302",
+      "huc12_name": "South Hardscrabble Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Fremont"
+    },
+    "PSF4 PORTABLE": {
+      "huc06": "101900",
+      "huc06_name": "SOUTH PARK",
+      "huc08": "10190001",
+      "huc08_name": "SOUTH PARK",
+      "huc10": "1019000106",
+      "huc10_name": "Elevenmile Canyon-South Platte River",
+      "huc12": "101900010605",
+      "huc12_name": "Elevenmile Canyon-South Platte River",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Park"
+    },
+    "PSF5 PORTABLE RX": {
+      "huc06": "110200",
+      "huc06_name": "Prescibed Fire",
+      "huc08": "11020003",
+      "huc08_name": "Prescibed Fire",
+      "huc10": "1102000301",
+      "huc10_name": "Monument Creek",
+      "huc12": "110200030102",
+      "huc12_name": "Upper Monument Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "El Paso"
+    },
+    "RAMAH": {
+      "huc06": "110200",
+      "huc06_name": "CO DIVISION OF FIRE",
+      "huc08": "11020011",
+      "huc08_name": "CO DIVISION OF FIRE",
+      "huc10": "1102001101",
+      "huc10_name": "Headwaters Big Sandy Creek",
+      "huc12": "110200110102",
+      "huc12_name": "Ramah Reservoir-Big Sandy Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "El Paso"
+    },
+    "RAMPART RANGE": {
+      "huc06": "110200",
+      "huc06_name": "RAMPART RANGE",
+      "huc08": "11020003",
+      "huc08_name": "RAMPART RANGE",
+      "huc10": "1102000301",
+      "huc10_name": "Monument Creek",
+      "huc12": "110200030103",
+      "huc12_name": "West Monument Creek",
+      "land_use": [
+        "Forest & Brush"
+      ],
+      "county": "El Paso"
+    },
+    "RED CREEK": {
+      "huc06": "110200",
+      "huc06_name": "SAN CARLOS DISTRICT",
+      "huc08": "11020002",
+      "huc08_name": "SAN CARLOS DISTRICT",
+      "huc10": "1102000206",
+      "huc10_name": "Red Creek-Arkansas River",
+      "huc12": "110200020602",
+      "huc12_name": "Red Creek",
+      "land_use": [
+        "Low Shrub"
+      ],
+      "county": "Pueblo"
+    },
+    "RED DEER": {
+      "huc06": "110200",
+      "huc06_name": "SALIDA RD",
+      "huc08": "11020001",
+      "huc08_name": "SALIDA RD",
+      "huc10": "1102000103",
+      "huc10_name": "Cottonwood Creek",
+      "huc12": "110200010303",
+      "huc12_name": "North Cottonwood Creek",
+      "land_use": [
+        "Mountain Shrub"
+      ],
+      "county": "Chaffee"
+    },
+    "REDFEATHER": {
+      "huc06": "101900",
+      "huc06_name": "REDFEATHER",
+      "huc08": "10190007",
+      "huc08_name": "REDFEATHER",
+      "huc10": "1019000706",
+      "huc10_name": "Lone Pine Creek",
+      "huc12": "101900070602",
+      "huc12_name": "North Fork Lone Pine Creek",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Larimer"
+    },
+    "REDSTONE": {
+      "huc06": "101900",
+      "huc06_name": "POUDRE FIRE AUTHORIT",
+      "huc08": "10190006",
+      "huc08_name": "POUDRE FIRE AUTHORIT",
+      "huc10": "1019000603",
+      "huc10_name": "Buckhorn Creek",
+      "huc12": "101900060303",
+      "huc12_name": "Redstone Creek",
+      "land_use": [
+        "Forest & Brush"
+      ],
+      "county": "Larimer"
+    },
+    "RGNF1 QD": {
+      "huc06": "130100",
+      "huc06_name": null,
+      "huc08": "13010004",
+      "huc08_name": null,
+      "huc10": "1301000406",
+      "huc10_name": "Russell Creek-La Garita Creek",
+      "huc12": "130100040609",
+      "huc12_name": "English Valley",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Saguache"
+    },
+    "RIFLE": {
+      "huc06": "140100",
+      "huc06_name": "WASHINGTON D.C.",
+      "huc08": "14010005",
+      "huc08_name": "WASHINGTON D.C.",
+      "huc10": "1401000506",
+      "huc10_name": "Garfield Creek-Colorado River",
+      "huc12": "140100050604",
+      "huc12_name": "Dry Creek-Colorado River",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Garfield"
+    },
+    "ROAN PLATEAU": {
+      "huc06": "140100",
+      "huc06_name": "Upper Colorado River",
+      "huc08": "14010005",
+      "huc08_name": "Upper Colorado River",
+      "huc10": "1401000508",
+      "huc10_name": "Parachute Creek",
+      "huc12": "140100050803",
+      "huc12_name": "East Fork Parachute Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Garfield"
+    },
+    "ROCKY FORD": {
+      "huc06": "110200",
+      "huc06_name": "CO DIVISION OF FIRE",
+      "huc08": "11020005",
+      "huc08_name": "CO DIVISION OF FIRE",
+      "huc10": "1102000507",
+      "huc10_name": "Dye Reservoir-Arkansas River",
+      "huc12": "110200050705",
+      "huc12_name": "Dye Reservoir-Arkansas River",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Otero"
+    },
+    "ROUTT PORTABLE 1": {
+      "huc06": "140500",
+      "huc06_name": null,
+      "huc08": "14050001",
+      "huc08_name": null,
+      "huc10": "1405000103",
+      "huc10_name": "Outlet Elk River",
+      "huc12": "140500010306",
+      "huc12_name": "Hot Springs Creek-Elk River",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Routt"
+    },
+    "SALTER": {
+      "huc06": "140300",
+      "huc06_name": "DOLORES RD",
+      "huc08": "14030002",
+      "huc08_name": "DOLORES RD",
+      "huc10": "1403000204",
+      "huc10_name": "Plateau Creek",
+      "huc12": "140300020404",
+      "huc12_name": "Calf Creek",
+      "land_use": [
+        "Mountain Shrub"
+      ],
+      "county": "Dolores"
+    },
+    "SAN JUAN PORTABLE": {
+      "huc06": "140300",
+      "huc06_name": null,
+      "huc08": "14030002",
+      "huc08_name": null,
+      "huc10": "1403000206",
+      "huc10_name": "Glade Creek-Dolores River",
+      "huc12": "140300020605",
+      "huc12_name": "Joe Davis Hill-Dolores River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "San Miguel"
+    },
+    "SAN JUAN PORTABLE #2": {
+      "huc06": "140801",
+      "huc06_name": "Columbine RD",
+      "huc08": "14080101",
+      "huc08_name": "Columbine RD",
+      "huc10": "1408010113",
+      "huc10_name": "Beaver Creek",
+      "huc12": "140801011302",
+      "huc12_name": "Middle Beaver Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "La Plata"
+    },
+    "SAN LUIS VALLEY PORTABLE": {
+      "huc06": "130100",
+      "huc06_name": null,
+      "huc08": "13010004",
+      "huc08_name": null,
+      "huc10": "1301000403",
+      "huc10_name": "Middle Creek-Saguache Creek",
+      "huc12": "130100040302",
+      "huc12_name": "Antelope Creek-Sheep Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Saguache"
+    },
+    "BIG BEAR PARK": {
+      "huc06": "140801",
+      "huc06_name": "COLUMBINE RD",
+      "huc08": "14080104",
+      "huc08_name": "COLUMBINE RD",
+      "huc10": "1408010405",
+      "huc10_name": "Electra Lake-Animas River",
+      "huc12": "140801040501",
+      "huc12_name": "Canyon Creek-Animas River",
+      "land_use": [
+        "Forest & Brush"
+      ],
+      "county": "La Plata"
+    },
+    "SAND DUNES": {
+      "huc06": "130100",
+      "huc06_name": null,
+      "huc08": "13010003",
+      "huc08_name": null,
+      "huc10": "1301000306",
+      "huc10_name": "Sand Creek-San Luis Creek",
+      "huc12": "130100030604",
+      "huc12_name": "Medano Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Alamosa"
+    },
+    "SANDOVAL MESA": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080101",
+      "huc08_name": null,
+      "huc10": "1408010108",
+      "huc10_name": "San Juan River-Navajo Reservoir",
+      "huc12": "140801010802",
+      "huc12_name": "Sandoval Canyon",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Archuleta"
+    },
+    "LOG CHUTE": {
+      "huc06": "140801",
+      "huc06_name": "Columbine RD",
+      "huc08": "14080104",
+      "huc08_name": "Columbine RD",
+      "huc10": "1408010406",
+      "huc10_name": "Lightner Creek-Animas River",
+      "huc12": "140801040601",
+      "huc12_name": "Junction Creek",
+      "land_use": [
+        "Forest & Brush"
+      ],
+      "county": "La Plata"
+    },
+    "SJF1 DURANGO QD": {
+      "huc06": "140801",
+      "huc06_name": "DURANGO",
+      "huc08": "14080102",
+      "huc08_name": "DURANGO",
+      "huc10": "1408010202",
+      "huc10_name": "Middle Piedra River",
+      "huc12": "140801020202",
+      "huc12_name": "Little Sand Creek-Weminuche Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "La Plata"
+    },
+    "SJF2 PAGOSA PORTABLE": {
+      "huc06": "140801",
+      "huc06_name": "PAGOSA RD",
+      "huc08": "14080101",
+      "huc08_name": "PAGOSA RD",
+      "huc10": "1408010104",
+      "huc10_name": "Pagosa Springs-San Juan River",
+      "huc12": "140801010406",
+      "huc12_name": "Mill Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Archuleta"
+    },
+    "SJF5 DOLORES PORTABLE #2": {
+      "huc06": "140300",
+      "huc06_name": "Dolores RD",
+      "huc08": "14030002",
+      "huc08_name": "Dolores RD",
+      "huc10": "1403000203",
+      "huc10_name": "McPhee Reservoir-Dolores River",
+      "huc12": "140300020307",
+      "huc12_name": "House Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Montezuma"
+    },
+    "SMOKE 454": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190002",
+      "huc08_name": null,
+      "huc10": "1019000209",
+      "huc10_name": "Little Dry Creek-South Platte River",
+      "huc12": "101900020904",
+      "huc12_name": "Sloan Lake-South Platte River",
+      "land_use": [
+        "Developed, Medium Intensity"
+      ],
+      "county": "Jefferson"
+    },
+    "SMOKE FWS #1": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190007",
+      "huc08_name": null,
+      "huc10": "1019000710",
+      "huc10_name": "Coalbank Creek-Cache la Poudre River",
+      "huc12": "101900071002",
+      "huc12_name": "Fossil Creek Reservoir-Cache la Poudre River",
+      "land_use": [
+        "Developed, Low Intensity"
+      ],
+      "county": "Larimer"
+    },
+    "SMOKE RMK 100": {
+      "huc06": "101900",
+      "huc06_name": "FAM",
+      "huc08": "10190002",
+      "huc08_name": "FAM",
+      "huc10": "1019000209",
+      "huc10_name": "Little Dry Creek-South Platte River",
+      "huc12": "101900020904",
+      "huc12_name": "Sloan Lake-South Platte River",
+      "land_use": [
+        "Developed, High Intensity"
+      ],
+      "county": "Jefferson"
+    },
+    "SMOKE RMK 101": {
+      "huc06": "101900",
+      "huc06_name": "FAM",
+      "huc08": "10190002",
+      "huc08_name": "FAM",
+      "huc10": "1019000209",
+      "huc10_name": "Little Dry Creek-South Platte River",
+      "huc12": "101900020904",
+      "huc12_name": "Sloan Lake-South Platte River",
+      "land_use": [
+        "Developed, High Intensity"
+      ],
+      "county": "Jefferson"
+    },
+    "SMOKE RMK 102": {
+      "huc06": "101900",
+      "huc06_name": "FAM",
+      "huc08": "10190002",
+      "huc08_name": "FAM",
+      "huc10": "1019000209",
+      "huc10_name": "Little Dry Creek-South Platte River",
+      "huc12": "101900020904",
+      "huc12_name": "Sloan Lake-South Platte River",
+      "land_use": [
+        "Developed, High Intensity"
+      ],
+      "county": "Jefferson"
+    },
+    "SMOKE RMK 103": {
+      "huc06": "101900",
+      "huc06_name": "FAM",
+      "huc08": "10190002",
+      "huc08_name": "FAM",
+      "huc10": "1019000209",
+      "huc10_name": "Little Dry Creek-South Platte River",
+      "huc12": "101900020904",
+      "huc12_name": "Sloan Lake-South Platte River",
+      "land_use": [
+        "Developed, High Intensity"
+      ],
+      "county": "Jefferson"
+    },
+    "SMOKE RMK 106": {
+      "huc06": "101900",
+      "huc06_name": "FAM",
+      "huc08": "10190002",
+      "huc08_name": "FAM",
+      "huc10": "1019000209",
+      "huc10_name": "Little Dry Creek-South Platte River",
+      "huc12": "101900020904",
+      "huc12_name": "Sloan Lake-South Platte River",
+      "land_use": [
+        "Developed, Medium Intensity"
+      ],
+      "county": "Jefferson"
+    },
+    "SMOKE RMK 400": {
+      "huc06": "101900",
+      "huc06_name": "FAM",
+      "huc08": "10190002",
+      "huc08_name": "FAM",
+      "huc10": "1019000209",
+      "huc10_name": "Little Dry Creek-South Platte River",
+      "huc12": "101900020904",
+      "huc12_name": "Sloan Lake-South Platte River",
+      "land_use": [
+        "Developed, High Intensity"
+      ],
+      "county": "Jefferson"
+    },
+    "SMOKE RMK 401": {
+      "huc06": "101900",
+      "huc06_name": "FAM",
+      "huc08": "10190002",
+      "huc08_name": "FAM",
+      "huc10": "1019000209",
+      "huc10_name": "Little Dry Creek-South Platte River",
+      "huc12": "101900020904",
+      "huc12_name": "Sloan Lake-South Platte River",
+      "land_use": [
+        "Developed, High Intensity"
+      ],
+      "county": "Jefferson"
+    },
+    "SMOKE RMK 402": {
+      "huc06": "101900",
+      "huc06_name": "FAM",
+      "huc08": "10190002",
+      "huc08_name": "FAM",
+      "huc10": "1019000209",
+      "huc10_name": "Little Dry Creek-South Platte River",
+      "huc12": "101900020904",
+      "huc12_name": "Sloan Lake-South Platte River",
+      "land_use": [
+        "Developed, High Intensity"
+      ],
+      "county": "Jefferson"
+    },
+    "SMOKE RMK 403": {
+      "huc06": "101900",
+      "huc06_name": "FAM",
+      "huc08": "10190002",
+      "huc08_name": "FAM",
+      "huc10": "1019000209",
+      "huc10_name": "Little Dry Creek-South Platte River",
+      "huc12": "101900020904",
+      "huc12_name": "Sloan Lake-South Platte River",
+      "land_use": [
+        "Developed, High Intensity"
+      ],
+      "county": "Jefferson"
+    },
+    "SMOKE RMK 404": {
+      "huc06": "101900",
+      "huc06_name": "FAM",
+      "huc08": "10190002",
+      "huc08_name": "FAM",
+      "huc10": "1019000209",
+      "huc10_name": "Little Dry Creek-South Platte River",
+      "huc12": "101900020904",
+      "huc12_name": "Sloan Lake-South Platte River",
+      "land_use": [
+        "Developed, High Intensity"
+      ],
+      "county": "Jefferson"
+    },
+    "SMOKE RMK 405": {
+      "huc06": "101900",
+      "huc06_name": "FAM",
+      "huc08": "10190002",
+      "huc08_name": "FAM",
+      "huc10": "1019000209",
+      "huc10_name": "Little Dry Creek-South Platte River",
+      "huc12": "101900020904",
+      "huc12_name": "Sloan Lake-South Platte River",
+      "land_use": [
+        "Developed, High Intensity"
+      ],
+      "county": "Jefferson"
+    },
+    "SMOKE RMK 406": {
+      "huc06": "101900",
+      "huc06_name": "FAM",
+      "huc08": "10190002",
+      "huc08_name": "FAM",
+      "huc10": "1019000209",
+      "huc10_name": "Little Dry Creek-South Platte River",
+      "huc12": "101900020904",
+      "huc12_name": "Sloan Lake-South Platte River",
+      "land_use": [
+        "Developed, High Intensity"
+      ],
+      "county": "Jefferson"
+    },
+    "SMOKE USFS R2-69": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190001",
+      "huc08_name": null,
+      "huc10": "1019000106",
+      "huc10_name": "Elevenmile Canyon-South Platte River",
+      "huc12": "101900010605",
+      "huc12_name": "Elevenmile Canyon-South Platte River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Park"
+    },
+    "DOWD JUNCTION": {
+      "huc06": "140100",
+      "huc06_name": "HOLY CROSS RD",
+      "huc08": "14010003",
+      "huc08_name": "HOLY CROSS RD",
+      "huc10": "1401000303",
+      "huc10_name": "Middle Eagle River",
+      "huc12": "140100030301",
+      "huc12_name": "Beaver Creek-Eagle River",
+      "land_use": [
+        "Aspen and Shrub"
+      ],
+      "county": "Eagle"
+    },
+    "SOUTH REPUBLICAN": {
+      "huc06": "102500",
+      "huc06_name": "CO DIVISION OF FIRE",
+      "huc08": "10250003",
+      "huc08_name": "CO DIVISION OF FIRE",
+      "huc10": "1025000310",
+      "huc10_name": "Bonny Reservoir-South Fork Republican River",
+      "huc12": "102500031002",
+      "huc12_name": "Town of Hale-South Fork Republican River",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Yuma"
+    },
+    "STORM KING MOUNTAIN": {
+      "huc06": "140100",
+      "huc06_name": "STORM KING MOUNTAIN",
+      "huc08": "14010005",
+      "huc08_name": "STORM KING MOUNTAIN",
+      "huc10": "1401000501",
+      "huc10_name": "Canyon Creek-Colorado River",
+      "huc12": "140100050102",
+      "huc12_name": "South Canyon Creek-Colorado River",
+      "land_use": [
+        "Mountain Shrub"
+      ],
+      "county": "Garfield"
+    },
+    "SUGARLOAF": {
+      "huc06": "101900",
+      "huc06_name": "BOULDER",
+      "huc08": "10190005",
+      "huc08_name": "BOULDER",
+      "huc10": "1019000504",
+      "huc10_name": "Headwaters Boulder Creek",
+      "huc12": "101900050404",
+      "huc12_name": "Bummers Gulch-Boulder Creek",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Boulder"
+    },
+    "DEAD HORSE": {
+      "huc06": "140500",
+      "huc06_name": "BLANCO RD",
+      "huc08": "14050005",
+      "huc08_name": "BLANCO RD",
+      "huc10": "1405000501",
+      "huc10_name": "North Fork White River",
+      "huc12": "140500050105",
+      "huc12_name": "Missouri Creek-North Fork White River",
+      "land_use": [
+        "Alpine Meadow"
+      ],
+      "county": "Rio Blanco"
+    },
+    "THE CROWN": {
+      "huc06": "140100",
+      "huc06_name": "WASHINGTON D.C.",
+      "huc08": "14010004",
+      "huc08_name": "WASHINGTON D.C.",
+      "huc10": "1401000408",
+      "huc10_name": "Lower Roaring Fork River",
+      "huc12": "140100040802",
+      "huc12_name": "Blue Creek-Roaring Fork River",
+      "land_use": [
+        "Deciduous Forest"
+      ],
+      "county": "Garfield"
+    },
+    "UCRBLMFTS QD": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010005",
+      "huc08_name": null,
+      "huc10": "1401000503",
+      "huc10_name": "Divide Creek",
+      "huc12": "140100050304",
+      "huc12_name": "Middle West Divide Creek",
+      "land_use": [
+        "Developed, Open Space"
+      ],
+      "county": "Rio Blanco"
+    },
+    "UCREZ1WRF QD": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010003",
+      "huc08_name": null,
+      "huc10": "1401000303",
+      "huc10_name": "Middle Eagle River",
+      "huc12": "140100030304",
+      "huc12_name": "Berry Creek-Eagle River",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Garfield"
+    },
+    "UCRWRF1 QD": {
+      "huc06": "140500",
+      "huc06_name": null,
+      "huc08": "14050005",
+      "huc08_name": null,
+      "huc10": "1405000501",
+      "huc10_name": "North Fork White River",
+      "huc12": "140500050107",
+      "huc12_name": "Fawn Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Rio Blanco"
+    },
+    "UTE CANYON": {
+      "huc06": "110400",
+      "huc06_name": "COMANCHE NG",
+      "huc08": "11040002",
+      "huc08_name": "COMANCHE NG",
+      "huc10": "1104000203",
+      "huc10_name": "Ute Canyon Creek",
+      "huc12": "110400020302",
+      "huc12_name": "West Ute Canyon",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Baca"
+    },
+    "STUB CREEK": {
+      "huc06": "101800",
+      "huc06_name": "STUB CREEK",
+      "huc08": "10180010",
+      "huc08_name": "STUB CREEK",
+      "huc10": "1018001001",
+      "huc10_name": "Grace Creek-Laramie River",
+      "huc12": "101800100105",
+      "huc12_name": "Stub Creek-Laramie River",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Larimer"
+    },
+    "WILLIS CREEK": {
+      "huc06": "110200",
+      "huc06_name": "SAN CARLOS RD",
+      "huc08": "11020002",
+      "huc08_name": "SAN CARLOS RD",
+      "huc10": "1102000211",
+      "huc10_name": "Headwaters Saint Charles River",
+      "huc12": "110200021104",
+      "huc12_name": "Upper Saint Charles River",
+      "land_use": [
+        "Mixed Conifer"
+      ],
+      "county": "Custer"
+    },
+    "SODA CREEK": {
+      "huc06": "140100",
+      "huc06_name": "DILLON RD",
+      "huc08": "14010002",
+      "huc08_name": "DILLON RD",
+      "huc10": "1401000204",
+      "huc10_name": "Upper Blue River",
+      "huc12": "140100020401",
+      "huc12_name": "Dillon Reservoir-Blue River",
+      "land_use": [
+        "Alpine Meadow"
+      ],
+      "county": "Summit"
+    },
+    "TAYLOR MOUNTAIN": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190005",
+      "huc08_name": null,
+      "huc10": "1019000502",
+      "huc10_name": "North Saint Vrain Creek",
+      "huc12": "101900050204",
+      "huc12_name": "Outlet North Saint Vrain Creek",
+      "land_use": [],
+      "county": null
+    },
+    "JUNCO LAKE": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010001",
+      "huc08_name": null,
+      "huc10": "1401000102",
+      "huc10_name": "Fraser River",
+      "huc12": "140100010205",
+      "huc12_name": "Meadows Creek-Ranch Creek",
+      "land_use": [],
+      "county": null
+    }
+  },
+  "SNOTEL": {
+    "303": {
+      "huc06": "110200",
+      "huc06_name": null,
+      "huc08": "11020006",
+      "huc08_name": null,
+      "huc10": "1102000604",
+      "huc10_name": "Upper Cucharas River",
+      "huc12": "110200060406",
+      "huc12_name": "Middle Creek-Cucharas River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Huerfano"
+    },
+    "322": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190006",
+      "huc08_name": null,
+      "huc10": "1019000602",
+      "huc10_name": "Headwaters Big Thompson River",
+      "huc12": "101900060201",
+      "huc12_name": "Glacier Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Larimer"
+    },
+    "327": {
+      "huc06": "130100",
+      "huc06_name": null,
+      "huc08": "13010001",
+      "huc08_name": null,
+      "huc10": "1301000101",
+      "huc10_name": "Headwaters Rio Grande",
+      "huc12": "130100010104",
+      "huc12_name": "Bear Creek-Rio Grande",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "San Juan"
+    },
+    "335": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010001",
+      "huc08_name": null,
+      "huc10": "1401000102",
+      "huc10_name": "Fraser River",
+      "huc12": "140100010202",
+      "huc12_name": "Upper Fraser River",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Grand"
+    },
+    "345": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010001",
+      "huc08_name": null,
+      "huc10": "1401000114",
+      "huc10_name": "Deep Creek",
+      "huc12": "140100011401",
+      "huc12_name": "Headwaters Deep Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Garfield"
+    },
+    "369": {
+      "huc06": "110200",
+      "huc06_name": null,
+      "huc08": "11020001",
+      "huc08_name": null,
+      "huc10": "1102000101",
+      "huc10_name": "Lake Creek",
+      "huc12": "110200010101",
+      "huc12_name": "North Fork Lake Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Lake"
+    },
+    "378": {
+      "huc06": "140500",
+      "huc06_name": null,
+      "huc08": "14050005",
+      "huc08_name": null,
+      "huc10": "1405000503",
+      "huc10_name": "Coal Creek-White River",
+      "huc12": "140500050302",
+      "huc12_name": "North Elk Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Rio_Blanco"
+    },
+    "380": {
+      "huc06": "140200",
+      "huc06_name": null,
+      "huc08": "14020001",
+      "huc08_name": null,
+      "huc10": "1402000102",
+      "huc10_name": "East River",
+      "huc12": "140200010206",
+      "huc12_name": "Washington Gulch-Slate River",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Gunnison"
+    },
+    "387": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080104",
+      "huc08_name": null,
+      "huc10": "1408010402",
+      "huc10_name": "Cascade Creek",
+      "huc12": "140801040201",
+      "huc12_name": "Headwaters Cascade Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "San_Juan"
+    },
+    "408": {
+      "huc06": "101800",
+      "huc06_name": null,
+      "huc08": "10180001",
+      "huc08_name": null,
+      "huc10": "1018000101",
+      "huc10_name": "Grizzly Creek",
+      "huc12": "101800010102",
+      "huc12_name": "Upper Grizzly Creek",
+      "land_use": [
+        "Deciduous Forest"
+      ],
+      "county": "Jackson"
+    },
+    "409": {
+      "huc06": "140200",
+      "huc06_name": null,
+      "huc08": "14020005",
+      "huc08_name": null,
+      "huc10": "1402000502",
+      "huc10_name": "Roubideau Creek",
+      "huc12": "140200050202",
+      "huc12_name": "Potter Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Montrose"
+    },
+    "412": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190005",
+      "huc08_name": null,
+      "huc10": "1019000502",
+      "huc10_name": "North Saint Vrain Creek",
+      "huc12": "101900050202",
+      "huc12_name": "Headwaters North Saint Vrain Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Boulder"
+    },
+    "415": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010002",
+      "huc08_name": null,
+      "huc10": "1401000203",
+      "huc10_name": "Tenmile Creek",
+      "huc12": "140100020302",
+      "huc12_name": "West Tenmile Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Summit"
+    },
+    "426": {
+      "huc06": "140500",
+      "huc06_name": null,
+      "huc08": "14050001",
+      "huc08_name": null,
+      "huc10": "1405000101",
+      "huc10_name": "Headwaters Yampa River",
+      "huc12": "140500010106",
+      "huc12_name": "Hunt Creek",
+      "land_use": [
+        "Deciduous Forest"
+      ],
+      "county": "Rio Blanco"
+    },
+    "430": {
+      "huc06": "140200",
+      "huc06_name": null,
+      "huc08": "14020001",
+      "huc08_name": null,
+      "huc10": "1402000101",
+      "huc10_name": "Taylor River",
+      "huc12": "140200010106",
+      "huc12_name": "Outlet Willow Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Costilla"
+    },
+    "431": {
+      "huc06": "130201",
+      "huc06_name": null,
+      "huc08": "13020102",
+      "huc08_name": null,
+      "huc10": "1302010202",
+      "huc10_name": "Canones Creek-Rio Chama",
+      "huc12": "130201020203",
+      "huc12_name": "Wolf Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Conejos"
+    },
+    "438": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190007",
+      "huc08_name": null,
+      "huc10": "1019000705",
+      "huc10_name": "Headwaters North Fork Cache la Poudre River",
+      "huc12": "101900070502",
+      "huc12_name": "Panhandle Creek-North Fork Cache La Poudre River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Larimer"
+    },
+    "457": {
+      "huc06": "130100",
+      "huc06_name": null,
+      "huc08": "13010002",
+      "huc08_name": null,
+      "huc10": "1301000209",
+      "huc10_name": "Headwaters Culebra Creek",
+      "huc12": "130100020902",
+      "huc12_name": "Headwaters Culebra Creek",
+      "land_use": [
+        "Mid-elevation forest",
+        "Aspen"
+      ],
+      "county": "Routt"
+    },
+    "465": {
+      "huc06": "140300",
+      "huc06_name": null,
+      "huc08": "14030002",
+      "huc08_name": null,
+      "huc10": "1403000202",
+      "huc10_name": "Headwaters Dolores River",
+      "huc12": "140300020202",
+      "huc12_name": "Barlow Creek-Dolores River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Dolores"
+    },
+    "467": {
+      "huc06": "140500",
+      "huc06_name": null,
+      "huc08": "14050001",
+      "huc08_name": null,
+      "huc10": "1405000102",
+      "huc10_name": "Headwaters Elk River",
+      "huc12": "140500010206",
+      "huc12_name": "Steamboat Lake-Willow Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Routt"
+    },
+    "485": {
+      "huc06": "140500",
+      "huc06_name": null,
+      "huc08": "14050001",
+      "huc08_name": null,
+      "huc10": "1405000104",
+      "huc10_name": "Oak Creek-Yampa River",
+      "huc12": "140500010409",
+      "huc12_name": "City of Steamboat Springs-Yampa River",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Summit"
+    },
+    "505": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010002",
+      "huc08_name": null,
+      "huc10": "1401000203",
+      "huc10_name": "Tenmile Creek",
+      "huc12": "140100020301",
+      "huc12_name": "Upper Tenmile Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Summit"
+    },
+    "531": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190001",
+      "huc08_name": null,
+      "huc10": "1019000101",
+      "huc10_name": "Middle Fork South Platte River",
+      "huc12": "101900010102",
+      "huc12_name": "Headwaters Middle Fork South Platte River",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Summit"
+    },
+    "538": {
+      "huc06": "140200",
+      "huc06_name": null,
+      "huc08": "14020006",
+      "huc08_name": null,
+      "huc10": "1402000602",
+      "huc10_name": "Upper Uncompahgre River",
+      "huc12": "140200060201",
+      "huc12_name": "Red Mountain Creek",
+      "land_use": [
+        "Woody Wetlands"
+      ],
+      "county": "Ouray"
+    },
+    "542": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010004",
+      "huc08_name": null,
+      "huc10": "1401000401",
+      "huc10_name": "Upper Roaring Fork River",
+      "huc12": "140100040101",
+      "huc12_name": "Lincoln Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Pitkin"
+    },
+    "547": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010004",
+      "huc08_name": null,
+      "huc10": "1401000405",
+      "huc10_name": "Fryingpan River",
+      "huc12": "140100040501",
+      "huc12_name": "Headwaters Fryingpan River",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Pitkin"
+    },
+    "551": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190007",
+      "huc08_name": null,
+      "huc10": "1019000702",
+      "huc10_name": "Headwaters Cache la Poudre River",
+      "huc12": "101900070204",
+      "huc12_name": "Joe Wright Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Larimer"
+    },
+    "564": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190005",
+      "huc08_name": null,
+      "huc10": "1019000504",
+      "huc10_name": "Headwaters Boulder Creek",
+      "huc12": "101900050402",
+      "huc12_name": "Middle Boulder Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Boulder"
+    },
+    "565": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010001",
+      "huc08_name": null,
+      "huc10": "1401000103",
+      "huc10_name": "Headwaters Colorado River",
+      "huc12": "140100010302",
+      "huc12_name": "Headwaters Colorado River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Grand"
+    },
+    "580": {
+      "huc06": "130100",
+      "huc06_name": null,
+      "huc08": "13010002",
+      "huc08_name": null,
+      "huc10": "1301000203",
+      "huc10_name": "Alamosa River",
+      "huc12": "130100020302",
+      "huc12_name": "Headwaters Alamosa River",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Conejos"
+    },
+    "586": {
+      "huc06": "140300",
+      "huc06_name": null,
+      "huc08": "14030002",
+      "huc08_name": null,
+      "huc10": "1403000202",
+      "huc10_name": "Headwaters Dolores River",
+      "huc12": "140300020201",
+      "huc12_name": "Headwaters Dolores River",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Dolores"
+    },
+    "589": {
+      "huc06": "140300",
+      "huc06_name": null,
+      "huc08": "14030003",
+      "huc08_name": null,
+      "huc10": "1403000303",
+      "huc10_name": "Beaver Creek-San Miguel River",
+      "huc12": "140300030302",
+      "huc12_name": "Headwaters Beaver Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "San_Miguel"
+    },
+    "602": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190004",
+      "huc08_name": null,
+      "huc10": "1019000401",
+      "huc10_name": "Upper Clear Creek",
+      "huc12": "101900040102",
+      "huc12_name": "Headwaters Clear Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Clear Creek"
+    },
+    "607": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010001",
+      "huc08_name": null,
+      "huc10": "1401000110",
+      "huc10_name": "Rock Creek",
+      "huc12": "140100011001",
+      "huc12_name": "Headwaters Rock Creek",
+      "land_use": [
+        "Mid-elevation forest"
+      ],
+      "county": "Routt"
+    },
+    "618": {
+      "huc06": "140200",
+      "huc06_name": null,
+      "huc08": "14020004",
+      "huc08_name": null,
+      "huc10": "1402000402",
+      "huc10_name": "East Muddy Creek",
+      "huc12": "140200040203",
+      "huc12_name": "Lee Creek",
+      "land_use": [
+        "Deciduous Forest"
+      ],
+      "county": "Gunnison"
+    },
+    "622": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010005",
+      "huc08_name": null,
+      "huc10": "1401000513",
+      "huc10_name": "Big Creek-Plateau Creek",
+      "huc12": "140100051307",
+      "huc12_name": "Coon Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Mesa"
+    },
+    "624": {
+      "huc06": "130100",
+      "huc06_name": null,
+      "huc08": "13010001",
+      "huc08_name": null,
+      "huc10": "1301000105",
+      "huc10_name": "Red Mountain Creek",
+      "huc12": "130100010502",
+      "huc12_name": "Middle Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Mineral"
+    },
+    "629": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080104",
+      "huc08_name": null,
+      "huc10": "1408010401",
+      "huc10_name": "Headwaters Animas River",
+      "huc12": "140801040103",
+      "huc12_name": "Mineral Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "San Juan"
+    },
+    "632": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080104",
+      "huc08_name": null,
+      "huc10": "1408010403",
+      "huc10_name": "Animas River Canyon",
+      "huc12": "140801040302",
+      "huc12_name": "Tenmile Creek-Animas River",
+      "land_use": [
+        "Woody Wetlands"
+      ],
+      "county": "San Juan"
+    },
+    "658": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010004",
+      "huc08_name": null,
+      "huc10": "1401000405",
+      "huc10_name": "Fryingpan River",
+      "huc12": "140100040504",
+      "huc12_name": "Deeds Creek-Fryingpan River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Pitkin"
+    },
+    "663": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190005",
+      "huc08_name": null,
+      "huc10": "1019000504",
+      "huc10_name": "Headwaters Boulder Creek",
+      "huc12": "101900050401",
+      "huc12_name": "North Boulder Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Boulder"
+    },
+    "669": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010004",
+      "huc08_name": null,
+      "huc10": "1401000407",
+      "huc10_name": "Cyrstal River",
+      "huc12": "140100040703",
+      "huc12_name": "Yule Creek-Crystal River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Gunnison"
+    },
+    "675": {
+      "huc06": "140200",
+      "huc06_name": null,
+      "huc08": "14020004",
+      "huc08_name": null,
+      "huc10": "1402000401",
+      "huc10_name": "West Muddy Creek",
+      "huc12": "140200040101",
+      "huc12_name": "Cow Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Delta"
+    },
+    "680": {
+      "huc06": "140200",
+      "huc06_name": null,
+      "huc08": "14020001",
+      "huc08_name": null,
+      "huc10": "1402000101",
+      "huc10_name": "Taylor River",
+      "huc12": "140200010107",
+      "huc12_name": "Lower Taylor River",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Gunnison"
+    },
+    "682": {
+      "huc06": "140200",
+      "huc06_name": null,
+      "huc08": "14020005",
+      "huc08_name": null,
+      "huc10": "1402000501",
+      "huc10_name": "Tongue Creek-Gunnison River",
+      "huc12": "140200050111",
+      "huc12_name": "Surface Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Delta"
+    },
+    "688": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010001",
+      "huc08_name": null,
+      "huc10": "1401000103",
+      "huc10_name": "Headwaters Colorado River",
+      "huc12": "140100010302",
+      "huc12_name": "Headwaters Colorado River",
+      "land_use": [
+        "Mid-elevation forest"
+      ],
+      "county": "Grand"
+    },
+    "701": {
+      "huc06": "140200",
+      "huc06_name": null,
+      "huc08": "14020003",
+      "huc08_name": null,
+      "huc10": "1402000301",
+      "huc10_name": "Headwaters Tomichi Creek",
+      "huc12": "140200030105",
+      "huc12_name": "Porphyry Creek-Tomichi Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Gunnison"
+    },
+    "709": {
+      "huc06": "140500",
+      "huc06_name": null,
+      "huc08": "14050001",
+      "huc08_name": null,
+      "huc10": "1405000104",
+      "huc10_name": "Oak Creek-Yampa River",
+      "huc12": "140500010402",
+      "huc12_name": "Harrison Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Routt"
+    },
+    "713": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080104",
+      "huc08_name": null,
+      "huc10": "1408010401",
+      "huc10_name": "Headwaters Animas River",
+      "huc12": "140801040103",
+      "huc12_name": "Mineral Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "San Juan"
+    },
+    "717": {
+      "huc06": "140500",
+      "huc06_name": null,
+      "huc08": "14050005",
+      "huc08_name": null,
+      "huc10": "1405000501",
+      "huc10_name": "North Fork White River",
+      "huc12": "140500050102",
+      "huc12_name": "Snell Creek-North Fork White River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Rio Blanco"
+    },
+    "718": {
+      "huc06": "101800",
+      "huc06_name": null,
+      "huc08": "10180010",
+      "huc08_name": null,
+      "huc10": "1018001001",
+      "huc10_name": "Grace Creek-Laramie River",
+      "huc12": "101800100106",
+      "huc12_name": "La Garde Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Larimer"
+    },
+    "737": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010004",
+      "huc08_name": null,
+      "huc10": "1401000407",
+      "huc10_name": "Cyrstal River",
+      "huc12": "140100040701",
+      "huc12_name": "South Fork Crystal River",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Gunnison"
+    },
+    "739": {
+      "huc06": "140300",
+      "huc06_name": null,
+      "huc08": "14030002",
+      "huc08_name": null,
+      "huc10": "1403000202",
+      "huc10_name": "Headwaters Dolores River",
+      "huc12": "140300020204",
+      "huc12_name": "Scotch Creek-Dolores River",
+      "land_use": [
+        "Deciduous Forest"
+      ],
+      "county": "Dolores"
+    },
+    "762": {
+      "huc06": "140200",
+      "huc06_name": null,
+      "huc08": "14020002",
+      "huc08_name": null,
+      "huc10": "1402000205",
+      "huc10_name": "Cebolla Creek",
+      "huc12": "140200020502",
+      "huc12_name": "Headwaters Cebolla Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Hinsdale"
+    },
+    "773": {
+      "huc06": "110200",
+      "huc06_name": null,
+      "huc08": "11020001",
+      "huc08_name": null,
+      "huc10": "1102000112",
+      "huc10_name": "Headwaters Grape Creek",
+      "huc12": "110200011206",
+      "huc12_name": "North Colony Creek-Grape Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Custer"
+    },
+    "780": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080104",
+      "huc08_name": null,
+      "huc10": "1408010402",
+      "huc10_name": "Cascade Creek",
+      "huc12": "140801040203",
+      "huc12_name": "Outlet Cascade Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "San Juan"
+    },
+    "797": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080104",
+      "huc08_name": null,
+      "huc10": "1408010407",
+      "huc10_name": "Headwaters Florida River",
+      "huc12": "140801040702",
+      "huc12_name": "Virginia Gulch-Florida River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "La Plata"
+    },
+    "802": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010002",
+      "huc08_name": null,
+      "huc10": "1401000205",
+      "huc10_name": "Middle Blue River",
+      "huc12": "140100020502",
+      "huc12_name": "Rock Creek-Blue River",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Summit"
+    },
+    "825": {
+      "huc06": "140500",
+      "huc06_name": null,
+      "huc08": "14050001",
+      "huc08_name": null,
+      "huc10": "1405000104",
+      "huc10_name": "Oak Creek-Yampa River",
+      "huc12": "140500010407",
+      "huc12_name": "Fish Creek",
+      "land_use": [
+        "Woody Wetlands"
+      ],
+      "county": "Routt"
+    },
+    "827": {
+      "huc06": "140500",
+      "huc06_name": null,
+      "huc08": "14050005",
+      "huc08_name": null,
+      "huc10": "1405000501",
+      "huc10_name": "North Fork White River",
+      "huc12": "140500050101",
+      "huc12_name": "Headwaters North Fork White River",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Garfield"
+    },
+    "829": {
+      "huc06": "130100",
+      "huc06_name": null,
+      "huc08": "13010002",
+      "huc08_name": null,
+      "huc10": "1301000206",
+      "huc10_name": "Sangre de Cristo Creek-Trinchera Creek",
+      "huc12": "130100020601",
+      "huc12_name": "North Fork Trinchera Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Costilla"
+    },
+    "838": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190005",
+      "huc08_name": null,
+      "huc10": "1019000504",
+      "huc10_name": "Headwaters Boulder Creek",
+      "huc12": "101900050401",
+      "huc12_name": "North Boulder Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Boulder"
+    },
+    "839": {
+      "huc06": "130100",
+      "huc06_name": null,
+      "huc08": "13010001",
+      "huc08_name": null,
+      "huc10": "1301000101",
+      "huc10_name": "Headwaters Rio Grande",
+      "huc12": "130100010106",
+      "huc12_name": "Rio Grande Reservoir-Rio Grande",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Hinsdale"
+    },
+    "840": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080101",
+      "huc08_name": null,
+      "huc10": "1408010102",
+      "huc10_name": "West Fork San Juan River",
+      "huc12": "140801010203",
+      "huc12_name": "Wolf Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Mineral"
+    },
+    "842": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010003",
+      "huc08_name": null,
+      "huc10": "1401000301",
+      "huc10_name": "Gore Creek",
+      "huc12": "140100030102",
+      "huc12_name": "Middle Gore Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Eagle"
+    },
+    "843": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080101",
+      "huc08_name": null,
+      "huc10": "1408010111",
+      "huc10_name": "Upper Los Pinos River",
+      "huc12": "140801011105",
+      "huc12_name": "Indian Creek-Los Pinos River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "La Plata"
+    },
+    "857": {
+      "huc06": "110200",
+      "huc06_name": null,
+      "huc08": "11020010",
+      "huc08_name": null,
+      "huc10": "1102001001",
+      "huc10_name": "Headwaters Purgatoire River",
+      "huc12": "110200100102",
+      "huc12_name": "North Fork Purgatoire River",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Las_Animas"
+    },
+    "869": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010001",
+      "huc08_name": null,
+      "huc10": "1401000101",
+      "huc10_name": "Willow Creek",
+      "huc12": "140100010102",
+      "huc12_name": "Upper Willow Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Grand"
+    },
+    "870": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190006",
+      "huc08_name": null,
+      "huc10": "1019000602",
+      "huc10_name": "Headwaters Big Thompson River",
+      "huc12": "101900060204",
+      "huc12_name": "Fall River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Larimer"
+    },
+    "874": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080101",
+      "huc08_name": null,
+      "huc10": "1408010102",
+      "huc10_name": "West Fork San Juan River",
+      "huc12": "140801010203",
+      "huc12_name": "Wolf Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Mineral"
+    },
+    "904": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080105",
+      "huc08_name": null,
+      "huc10": "1408010501",
+      "huc10_name": "Headwaters La Plata River",
+      "huc12": "140801050101",
+      "huc12_name": "Headwaters La Plata River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "La Plata"
+    },
+    "905": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080107",
+      "huc08_name": null,
+      "huc10": "1408010701",
+      "huc10_name": "Upper Mancos River",
+      "huc12": "140801070102",
+      "huc12_name": "West Mancos River",
+      "land_use": [
+        "Deciduous Forest"
+      ],
+      "county": "Montezuma"
+    },
+    "913": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010001",
+      "huc08_name": null,
+      "huc10": "1401000107",
+      "huc10_name": "Muddy Creek",
+      "huc12": "140100010706",
+      "huc12_name": "Deer Creek-Red Dirt Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Grand"
+    },
+    "914": {
+      "huc06": "130100",
+      "huc06_name": null,
+      "huc08": "13010003",
+      "huc08_name": null,
+      "huc10": "1301000306",
+      "huc10_name": "Sand Creek-San Luis Creek",
+      "huc12": "130100030604",
+      "huc12_name": "Medano Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Saguache"
+    },
+    "935": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190002",
+      "huc08_name": null,
+      "huc10": "1019000202",
+      "huc10_name": "Headwaters North Fork South Platte River",
+      "huc12": "101900020201",
+      "huc12_name": "Geneva Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Clear_Creek"
+    },
+    "936": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190002",
+      "huc08_name": null,
+      "huc10": "1019000208",
+      "huc10_name": "Bear Creek",
+      "huc12": "101900020801",
+      "huc12_name": "Vance Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Clear Creek"
+    },
+    "937": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190001",
+      "huc08_name": null,
+      "huc10": "1019000104",
+      "huc10_name": "Headwates Tarryall Creek",
+      "huc12": "101900010404",
+      "huc12_name": "Michigan Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Park"
+    },
+    "938": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190001",
+      "huc08_name": null,
+      "huc10": "1019000101",
+      "huc10_name": "Middle Fork South Platte River",
+      "huc12": "101900010102",
+      "huc12_name": "Headwaters Middle Fork South Platte River",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Park"
+    },
+    "939": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190001",
+      "huc08_name": null,
+      "huc10": "1019000102",
+      "huc10_name": "South Fork South Platte River",
+      "huc12": "101900010202",
+      "huc12_name": "Headwaters South Fork South Platte River",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Park"
+    },
+    "940": {
+      "huc06": "140500",
+      "huc06_name": null,
+      "huc08": "14050001",
+      "huc08_name": null,
+      "huc10": "1405000102",
+      "huc10_name": "Headwaters Elk River",
+      "huc12": "140500010203",
+      "huc12_name": "Outlet North Fork Elk River",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Routt"
+    },
+    "1005": {
+      "huc06": "130100",
+      "huc06_name": null,
+      "huc08": "13010002",
+      "huc08_name": null,
+      "huc10": "1301000206",
+      "huc10_name": "Sangre de Cristo Creek-Trinchera Creek",
+      "huc12": "130100020604",
+      "huc12_name": "East Fork Ute Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Costilla"
+    },
+    "1014": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010001",
+      "huc08_name": null,
+      "huc10": "1401000104",
+      "huc10_name": "Williams Fork",
+      "huc12": "140100010402",
+      "huc12_name": "Headwaters Williams Fork",
+      "land_use": [
+        "Mid-elevation forest"
+      ],
+      "county": "Grand"
+    },
+    "1030": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010001",
+      "huc08_name": null,
+      "huc10": "1401000106",
+      "huc10_name": "Troublesome Creek-Colorado River",
+      "huc12": "140100010604",
+      "huc12_name": "Rabbit Ears Creek-Troublesome Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Grand"
+    },
+    "1031": {
+      "huc06": "101800",
+      "huc06_name": null,
+      "huc08": "10180001",
+      "huc08_name": null,
+      "huc10": "1018000104",
+      "huc10_name": "Illinois River",
+      "huc12": "101800010401",
+      "huc12_name": "Jack Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Jackson"
+    },
+    "1032": {
+      "huc06": "101800",
+      "huc06_name": null,
+      "huc08": "10180001",
+      "huc08_name": null,
+      "huc10": "1018000106",
+      "huc10_name": "Canadian River",
+      "huc12": "101800010603",
+      "huc12_name": "East Sand Creek-Canadian River",
+      "land_use": [
+        "Deciduous Forest"
+      ],
+      "county": "Jackson"
+    },
+    "1033": {
+      "huc06": "101800",
+      "huc06_name": null,
+      "huc08": "10180001",
+      "huc08_name": null,
+      "huc10": "1018000102",
+      "huc10_name": "North Fork North Platte River",
+      "huc12": "101800010202",
+      "huc12_name": "Middle North Fork North Platte River",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Jackson"
+    },
+    "1040": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010003",
+      "huc08_name": null,
+      "huc10": "1401000303",
+      "huc10_name": "Middle Eagle River",
+      "huc12": "140100030304",
+      "huc12_name": "Berry Creek-Eagle River",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Eagle"
+    },
+    "1041": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010003",
+      "huc08_name": null,
+      "huc10": "1401000303",
+      "huc10_name": "Middle Eagle River",
+      "huc12": "140100030301",
+      "huc12_name": "Beaver Creek-Eagle River",
+      "land_use": [
+        "Deciduous Forest"
+      ],
+      "county": "Eagle"
+    },
+    "1042": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190005",
+      "huc08_name": null,
+      "huc10": "1019000502",
+      "huc10_name": "North Saint Vrain Creek",
+      "huc12": "101900050202",
+      "huc12_name": "Headwaters North Saint Vrain Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Boulder"
+    },
+    "1057": {
+      "huc06": "110200",
+      "huc06_name": null,
+      "huc08": "11020003",
+      "huc08_name": null,
+      "huc10": "1102000302",
+      "huc10_name": "Upper Fountain Creek",
+      "huc12": "110200030201",
+      "huc12_name": "Headwaters Fountain Creek",
+      "land_use": [
+        "Shrub/Scrub"
+      ],
+      "county": "Teller"
+    },
+    "1058": {
+      "huc06": "130100",
+      "huc06_name": null,
+      "huc08": "13010002",
+      "huc08_name": null,
+      "huc10": "1301000201",
+      "huc10_name": "Pinos Creek",
+      "huc12": "130100020101",
+      "huc12_name": "East Fork Pinos Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Rio Grande"
+    },
+    "1059": {
+      "huc06": "130100",
+      "huc06_name": null,
+      "huc08": "13010004",
+      "huc08_name": null,
+      "huc10": "1301000402",
+      "huc10_name": "Porcupine Creek-Saguache Creek",
+      "huc12": "130100040203",
+      "huc12_name": "Luders Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Saguache"
+    },
+    "1060": {
+      "huc06": "140300",
+      "huc06_name": null,
+      "huc08": "14030002",
+      "huc08_name": null,
+      "huc10": "1403000202",
+      "huc10_name": "Headwaters Dolores River",
+      "huc12": "140300020206",
+      "huc12_name": "Little Bear Creek-Bear Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Montezuma"
+    },
+    "1061": {
+      "huc06": "140500",
+      "huc06_name": null,
+      "huc08": "14050001",
+      "huc08_name": null,
+      "huc10": "1405000101",
+      "huc10_name": "Headwaters Yampa River",
+      "huc12": "140500010102",
+      "huc12_name": "Yamcolo Reservoir-Bear River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Routt"
+    },
+    "1100": {
+      "huc06": "110200",
+      "huc06_name": null,
+      "huc08": "11020001",
+      "huc08_name": null,
+      "huc10": "1102000105",
+      "huc10_name": "Chalk Creek",
+      "huc12": "110200010501",
+      "huc12_name": "Headwaters Chalk Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Chaffee"
+    },
+    "1102": {
+      "huc06": "130100",
+      "huc06_name": null,
+      "huc08": "13010003",
+      "huc08_name": null,
+      "huc10": "1301000303",
+      "huc10_name": "Garner Creek-San Luis Creek",
+      "huc12": "130100030301",
+      "huc12_name": "Piney Creek-San Luis Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Saguache"
+    },
+    "1120": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010002",
+      "huc08_name": null,
+      "huc10": "1401000206",
+      "huc10_name": "Lower Blue River",
+      "huc12": "140100020602",
+      "huc12_name": "Deep Creek-Blue River",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Summit"
+    },
+    "1122": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190007",
+      "huc08_name": null,
+      "huc10": "1019000701",
+      "huc10_name": "South Fork Cache la Poudre River",
+      "huc12": "101900070101",
+      "huc12_name": "Beaver Creek",
+      "land_use": [
+        "Grassland/Herbaceous"
+      ],
+      "county": "Larimer"
+    },
+    "1123": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190007",
+      "huc08_name": null,
+      "huc10": "1019000702",
+      "huc10_name": "Headwaters Cache la Poudre River",
+      "huc12": "101900070203",
+      "huc12_name": "La Poudre Pass Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Larimer"
+    },
+    "1124": {
+      "huc06": "130100",
+      "huc06_name": null,
+      "huc08": "13010004",
+      "huc08_name": null,
+      "huc10": "1301000402",
+      "huc10_name": "Porcupine Creek-Saguache Creek",
+      "huc12": "130100040201",
+      "huc12_name": "California Gulch",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Saguache"
+    },
+    "1128": {
+      "huc06": "130100",
+      "huc06_name": null,
+      "huc08": "13010004",
+      "huc08_name": null,
+      "huc10": "1301000403",
+      "huc10_name": "Middle Creek-Saguache Creek",
+      "huc12": "130100040306",
+      "huc12_name": "Middle Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Saguache"
+    },
+    "1141": {
+      "huc06": "140200",
+      "huc06_name": null,
+      "huc08": "14020001",
+      "huc08_name": null,
+      "huc10": "1402000101",
+      "huc10_name": "Taylor River",
+      "huc12": "140200010101",
+      "huc12_name": "Headwaters Taylor River",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Gunnison"
+    },
+    "1160": {
+      "huc06": "140801",
+      "huc06_name": null,
+      "huc08": "14080102",
+      "huc08_name": null,
+      "huc10": "1408010202",
+      "huc10_name": "Middle Piedra River",
+      "huc12": "140801020203",
+      "huc12_name": "Sand Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Hinsdale"
+    },
+    "1161": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190007",
+      "huc08_name": null,
+      "huc10": "1019000705",
+      "huc10_name": "Headwaters North Fork Cache la Poudre River",
+      "huc12": "101900070501",
+      "huc12_name": "George Creek-Sheep Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Larimer"
+    },
+    "1185": {
+      "huc06": "140300",
+      "huc06_name": null,
+      "huc08": "14030002",
+      "huc08_name": null,
+      "huc10": "1403000201",
+      "huc10_name": "West Dolores River",
+      "huc12": "140300020103",
+      "huc12_name": "Fish Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Dolores"
+    },
+    "1186": {
+      "huc06": "140100",
+      "huc06_name": null,
+      "huc08": "14010001",
+      "huc08_name": null,
+      "huc10": "1401000102",
+      "huc10_name": "Fraser River",
+      "huc12": "140100010203",
+      "huc12_name": "Saint Louis Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Grand"
+    },
+    "1188": {
+      "huc06": "140200",
+      "huc06_name": null,
+      "huc08": "14020002",
+      "huc08_name": null,
+      "huc10": "1402000206",
+      "huc10_name": "Lake Fork",
+      "huc12": "140200020602",
+      "huc12_name": "Lake San Cristobal-Lake Fork",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Hinsdale"
+    },
+    "1251": {
+      "huc06": "101900",
+      "huc06_name": null,
+      "huc08": "10190005",
+      "huc08_name": null,
+      "huc10": "1019000501",
+      "huc10_name": "South Saint Vrain Creek",
+      "huc12": "101900050102",
+      "huc12_name": "Middle Saint Vrain Creek",
+      "land_use": [
+        "Subalpine Forest"
+      ],
+      "county": "Boulder"
+    },
+    "1252": {
+      "huc06": "140500",
+      "huc06_name": null,
+      "huc08": "14050001",
+      "huc08_name": null,
+      "huc10": "1405000106",
+      "huc10_name": "Elkhead Creek",
+      "huc12": "140500010601",
+      "huc12_name": "Headwaters Elkhead Creek",
+      "land_use": [
+        "Evergreen Forest"
+      ],
+      "county": "Routt"
+    }
+  }
+}
