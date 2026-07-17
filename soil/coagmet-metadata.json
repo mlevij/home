@@ -155,7 +155,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2007-11-30",
-    "lastObs": "2026-07-16",
+    "lastObs": "2026-07-17",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1023,6 +1023,22 @@
     "timestep": 300,
     "network": "Coag"
   },
+  "kim01": {
+    "units": "us",
+    "station": "kim01",
+    "name": "Kim",
+    "location": "8.5 miles WSW of Kim, CO",
+    "lat": 37.2168,
+    "lon": -103.5042,
+    "elevation": 5880,
+    "anemometerHeight": 6.6,
+    "active": "active",
+    "irrigation": "dry",
+    "firstObs": "2026-07-15",
+    "lastObs": "2026-07-17",
+    "timestep": 300,
+    "network": "Coag"
+  },
   "kln01": {
     "units": "us",
     "station": "kln01",
@@ -1307,7 +1323,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "2018-04-26",
-    "lastObs": "2026-07-16",
+    "lastObs": "2026-07-17",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1659,7 +1675,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2007-11-30",
-    "lastObs": "2026-07-16",
+    "lastObs": "2026-07-17",
     "timestep": 300,
     "network": "Coag"
   },
