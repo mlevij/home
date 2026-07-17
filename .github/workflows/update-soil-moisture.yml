@@ -16,21 +16,35 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # continue-on-error on every fetch step below: these are four independent
+      # networks (CoAgMET x2, station metadata, RAWS), and one being down (e.g.
+      # NIFC for RAWS) shouldn't block the others' already-successful data from
+      # being committed. Each script only writes its output file once, at the very
+      # end, after gathering everything in memory -- so a step that fails/crashes
+      # partway through never leaves a corrupt/partial file, just the file
+      # unchanged from its last successful commit. That's what makes it safe for
+      # "Commit if changed" below to always run regardless of which steps failed:
+      # it naturally only picks up the files that actually changed.
       - name: Fetch soil moisture data (hourly, aggregated to daily)
+        continue-on-error: true
         run: python3 .github/scripts/fetch_coagmet_soilmoisture.py
 
       - name: Fetch station metadata
+        continue-on-error: true
         run: |
           curl -sf "https://coagmet.colostate.edu/data/metadata.json" \
             -o soil/coagmet-metadata.json
 
       - name: Fetch CoAgMET daily data (precip, etc.)
+        continue-on-error: true
         run: python3 .github/scripts/fetch_coagmet_daily.py
 
       - name: Fetch RAWS live snapshot (soil moisture + recent precip)
+        continue-on-error: true
         run: python3 .github/scripts/fetch_raws_snapshot.py
 
       - name: Commit if changed
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
