@@ -665,246 +665,257 @@
     // ── Soil monitoring data (2025 sampling) ─────────────────────────────────
     // Depths: [d, silt, sand, clay, texture, pH, ec, n, c, cn, wp, srFC, sat, bagFC]
     // null = not measured / not available
+    // wp/srFC/sat recomputed directly from 'Soil Characteristics Data Sheet.xlsx'
+    // sand/clay/organic-carbon values using Saxton-Rawls (2006) Eq. 1/2/5, verified
+    // against the actual published paper -- the sheet's own WP/FC formulas divided
+    // %OM by 100 before use (wrong; the paper's coefficients expect OM as a raw
+    // percentage, unlike sand/clay which do need the /100 fraction conversion),
+    // and its Sat column wasn't Saxton-Rawls at all (an ad-hoc FC+0.3*(100-FC),
+    // no sand/clay/OM dependence). Rows with organic-carbon-derived OM > 8%w
+    // (BNV01's 0-6" horizon; a few RAWS stations) have wp/srFC/sat omitted
+    // entirely, same as SNOTEL_SOIL below -- the paper excluded those samples
+    // from its whole regression dataset, so the equations don't mean anything
+    // there. See recompute_saxton_rawls.py for the correction methodology.
     const COAGMET_SOIL = {
       'LAM01': { name:'LAM01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:47.4,sand:27,clay:25.6,tex:'Loam',pH:7.87,ec:0.2,n:0.12,c:1.91,cn:15.9,wp:16,srFC:31,sat:52,bagFC:31,caco3:7.9,inorgC:0.66},
-        {d:'6-12"',silt:49.4,sand:25,clay:25.6,tex:'Loam',pH:8.28,ec:0.2,n:0.067,c:1.6,cn:23.9,wp:16,srFC:31,sat:52,bagFC:30,caco3:9,inorgC:0.75},
-        {d:'12-20"',silt:48.4,sand:24,clay:27.6,tex:'Clay Loam',pH:8.8,ec:0.41,n:0.055,c:1.65,cn:30,wp:17,srFC:32,sat:52,bagFC:30.1,caco3:10,inorgC:0.84}]},
+        {d:'0-6"',silt:47.4,sand:27,clay:25.6,tex:'Loam',pH:7.87,ec:0.2,n:0.12,c:1.91,cn:15.9,wp:17,srFC:32,sat:47,bagFC:31,caco3:7.9,inorgC:0.66},
+        {d:'6-12"',silt:49.4,sand:25,clay:25.6,tex:'Loam',pH:8.28,ec:0.2,n:0.067,c:1.6,cn:23.9,wp:16,srFC:32,sat:45,bagFC:30,caco3:9,inorgC:0.75},
+        {d:'12-20"',silt:48.4,sand:24,clay:27.6,tex:'Clay Loam',pH:8.8,ec:0.41,n:0.055,c:1.65,cn:30,wp:17,srFC:33,sat:46,bagFC:30.1,caco3:10,inorgC:0.84}]},
       'ILF01': { name:'ILF01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:26.4,sand:42,clay:31.6,tex:'Clay Loam',pH:7.96,ec:0.39,n:0.219,c:2.17,cn:9.9,wp:19,srFC:31,sat:52,bagFC:31.7,caco3:2.4,inorgC:0.2},
-        {d:'6-12"',silt:24.4,sand:42,clay:33.6,tex:'Clay Loam',pH:7.92,ec:0.59,n:0.161,c:1.63,cn:10.1,wp:20,srFC:32,sat:52,bagFC:29.3,caco3:2.5,inorgC:0.21},
-        {d:'12-20"',silt:25.4,sand:49,clay:25.6,tex:'Sandy Clay Loam',pH:8.09,ec:0.58,n:0.126,c:1.21,cn:9.6,wp:15,srFC:26,sat:48,bagFC:26.3,caco3:1,inorgC:0.09}]},
+        {d:'0-6"',silt:26.4,sand:42,clay:31.6,tex:'Clay Loam',pH:7.96,ec:0.39,n:0.219,c:2.17,cn:9.9,wp:21,srFC:33,sat:47,bagFC:31.7,caco3:2.4,inorgC:0.2},
+        {d:'6-12"',silt:24.4,sand:42,clay:33.6,tex:'Clay Loam',pH:7.92,ec:0.59,n:0.161,c:1.63,cn:10.1,wp:21,srFC:34,sat:46,bagFC:29.3,caco3:2.5,inorgC:0.21},
+        {d:'12-20"',silt:25.4,sand:49,clay:25.6,tex:'Sandy Clay Loam',pH:8.09,ec:0.58,n:0.126,c:1.21,cn:9.6,wp:17,srFC:28,sat:44,bagFC:26.3,caco3:1,inorgC:0.09}]},
       'HXT01': { name:'HXT01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:20.4,sand:72,clay:7.6,tex:'Sandy Loam',pH:6.06,ec:0.06,n:0.14,c:1.49,cn:10.6,wp:4,srFC:12,sat:38,bagFC:21.3,caco3:0.4,inorgC:0.04},
-        {d:'6-12"',silt:13.4,sand:79,clay:7.6,tex:'Loamy Sand',pH:5.6,ec:0,n:0.102,c:0.97,cn:9.5,wp:4,srFC:10,sat:37,bagFC:17.5,caco3:0.4,inorgC:0.04},
-        {d:'12-20"',silt:17.4,sand:71,clay:11.6,tex:'Sandy Loam',pH:6.42,ec:0,n:0.077,c:0.72,cn:9.4,wp:7,srFC:14,sat:40,bagFC:18.6,caco3:0.6,inorgC:0.05}]},
+        {d:'0-6"',silt:20.4,sand:72,clay:7.6,tex:'Sandy Loam',pH:6.06,ec:0.06,n:0.14,c:1.49,cn:10.6,wp:7,srFC:15,sat:45,bagFC:21.3,caco3:0.4,inorgC:0.04},
+        {d:'6-12"',silt:13.4,sand:79,clay:7.6,tex:'Loamy Sand',pH:5.6,ec:0,n:0.102,c:0.97,cn:9.5,wp:6,srFC:12,sat:43,bagFC:17.5,caco3:0.4,inorgC:0.04},
+        {d:'12-20"',silt:17.4,sand:71,clay:11.6,tex:'Sandy Loam',pH:6.42,ec:0,n:0.077,c:0.72,cn:9.4,wp:8,srFC:16,sat:41,bagFC:18.6,caco3:0.6,inorgC:0.05}]},
       'WRY02': { name:'WRY02', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:7.4,sand:89,clay:3.6,tex:'Sand',pH:6.42,ec:0.13,n:0.124,c:1.28,cn:10.3,wp:1,srFC:6,sat:34,bagFC:16,caco3:0.6,inorgC:0.05},
-        {d:'6-12"',silt:8.4,sand:90,clay:1.6,tex:'Sand',pH:6.98,ec:0.06,n:0.055,c:0.52,cn:9.5,wp:0,srFC:5,sat:34,bagFC:12.1,caco3:0.4,inorgC:0.04},
-        {d:'12-20"',silt:9.4,sand:85,clay:5.6,tex:'Loamy Sand',pH:6.9,ec:0,n:0.041,c:0.38,cn:9.3,wp:3,srFC:8,sat:36,bagFC:13.1,caco3:0.4,inorgC:0.04}]},
+        {d:'0-6"',silt:7.4,sand:89,clay:3.6,tex:'Sand',pH:6.42,ec:0.13,n:0.124,c:1.28,cn:10.3,wp:4,srFC:9,sat:46,bagFC:16,caco3:0.6,inorgC:0.05},
+        {d:'6-12"',silt:8.4,sand:90,clay:1.6,tex:'Sand',pH:6.98,ec:0.06,n:0.055,c:0.52,cn:9.5,wp:1,srFC:6,sat:44,bagFC:12.1,caco3:0.4,inorgC:0.04},
+        {d:'12-20"',silt:9.4,sand:85,clay:5.6,tex:'Loamy Sand',pH:6.9,ec:0,n:0.041,c:0.38,cn:9.3,wp:3,srFC:8,sat:42,bagFC:13.1,caco3:0.4,inorgC:0.04}]},
       'PAI01': { name:'PAI01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:12.4,sand:82,clay:5.6,tex:'Loamy Sand',pH:6.51,ec:0.04,n:0.122,c:1.24,cn:10.2,wp:3,srFC:8,sat:36,bagFC:17.8,caco3:0.4,inorgC:0.04},
-        {d:'6-12"',silt:12.4,sand:78,clay:9.6,tex:'Sandy Loam',pH:6.95,ec:0,n:0.083,c:0.76,cn:9.2,wp:5,srFC:11,sat:38,bagFC:17,caco3:0.4,inorgC:0.04},
-        {d:'12-20"',silt:8.4,sand:76,clay:15.6,tex:'Sandy Loam',pH:7,ec:0,n:0.075,c:0.66,cn:8.8,wp:9,srFC:15,sat:41,bagFC:17.4,caco3:0.4,inorgC:0.04}]},
+        {d:'0-6"',silt:12.4,sand:82,clay:5.6,tex:'Loamy Sand',pH:6.51,ec:0.04,n:0.122,c:1.24,cn:10.2,wp:5,srFC:11,sat:45,bagFC:17.8,caco3:0.4,inorgC:0.04},
+        {d:'6-12"',silt:12.4,sand:78,clay:9.6,tex:'Sandy Loam',pH:6.95,ec:0,n:0.083,c:0.76,cn:9.2,wp:7,srFC:13,sat:42,bagFC:17,caco3:0.4,inorgC:0.04},
+        {d:'12-20"',silt:8.4,sand:76,clay:15.6,tex:'Sandy Loam',pH:7,ec:0,n:0.075,c:0.66,cn:8.8,wp:10,srFC:17,sat:40,bagFC:17.4,caco3:0.4,inorgC:0.04}]},
       'WLS01': { name:'WLS01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:35.8,sand:24.6,clay:39.6,tex:'Clay Loam',pH:7.74,ec:0.19,n:0.163,c:1.9,cn:11.7,wp:24,srFC:37,sat:56,bagFC:33.6,caco3:2.5,inorgC:0.21},
-        {d:'6-12"',silt:38.8,sand:17.6,clay:43.6,tex:'Clay',pH:7.98,ec:0.15,n:0.114,c:1.83,cn:16.1,wp:26,srFC:40,sat:58,bagFC:32.7,caco3:7.2,inorgC:0.6},
-        {d:'12-20"',silt:37.8,sand:18.6,clay:43.6,tex:'Clay',pH:8.15,ec:0.14,n:0.078,c:1.84,cn:23.6,wp:26,srFC:40,sat:58,bagFC:31.5,caco3:10.1,inorgC:0.84}]},
+        {d:'0-6"',silt:35.8,sand:24.6,clay:39.6,tex:'Clay Loam',pH:7.74,ec:0.19,n:0.163,c:1.9,cn:11.7,wp:24,srFC:38,sat:50,bagFC:33.6,caco3:2.5,inorgC:0.21},
+        {d:'6-12"',silt:38.8,sand:17.6,clay:43.6,tex:'Clay',pH:7.98,ec:0.15,n:0.114,c:1.83,cn:16.1,wp:26,srFC:40,sat:50,bagFC:32.7,caco3:7.2,inorgC:0.6},
+        {d:'12-20"',silt:37.8,sand:18.6,clay:43.6,tex:'Clay',pH:8.15,ec:0.14,n:0.078,c:1.84,cn:23.6,wp:26,srFC:40,sat:50,bagFC:31.5,caco3:10.1,inorgC:0.84}]},
       'STG01': { name:'STG01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:29.8,sand:38.6,clay:31.6,tex:'Clay Loam',pH:7.11,ec:0.23,n:0.099,c:0.82,cn:8.3,wp:19,srFC:32,sat:52,bagFC:27,caco3:0.4,inorgC:0.04},
-        {d:'6-12"',silt:33.8,sand:32.6,clay:33.6,tex:'Clay Loam',pH:7.88,ec:0.17,n:0.092,c:1.13,cn:12.3,wp:20,srFC:33,sat:53,bagFC:28.2,caco3:3.9,inorgC:0.33},
-        {d:'12-20"',silt:35.8,sand:36.6,clay:27.6,tex:'Clay Loam',pH:8.3,ec:0.15,n:0.057,c:2.23,cn:39.1,wp:17,srFC:30,sat:51,bagFC:28.6,caco3:13.5,inorgC:1.13}]},
+        {d:'0-6"',silt:29.8,sand:38.6,clay:31.6,tex:'Clay Loam',pH:7.11,ec:0.23,n:0.099,c:0.82,cn:8.3,wp:20,srFC:32,sat:44,bagFC:27,caco3:0.4,inorgC:0.04},
+        {d:'6-12"',silt:33.8,sand:32.6,clay:33.6,tex:'Clay Loam',pH:7.88,ec:0.17,n:0.092,c:1.13,cn:12.3,wp:21,srFC:34,sat:45,bagFC:28.2,caco3:3.9,inorgC:0.33},
+        {d:'12-20"',silt:35.8,sand:36.6,clay:27.6,tex:'Clay Loam',pH:8.3,ec:0.15,n:0.057,c:2.23,cn:39.1,wp:18,srFC:31,sat:45,bagFC:28.6,caco3:13.5,inorgC:1.13}]},
       'YUM02': { name:'YUM02', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:7.8,sand:82.6,clay:9.6,tex:'Loamy Sand',pH:6.13,ec:0.1,n:0.068,c:0.61,cn:9,wp:5,srFC:10,sat:37,bagFC:15.1,caco3:0.4,inorgC:0.04},
-        {d:'6-12"',silt:6.8,sand:79.6,clay:13.6,tex:'Sandy Loam',pH:6.45,ec:0.05,n:0.063,c:0.51,cn:8.1,wp:8,srFC:13,sat:39,bagFC:15.6,caco3:0.4,inorgC:0.04},
-        {d:'12-20"',silt:5.8,sand:82.6,clay:11.6,tex:'Loamy Sand',pH:6.72,ec:0,n:0.044,c:0.34,cn:7.7,wp:6,srFC:12,sat:38,bagFC:13.9,caco3:0.6,inorgC:0.05}]},
+        {d:'0-6"',silt:7.8,sand:82.6,clay:9.6,tex:'Loamy Sand',pH:6.13,ec:0.1,n:0.068,c:0.61,cn:9,wp:6,srFC:12,sat:41,bagFC:15.1,caco3:0.4,inorgC:0.04},
+        {d:'6-12"',silt:6.8,sand:79.6,clay:13.6,tex:'Sandy Loam',pH:6.45,ec:0.05,n:0.063,c:0.51,cn:8.1,wp:9,srFC:14,sat:40,bagFC:15.6,caco3:0.4,inorgC:0.04},
+        {d:'12-20"',silt:5.8,sand:82.6,clay:11.6,tex:'Loamy Sand',pH:6.72,ec:0,n:0.044,c:0.34,cn:7.7,wp:7,srFC:12,sat:40,bagFC:13.9,caco3:0.6,inorgC:0.05}]},
       'HYK02': { name:'HYK02', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:2.8,sand:89.6,clay:7.6,tex:'Sand',pH:6.8,ec:0.04,n:0.098,c:0.93,cn:9.5,wp:4,srFC:8,sat:36,bagFC:14.8,caco3:0.3,inorgC:0.03},
-        {d:'6-12"',silt:2.8,sand:91.6,clay:5.6,tex:'Sand',pH:6.95,ec:0,n:0.052,c:0.49,cn:9.4,wp:3,srFC:6,sat:34,bagFC:11.8,caco3:0.4,inorgC:0.04},
-        {d:'12-20"',silt:4.8,sand:87.6,clay:7.6,tex:'Loamy Sand',pH:7.04,ec:0,n:0.061,c:0.57,cn:9.3,wp:4,srFC:8,sat:36,bagFC:13.5,caco3:0.4,inorgC:0.04}]},
+        {d:'0-6"',silt:2.8,sand:89.6,clay:7.6,tex:'Sand',pH:6.8,ec:0.04,n:0.098,c:0.93,cn:9.5,wp:6,srFC:10,sat:43,bagFC:14.8,caco3:0.3,inorgC:0.03},
+        {d:'6-12"',silt:2.8,sand:91.6,clay:5.6,tex:'Sand',pH:6.95,ec:0,n:0.052,c:0.49,cn:9.4,wp:3,srFC:7,sat:42,bagFC:11.8,caco3:0.4,inorgC:0.04},
+        {d:'12-20"',silt:4.8,sand:87.6,clay:7.6,tex:'Loamy Sand',pH:7.04,ec:0,n:0.061,c:0.57,cn:9.3,wp:5,srFC:9,sat:42,bagFC:13.5,caco3:0.4,inorgC:0.04}]},
       'AKR02': { name:'AKR02', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:54.8,sand:39.6,clay:5.6,tex:'Silt Loam',pH:7.21,ec:0.19,n:0.15,c:1.4,cn:9.3,wp:4,srFC:19,sat:43,bagFC:27.9,caco3:0.4,inorgC:0.04},
-        {d:'6-12"',silt:30.8,sand:29.6,clay:39.6,tex:'Clay Loam',pH:7.45,ec:0.14,n:0.114,c:0.97,cn:8.5,wp:24,srFC:37,sat:56,bagFC:29.3,caco3:0.6,inorgC:0.05},
-        {d:'12-20"',silt:33.8,sand:30.6,clay:35.6,tex:'Clay Loam',pH:7.86,ec:0.19,n:0.102,c:2.17,cn:21.3,wp:21,srFC:35,sat:55,bagFC:30.4,caco3:11.4,inorgC:0.95}]},
+        {d:'0-6"',silt:54.8,sand:39.6,clay:5.6,tex:'Silt Loam',pH:7.21,ec:0.19,n:0.15,c:1.4,cn:9.3,wp:6,srFC:22,sat:46,bagFC:27.9,caco3:0.4,inorgC:0.04},
+        {d:'6-12"',silt:30.8,sand:29.6,clay:39.6,tex:'Clay Loam',pH:7.45,ec:0.14,n:0.114,c:0.97,cn:8.5,wp:24,srFC:37,sat:47,bagFC:29.3,caco3:0.6,inorgC:0.05},
+        {d:'12-20"',silt:33.8,sand:30.6,clay:35.6,tex:'Clay Loam',pH:7.86,ec:0.19,n:0.102,c:2.17,cn:21.3,wp:22,srFC:36,sat:47,bagFC:30.4,caco3:11.4,inorgC:0.95}]},
       'EAC01': { name:'EAC01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:36.4,sand:36,clay:27.6,tex:'Clay Loam',pH:7.84,ec:0.54,n:0.13,c:1.15,cn:8.8,wp:17,srFC:30,sat:51,bagFC:28.5,caco3:1.5,inorgC:0.12},
-        {d:'6-12"',silt:39.4,sand:37,clay:23.6,tex:'Loam',pH:7.81,ec:0.32,n:0.091,c:0.74,cn:8.1,wp:14,srFC:28,sat:50,bagFC:26.9,caco3:0.7,inorgC:0.06},
-        {d:'12-20"',silt:40.4,sand:30,clay:29.6,tex:'Clay Loam',pH:7.6,ec:0.7,n:0.107,c:0.82,cn:7.7,wp:18,srFC:32,sat:52,bagFC:28.6,caco3:0.7,inorgC:0.06}]},
+        {d:'0-6"',silt:36.4,sand:36,clay:27.6,tex:'Clay Loam',pH:7.84,ec:0.54,n:0.13,c:1.15,cn:8.8,wp:17,srFC:31,sat:45,bagFC:28.5,caco3:1.5,inorgC:0.12},
+        {d:'6-12"',silt:39.4,sand:37,clay:23.6,tex:'Loam',pH:7.81,ec:0.32,n:0.091,c:0.74,cn:8.1,wp:15,srFC:29,sat:43,bagFC:26.9,caco3:0.7,inorgC:0.06},
+        {d:'12-20"',silt:40.4,sand:30,clay:29.6,tex:'Clay Loam',pH:7.6,ec:0.7,n:0.107,c:0.82,cn:7.7,wp:18,srFC:33,sat:45,bagFC:28.6,caco3:0.7,inorgC:0.06}]},
       'HLY01': { name:'HLY01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:53.4,sand:31,clay:15.6,tex:'Silt Loam',pH:7.89,ec:0.19,n:0.142,c:1.64,cn:11.5,wp:10,srFC:25,sat:48,bagFC:30.1,caco3:4,inorgC:0.34},
-        {d:'6-12"',silt:43.4,sand:25,clay:31.6,tex:'Clay Loam',pH:8.06,ec:0.15,n:0.106,c:1.94,cn:18.3,wp:19,srFC:34,sat:54,bagFC:31.1,caco3:9.3,inorgC:0.77},
-        {d:'12-20"',silt:44.4,sand:26,clay:29.6,tex:'Clay Loam',pH:8.4,ec:0.12,n:0.057,c:1.66,cn:29.1,wp:18,srFC:33,sat:53,bagFC:30.3,caco3:8.2,inorgC:0.68}]},
+        {d:'0-6"',silt:53.4,sand:31,clay:15.6,tex:'Silt Loam',pH:7.89,ec:0.19,n:0.142,c:1.64,cn:11.5,wp:11,srFC:28,sat:46,bagFC:30.1,caco3:4,inorgC:0.34},
+        {d:'6-12"',silt:43.4,sand:25,clay:31.6,tex:'Clay Loam',pH:8.06,ec:0.15,n:0.106,c:1.94,cn:18.3,wp:20,srFC:35,sat:47,bagFC:31.1,caco3:9.3,inorgC:0.77},
+        {d:'12-20"',silt:44.4,sand:26,clay:29.6,tex:'Clay Loam',pH:8.4,ec:0.12,n:0.057,c:1.66,cn:29.1,wp:19,srFC:34,sat:46,bagFC:30.3,caco3:8.2,inorgC:0.68}]},
       'KRK01': { name:'KRK01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:23.4,sand:53,clay:23.6,tex:'Loam',pH:7.9,ec:0.16,n:0.13,c:1.46,cn:11.2,wp:14,srFC:25,sat:48,bagFC:26.3,caco3:1.5,inorgC:0.12},
-        {d:'6-12"',silt:19.4,sand:55,clay:25.6,tex:'Loam',pH:7.88,ec:0.13,n:0.117,c:1.31,cn:11.2,wp:15,srFC:25,sat:48,bagFC:25.3,caco3:1.6,inorgC:0.13},
-        {d:'12-20"',silt:20.4,sand:56,clay:23.6,tex:'Loam',pH:8.04,ec:0.09,n:0.1,c:1.24,cn:12.4,wp:14,srFC:24,sat:47,bagFC:24.3,caco3:2.7,inorgC:0.22}]},
+        {d:'0-6"',silt:23.4,sand:53,clay:23.6,tex:'Loam',pH:7.9,ec:0.16,n:0.13,c:1.46,cn:11.2,wp:16,srFC:27,sat:44,bagFC:26.3,caco3:1.5,inorgC:0.12},
+        {d:'6-12"',silt:19.4,sand:55,clay:25.6,tex:'Loam',pH:7.88,ec:0.13,n:0.117,c:1.31,cn:11.2,wp:17,srFC:27,sat:43,bagFC:25.3,caco3:1.6,inorgC:0.13},
+        {d:'12-20"',silt:20.4,sand:56,clay:23.6,tex:'Loam',pH:8.04,ec:0.09,n:0.1,c:1.24,cn:12.4,wp:15,srFC:26,sat:43,bagFC:24.3,caco3:2.7,inorgC:0.22}]},
       'LSL01': { name:'LSL01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:15.4,sand:65,clay:19.6,tex:'Sandy Loam',pH:7.94,ec:1.35,n:0.159,c:1.65,cn:10.4,wp:12,srFC:20,sat:44,bagFC:24.9,caco3:0.4,inorgC:0.04},
-        {d:'6-12"',silt:17.4,sand:63,clay:19.6,tex:'Sandy Loam',pH:8.63,ec:2.57,n:0.06,c:0.51,cn:8.5,wp:12,srFC:20,sat:44,bagFC:19.9,caco3:0.6,inorgC:0.05},
-        {d:'12-20"',silt:9.4,sand:55,clay:35.6,tex:'Sandy Clay Loam',pH:8.95,ec:4.55,n:0.061,c:0.6,cn:9.8,wp:21,srFC:32,sat:52,bagFC:22.1,caco3:1.5,inorgC:0.12}]},
+        {d:'0-6"',silt:15.4,sand:65,clay:19.6,tex:'Sandy Loam',pH:7.94,ec:1.35,n:0.159,c:1.65,cn:10.4,wp:14,srFC:23,sat:44,bagFC:24.9,caco3:0.4,inorgC:0.04},
+        {d:'6-12"',silt:17.4,sand:63,clay:19.6,tex:'Sandy Loam',pH:8.63,ec:2.57,n:0.06,c:0.51,cn:8.5,wp:12,srFC:21,sat:40,bagFC:19.9,caco3:0.6,inorgC:0.05},
+        {d:'12-20"',silt:9.4,sand:55,clay:35.6,tex:'Sandy Clay Loam',pH:8.95,ec:4.55,n:0.061,c:0.6,cn:9.8,wp:22,srFC:32,sat:42,bagFC:22.1,caco3:1.5,inorgC:0.12}]},
       'LCN01': { name:'LCN01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:17.4,sand:59,clay:23.6,tex:'Loam',pH:7.94,ec:0.22,n:0.132,c:1.12,cn:8.5,wp:14,srFC:23,sat:46,bagFC:23.9,caco3:0.6,inorgC:0.05},
-        {d:'6-12"',silt:14.4,sand:60,clay:25.6,tex:'Loam',pH:7.81,ec:0.21,n:0.101,c:0.8,cn:7.9,wp:15,srFC:24,sat:47,bagFC:22.2,caco3:0.6,inorgC:0.05},
-        {d:'12-20"',silt:19.4,sand:49,clay:31.6,tex:'Sandy Clay Loam',pH:7.77,ec:0.32,n:0.078,c:0.56,cn:7.2,wp:19,srFC:30,sat:51,bagFC:23.6,caco3:0.4,inorgC:0.04}]},
+        {d:'0-6"',silt:17.4,sand:59,clay:23.6,tex:'Loam',pH:7.94,ec:0.22,n:0.132,c:1.12,cn:8.5,wp:15,srFC:25,sat:42,bagFC:23.9,caco3:0.6,inorgC:0.05},
+        {d:'6-12"',silt:14.4,sand:60,clay:25.6,tex:'Loam',pH:7.81,ec:0.21,n:0.101,c:0.8,cn:7.9,wp:16,srFC:26,sat:41,bagFC:22.2,caco3:0.6,inorgC:0.05},
+        {d:'12-20"',silt:19.4,sand:49,clay:31.6,tex:'Sandy Clay Loam',pH:7.77,ec:0.32,n:0.078,c:0.56,cn:7.2,wp:19,srFC:31,sat:42,bagFC:23.6,caco3:0.4,inorgC:0.04}]},
       'PKN01': { name:'PKN01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:16.4,sand:66,clay:17.6,tex:'Sandy Loam',pH:7.53,ec:0.27,n:0.148,c:1.44,cn:9.7,wp:10,srFC:19,sat:43,bagFC:23.5,caco3:0.4,inorgC:0.04},
-        {d:'6-12"',silt:20.4,sand:52,clay:27.6,tex:'Sandy Clay Loam',pH:7.86,ec:0.15,n:0.093,c:0.78,cn:8.4,wp:17,srFC:27,sat:49,bagFC:24,caco3:0.3,inorgC:0.03},
-        {d:'12-20"',silt:22.4,sand:46,clay:31.6,tex:'Sandy Clay Loam',pH:7.9,ec:0.12,n:0.085,c:0.66,cn:7.8,wp:19,srFC:30,sat:51,bagFC:24.8,caco3:0.3,inorgC:0.03}]},
+        {d:'0-6"',silt:16.4,sand:66,clay:17.6,tex:'Sandy Loam',pH:7.53,ec:0.27,n:0.148,c:1.44,cn:9.7,wp:12,srFC:22,sat:44,bagFC:23.5,caco3:0.4,inorgC:0.04},
+        {d:'6-12"',silt:20.4,sand:52,clay:27.6,tex:'Sandy Clay Loam',pH:7.86,ec:0.15,n:0.093,c:0.78,cn:8.4,wp:17,srFC:28,sat:42,bagFC:24,caco3:0.3,inorgC:0.03},
+        {d:'12-20"',silt:22.4,sand:46,clay:31.6,tex:'Sandy Clay Loam',pH:7.9,ec:0.12,n:0.085,c:0.66,cn:7.8,wp:19,srFC:31,sat:43,bagFC:24.8,caco3:0.3,inorgC:0.03}]},
       'KSY01': { name:'KSY01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:8.4,sand:82,clay:9.6,tex:'Loamy Sand',pH:8.33,ec:0.17,n:0.05,c:0.48,cn:9.6,wp:5,srFC:11,sat:38,bagFC:14.5,caco3:0.9,inorgC:0.08},
-        {d:'6-12"',silt:8.4,sand:82,clay:9.6,tex:'Loamy Sand',pH:8.02,ec:0.32,n:0.05,c:0.42,cn:8.4,wp:5,srFC:11,sat:38,bagFC:14.3,caco3:0.6,inorgC:0.05},
-        {d:'12-20"',silt:6.4,sand:84,clay:9.6,tex:'Loamy Sand',pH:7.87,ec:0.79,n:0.052,c:0.42,cn:8.1,wp:5,srFC:10,sat:37,bagFC:13.8,caco3:0.6,inorgC:0.05}]},
+        {d:'0-6"',silt:8.4,sand:82,clay:9.6,tex:'Loamy Sand',pH:8.33,ec:0.17,n:0.05,c:0.48,cn:9.6,wp:6,srFC:11,sat:41,bagFC:14.5,caco3:0.9,inorgC:0.08},
+        {d:'6-12"',silt:8.4,sand:82,clay:9.6,tex:'Loamy Sand',pH:8.02,ec:0.32,n:0.05,c:0.42,cn:8.4,wp:6,srFC:11,sat:41,bagFC:14.3,caco3:0.6,inorgC:0.05},
+        {d:'12-20"',silt:6.4,sand:84,clay:9.6,tex:'Loamy Sand',pH:7.87,ec:0.79,n:0.052,c:0.42,cn:8.1,wp:6,srFC:11,sat:41,bagFC:13.8,caco3:0.6,inorgC:0.05}]},
       'GBY01': { name:'GBY01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:20.4,sand:64,clay:15.6,tex:'Sandy Loam',pH:6.84,ec:0.3,n:0.198,c:2.03,cn:10.3,wp:9,srFC:18,sat:43,bagFC:26.2,caco3:0.6,inorgC:0.05},
-        {d:'6-12"',silt:21.4,sand:63,clay:15.6,tex:'Sandy Loam',pH:7.5,ec:0.16,n:0.094,c:0.87,cn:9.3,wp:9,srFC:18,sat:43,bagFC:21.4,caco3:0.6,inorgC:0.05},
-        {d:'12-20"',silt:20.4,sand:66,clay:13.6,tex:'Sandy Loam',pH:7.93,ec:0.29,n:0.06,c:0.53,cn:8.8,wp:8,srFC:16,sat:41,bagFC:19.1,caco3:0.7,inorgC:0.06}]},
+        {d:'0-6"',silt:20.4,sand:64,clay:15.6,tex:'Sandy Loam',pH:6.84,ec:0.3,n:0.198,c:2.03,cn:10.3,wp:12,srFC:22,sat:46,bagFC:26.2,caco3:0.6,inorgC:0.05},
+        {d:'6-12"',silt:21.4,sand:63,clay:15.6,tex:'Sandy Loam',pH:7.5,ec:0.16,n:0.094,c:0.87,cn:9.3,wp:10,srFC:20,sat:42,bagFC:21.4,caco3:0.6,inorgC:0.05},
+        {d:'12-20"',silt:20.4,sand:66,clay:13.6,tex:'Sandy Loam',pH:7.93,ec:0.29,n:0.06,c:0.53,cn:8.8,wp:9,srFC:17,sat:40,bagFC:19.1,caco3:0.7,inorgC:0.06}]},
       'BLA01': { name:'BLA01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:9.4,sand:83,clay:7.6,tex:'Loamy Sand',pH:7.99,ec:0,n:0.039,c:0.33,cn:8.5,wp:4,srFC:9,sat:36,bagFC:13.5,caco3:0.6,inorgC:0.05},
-        {d:'6-12"',silt:4.4,sand:84,clay:11.6,tex:'Loamy Sand',pH:7.87,ec:0,n:0.043,c:0.35,cn:8.1,wp:6,srFC:11,sat:38,bagFC:13.5,caco3:0.6,inorgC:0.05},
-        {d:'12-20"',silt:7.4,sand:83,clay:9.6,tex:'Loamy Sand',pH:7.92,ec:0,n:0.034,c:0.27,cn:7.9,wp:5,srFC:10,sat:37,bagFC:13.3,caco3:0.6,inorgC:0.05}]},
+        {d:'0-6"',silt:9.4,sand:83,clay:7.6,tex:'Loamy Sand',pH:7.99,ec:0,n:0.039,c:0.33,cn:8.5,wp:4,srFC:10,sat:41,bagFC:13.5,caco3:0.6,inorgC:0.05},
+        {d:'6-12"',silt:4.4,sand:84,clay:11.6,tex:'Loamy Sand',pH:7.87,ec:0,n:0.043,c:0.35,cn:8.1,wp:7,srFC:12,sat:40,bagFC:13.5,caco3:0.6,inorgC:0.05},
+        {d:'12-20"',silt:7.4,sand:83,clay:9.6,tex:'Loamy Sand',pH:7.92,ec:0,n:0.034,c:0.27,cn:7.9,wp:6,srFC:11,sat:40,bagFC:13.3,caco3:0.6,inorgC:0.05}]},
       'LAM03': { name:'LAM03', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:43.4,sand:25,clay:31.6,tex:'Clay Loam',pH:8.16,ec:0.09,n:0.101,c:2.06,cn:20.4,wp:19,srFC:34,sat:54,bagFC:31.4,caco3:9.9,inorgC:0.82},
-        {d:'6-12"',silt:46.8,sand:18,clay:35.2,tex:'Silty Clay Loam',pH:8.35,ec:0.09,n:0.064,c:1.89,cn:29.5,wp:21,srFC:36,sat:55,bagFC:31.5,caco3:11.7,inorgC:0.97},
-        {d:'12-20"',silt:52.8,sand:20,clay:27.2,tex:'Clay Loam',pH:8.61,ec:0.11,n:0.046,c:1.55,cn:33.7,wp:17,srFC:33,sat:53,bagFC:30.6,caco3:10.1,inorgC:0.84}]},
+        {d:'0-6"',silt:43.4,sand:25,clay:31.6,tex:'Clay Loam',pH:8.16,ec:0.09,n:0.101,c:2.06,cn:20.4,wp:20,srFC:35,sat:48,bagFC:31.4,caco3:9.9,inorgC:0.82},
+        {d:'6-12"',silt:46.8,sand:18,clay:35.2,tex:'Silty Clay Loam',pH:8.35,ec:0.09,n:0.064,c:1.89,cn:29.5,wp:21,srFC:37,sat:48,bagFC:31.5,caco3:11.7,inorgC:0.97},
+        {d:'12-20"',silt:52.8,sand:20,clay:27.2,tex:'Clay Loam',pH:8.61,ec:0.11,n:0.046,c:1.55,cn:33.7,wp:17,srFC:33,sat:46,bagFC:30.6,caco3:10.1,inorgC:0.84}]},
       'BRG01': { name:'BRG01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:16.8,sand:74,clay:9.2,tex:'Loamy Sand',pH:5.98,ec:0.12,n:0.101,c:0.93,cn:9.2,wp:5,srFC:12,sat:38,bagFC:18.7,caco3:0.4,inorgC:0.04},
-        {d:'6-12"',silt:8.8,sand:80,clay:11.2,tex:'Loamy Sand',pH:7.35,ec:0.06,n:0.055,c:0.4,cn:7.3,wp:6,srFC:12,sat:38,bagFC:14.8,caco3:0.6,inorgC:0.05},
-        {d:'12-20"',silt:12.8,sand:70,clay:17.2,tex:'Sandy Loam',pH:7.91,ec:0.17,n:0.064,c:0.55,cn:8.6,wp:10,srFC:17,sat:42,bagFC:18.1,caco3:1.3,inorgC:0.1}]},
+        {d:'0-6"',silt:16.8,sand:74,clay:9.2,tex:'Loamy Sand',pH:5.98,ec:0.12,n:0.101,c:0.93,cn:9.2,wp:7,srFC:14,sat:43,bagFC:18.7,caco3:0.4,inorgC:0.04},
+        {d:'6-12"',silt:8.8,sand:80,clay:11.2,tex:'Loamy Sand',pH:7.35,ec:0.06,n:0.055,c:0.4,cn:7.3,wp:7,srFC:13,sat:40,bagFC:14.8,caco3:0.6,inorgC:0.05},
+        {d:'12-20"',silt:12.8,sand:70,clay:17.2,tex:'Sandy Loam',pH:7.91,ec:0.17,n:0.064,c:0.55,cn:8.6,wp:11,srFC:18,sat:40,bagFC:18.1,caco3:1.3,inorgC:0.1}]},
       'LMS02': { name:'LMS02', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:29.8,sand:29,clay:41.2,tex:'Clay',pH:8.22,ec:0.58,n:0.134,c:1.83,cn:13.7,wp:25,srFC:38,sat:57,bagFC:31.7,caco3:5.2,inorgC:0.43},
-        {d:'6-12"',silt:22.8,sand:28,clay:49.2,tex:'Clay',pH:7.7,ec:4.28,n:0.125,c:1.6,cn:12.8,wp:29,srFC:42,sat:59,bagFC:30.8,caco3:5.3,inorgC:0.44},
-        {d:'12-20"',silt:15.8,sand:39,clay:45.2,tex:'Clay',pH:7.79,ec:4.87,n:0.098,c:1.25,cn:12.8,wp:27,srFC:39,sat:57,bagFC:27.4,caco3:4.7,inorgC:0.4}]},
+        {d:'0-6"',silt:29.8,sand:29,clay:41.2,tex:'Clay',pH:8.22,ec:0.58,n:0.134,c:1.83,cn:13.7,wp:25,srFC:38,sat:48,bagFC:31.7,caco3:5.2,inorgC:0.43},
+        {d:'6-12"',silt:22.8,sand:28,clay:49.2,tex:'Clay',pH:7.7,ec:4.28,n:0.125,c:1.6,cn:12.8,wp:29,srFC:42,sat:49,bagFC:30.8,caco3:5.3,inorgC:0.44},
+        {d:'12-20"',silt:15.8,sand:39,clay:45.2,tex:'Clay',pH:7.79,ec:4.87,n:0.098,c:1.25,cn:12.8,wp:27,srFC:39,sat:46,bagFC:27.4,caco3:4.7,inorgC:0.4}]},
       'BRL02': { name:'BRL02', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:43.8,sand:35,clay:21.2,tex:'Loam',pH:7.1,ec:0.22,n:0.169,c:1.54,cn:9.1,wp:13,srFC:27,sat:49,bagFC:30.1,caco3:0.6,inorgC:0.05},
-        {d:'6-12"',silt:48.8,sand:26,clay:25.2,tex:'Loam',pH:7.41,ec:0.06,n:0.139,c:1.27,cn:9.1,wp:15,srFC:31,sat:52,bagFC:31.1,caco3:0.4,inorgC:0.04},
-        {d:'12-20"',silt:45.8,sand:23,clay:31.2,tex:'Clay Loam',pH:7.58,ec:0.1,n:0.105,c:0.89,cn:8.5,wp:19,srFC:34,sat:54,bagFC:30.3,caco3:0.6,inorgC:0.05}]},
+        {d:'0-6"',silt:43.8,sand:35,clay:21.2,tex:'Loam',pH:7.1,ec:0.22,n:0.169,c:1.54,cn:9.1,wp:14,srFC:30,sat:47,bagFC:30.1,caco3:0.6,inorgC:0.05},
+        {d:'6-12"',silt:48.8,sand:26,clay:25.2,tex:'Loam',pH:7.41,ec:0.06,n:0.139,c:1.27,cn:9.1,wp:16,srFC:32,sat:47,bagFC:31.1,caco3:0.4,inorgC:0.04},
+        {d:'12-20"',silt:45.8,sand:23,clay:31.2,tex:'Clay Loam',pH:7.58,ec:0.1,n:0.105,c:0.89,cn:8.5,wp:19,srFC:35,sat:46,bagFC:30.3,caco3:0.6,inorgC:0.05}]},
       'CTR01': { name:'CTR01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:17.8,sand:65,clay:17.2,tex:'Sandy Loam',pH:8.46,ec:0.19,n:0.076,c:0.73,cn:9.6,wp:10,srFC:18,sat:43,bagFC:20.3,caco3:0.9,inorgC:0.08},
-        {d:'6-12"',silt:17.8,sand:67,clay:15.2,tex:'Sandy Loam',pH:8.28,ec:0.19,n:0.073,c:0.69,cn:9.5,wp:9,srFC:17,sat:42,bagFC:19.5,caco3:1,inorgC:0.09},
-        {d:'12-20"',silt:34.8,sand:36,clay:29.2,tex:'Clay Loam',pH:7.91,ec:0.91,n:0.074,c:0.66,cn:8.9,wp:18,srFC:31,sat:52,bagFC:26.3,caco3:2,inorgC:0.16}]},
+        {d:'0-6"',silt:17.8,sand:65,clay:17.2,tex:'Sandy Loam',pH:8.46,ec:0.19,n:0.076,c:0.73,cn:9.6,wp:11,srFC:20,sat:41,bagFC:20.3,caco3:0.9,inorgC:0.08},
+        {d:'6-12"',silt:17.8,sand:67,clay:15.2,tex:'Sandy Loam',pH:8.28,ec:0.19,n:0.073,c:0.69,cn:9.5,wp:10,srFC:18,sat:41,bagFC:19.5,caco3:1,inorgC:0.09},
+        {d:'12-20"',silt:34.8,sand:36,clay:29.2,tex:'Clay Loam',pH:7.91,ec:0.91,n:0.074,c:0.66,cn:8.9,wp:18,srFC:31,sat:43,bagFC:26.3,caco3:2,inorgC:0.16}]},
       'CTR02': { name:'CTR02', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:14.8,sand:74,clay:11.2,tex:'Loamy Sand',pH:8.48,ec:0.36,n:0.126,c:1.44,cn:11.4,wp:6,srFC:13,sat:39,bagFC:20.3,caco3:2.5,inorgC:0.21},
-        {d:'6-12"',silt:14.8,sand:74,clay:11.2,tex:'Loamy Sand',pH:8.12,ec:1.24,n:0.053,c:0.82,cn:15.5,wp:6,srFC:13,sat:39,bagFC:17.4,caco3:3,inorgC:0.25},
-        {d:'12-20"',silt:12.8,sand:66,clay:21.2,tex:'Loam',pH:7.86,ec:3.02,n:0.063,c:2.2,cn:34.9,wp:13,srFC:21,sat:45,bagFC:23.6,caco3:10.4,inorgC:0.87}]},
+        {d:'0-6"',silt:14.8,sand:74,clay:11.2,tex:'Loamy Sand',pH:8.48,ec:0.36,n:0.126,c:1.44,cn:11.4,wp:8,srFC:16,sat:44,bagFC:20.3,caco3:2.5,inorgC:0.21},
+        {d:'6-12"',silt:14.8,sand:74,clay:11.2,tex:'Loamy Sand',pH:8.12,ec:1.24,n:0.053,c:0.82,cn:15.5,wp:7,srFC:14,sat:41,bagFC:17.4,caco3:3,inorgC:0.25},
+        {d:'12-20"',silt:12.8,sand:66,clay:21.2,tex:'Loam',pH:7.86,ec:3.02,n:0.063,c:2.2,cn:34.9,wp:14,srFC:23,sat:43,bagFC:23.6,caco3:10.4,inorgC:0.87}]},
       'FWL01': { name:'FWL01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:32.8,sand:54,clay:13.2,tex:'Sandy Loam',pH:8.4,ec:0.25,n:0.096,c:1.55,cn:16.1,wp:8,srFC:19,sat:43,bagFC:24.6,caco3:4.6,inorgC:0.39},
-        {d:'6-12"',silt:26.8,sand:50,clay:23.2,tex:'Loam',pH:7.9,ec:3.04,n:0.086,c:1.43,cn:16.6,wp:14,srFC:25,sat:48,bagFC:25.6,caco3:4.5,inorgC:0.38},
-        {d:'12-20"',silt:30.8,sand:44,clay:25.2,tex:'Loam',pH:7.87,ec:3.79,n:0.099,c:1.69,cn:17.1,wp:15,srFC:27,sat:49,bagFC:28,caco3:4.4,inorgC:0.37}]},
+        {d:'0-6"',silt:32.8,sand:54,clay:13.2,tex:'Sandy Loam',pH:8.4,ec:0.25,n:0.096,c:1.55,cn:16.1,wp:10,srFC:21,sat:44,bagFC:24.6,caco3:4.6,inorgC:0.39},
+        {d:'6-12"',silt:26.8,sand:50,clay:23.2,tex:'Loam',pH:7.9,ec:3.04,n:0.086,c:1.43,cn:16.6,wp:15,srFC:27,sat:43,bagFC:25.6,caco3:4.5,inorgC:0.38},
+        {d:'12-20"',silt:30.8,sand:44,clay:25.2,tex:'Loam',pH:7.87,ec:3.79,n:0.099,c:1.69,cn:17.1,wp:16,srFC:29,sat:45,bagFC:28,caco3:4.4,inorgC:0.37}]},
       'LBN01': { name:'LBN01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:35.8,sand:33,clay:31.2,tex:'Clay Loam',pH:7.81,ec:0.19,n:0.143,c:1.48,cn:10.3,wp:19,srFC:32,sat:52,bagFC:30.7,caco3:0.7,inorgC:0.06},
-        {d:'6-12"',silt:33.8,sand:37,clay:29.2,tex:'Clay Loam',pH:7.78,ec:0.27,n:0.093,c:0.94,cn:10.1,wp:18,srFC:31,sat:52,bagFC:27.7,caco3:0.7,inorgC:0.06},
-        {d:'12-20"',silt:36.8,sand:34,clay:29.2,tex:'Clay Loam',pH:7.72,ec:0.16,n:0.054,c:0.43,cn:8,wp:18,srFC:31,sat:52,bagFC:26.3,caco3:0.6,inorgC:0.05}]},
+        {d:'0-6"',silt:35.8,sand:33,clay:31.2,tex:'Clay Loam',pH:7.81,ec:0.19,n:0.143,c:1.48,cn:10.3,wp:20,srFC:34,sat:47,bagFC:30.7,caco3:0.7,inorgC:0.06},
+        {d:'6-12"',silt:33.8,sand:37,clay:29.2,tex:'Clay Loam',pH:7.78,ec:0.27,n:0.093,c:0.94,cn:10.1,wp:18,srFC:32,sat:44,bagFC:27.7,caco3:0.7,inorgC:0.06},
+        {d:'12-20"',silt:36.8,sand:34,clay:29.2,tex:'Clay Loam',pH:7.72,ec:0.16,n:0.054,c:0.43,cn:8,wp:18,srFC:32,sat:43,bagFC:26.3,caco3:0.6,inorgC:0.05}]},
       'IGN01': { name:'IGN01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:32,sand:22,clay:46,tex:'Clay',pH:6.71,ec:0.44,n:0.183,c:1.64,cn:9,wp:27,srFC:41,sat:59,bagFC:33.7,caco3:0.7,inorgC:0.06},
-        {d:'6-12"',silt:33,sand:21,clay:46,tex:'Clay',pH:7.24,ec:0.43,n:0.106,c:0.84,cn:7.9,wp:27,srFC:41,sat:59,bagFC:29.9,caco3:1,inorgC:0.08},
-        {d:'12-20"',silt:32,sand:26,clay:42,tex:'Clay',pH:7.59,ec:0.72,n:0.072,c:0.65,cn:9,wp:25,srFC:38,sat:57,bagFC:27.8,caco3:2.1,inorgC:0.18}]},
+        {d:'0-6"',silt:32,sand:22,clay:46,tex:'Clay',pH:6.71,ec:0.44,n:0.183,c:1.64,cn:9,wp:28,srFC:41,sat:50,bagFC:33.7,caco3:0.7,inorgC:0.06},
+        {d:'6-12"',silt:33,sand:21,clay:46,tex:'Clay',pH:7.24,ec:0.43,n:0.106,c:0.84,cn:7.9,wp:27,srFC:41,sat:49,bagFC:29.9,caco3:1,inorgC:0.08},
+        {d:'12-20"',silt:32,sand:26,clay:42,tex:'Clay',pH:7.59,ec:0.72,n:0.072,c:0.65,cn:9,wp:25,srFC:39,sat:47,bagFC:27.8,caco3:2.1,inorgC:0.18}]},
       'HYD01': { name:'HYD01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:31,sand:51,clay:18,tex:'Sandy Loam',pH:6.61,ec:0.21,n:0.046,c:0.83,cn:18,wp:11,srFC:22,sat:45,bagFC:24,caco3:0.7,inorgC:0.06},
-        {d:'6-12"',silt:32,sand:50,clay:18,tex:'Sandy Loam',pH:6.69,ec:0.06,n:0.23,c:2.59,cn:11.3,wp:11,srFC:22,sat:45,bagFC:31.1,caco3:0.7,inorgC:0.06},
-        {d:'12-20"',silt:35,sand:43,clay:22,tex:'Loam',pH:6.86,ec:0.05,n:0.11,c:1.14,cn:10.4,wp:13,srFC:26,sat:48,bagFC:27.1,caco3:0.9,inorgC:0.07}]},
+        {d:'0-6"',silt:31,sand:51,clay:18,tex:'Sandy Loam',pH:6.61,ec:0.21,n:0.046,c:0.83,cn:18,wp:12,srFC:23,sat:42,bagFC:24,caco3:0.7,inorgC:0.06},
+        {d:'6-12"',silt:32,sand:50,clay:18,tex:'Sandy Loam',pH:6.69,ec:0.06,n:0.23,c:2.59,cn:11.3,wp:14,srFC:27,sat:50,bagFC:31.1,caco3:0.7,inorgC:0.06},
+        {d:'12-20"',silt:35,sand:43,clay:22,tex:'Loam',pH:6.86,ec:0.05,n:0.11,c:1.14,cn:10.4,wp:14,srFC:28,sat:44,bagFC:27.1,caco3:0.9,inorgC:0.07}]},
       'HNE01': { name:'HNE01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:22,sand:62,clay:16,tex:'Sandy Loam',pH:7.65,ec:0.24,n:0.075,c:0.71,cn:9.5,wp:9,srFC:18,sat:43,bagFC:20.1,caco3:2.9,inorgC:0.24},
-        {d:'6-12"',silt:25,sand:57,clay:18,tex:'Sandy Loam',pH:7.7,ec:0.22,n:0.078,c:1.11,cn:14.2,wp:11,srFC:21,sat:45,bagFC:22.7,caco3:3.9,inorgC:0.33},
-        {d:'12-20"',silt:24,sand:60,clay:16,tex:'Sandy Loam',pH:7.85,ec:0.22,n:0.02,c:0.81,cn:40.5,wp:10,srFC:19,sat:43,bagFC:20.2,caco3:5.2,inorgC:0.43}]},
+        {d:'0-6"',silt:22,sand:62,clay:16,tex:'Sandy Loam',pH:7.65,ec:0.24,n:0.075,c:0.71,cn:9.5,wp:10,srFC:19,sat:40,bagFC:20.1,caco3:2.9,inorgC:0.24},
+        {d:'6-12"',silt:25,sand:57,clay:18,tex:'Sandy Loam',pH:7.7,ec:0.22,n:0.078,c:1.11,cn:14.2,wp:12,srFC:22,sat:42,bagFC:22.7,caco3:3.9,inorgC:0.33},
+        {d:'12-20"',silt:24,sand:60,clay:16,tex:'Sandy Loam',pH:7.85,ec:0.22,n:0.02,c:0.81,cn:40.5,wp:10,srFC:20,sat:40,bagFC:20.2,caco3:5.2,inorgC:0.43}]},
       'BNV01': { name:'BNV01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:21,sand:47,clay:32,tex:'Sandy Clay Loam',pH:7.48,ec:1.26,n:0.335,c:6.67,cn:19.9,wp:19,srFC:31,sat:52,bagFC:46.9,caco3:17.6,inorgC:1.47},
-        {d:'6-12"',silt:14,sand:56,clay:30,tex:'Sandy Clay Loam',pH:7.6,ec:0.57,n:0.07,c:2.96,cn:42.3,wp:18,srFC:28,sat:50,bagFC:27.4,caco3:16.9,inorgC:1.41},
-        {d:'12-20"',silt:21,sand:69,clay:10,tex:'Sandy Loam',pH:7.48,ec:0.38,n:0.031,c:0.72,cn:23.2,wp:6,srFC:14,sat:40,bagFC:18.6,caco3:1.9,inorgC:0.16}]},
+        {d:'0-6"',silt:21,sand:47,clay:32,tex:'Sandy Clay Loam',pH:7.48,ec:1.26,n:0.335,c:6.67,cn:19.9,bagFC:46.9,caco3:17.6,inorgC:1.47},
+        {d:'6-12"',silt:14,sand:56,clay:30,tex:'Sandy Clay Loam',pH:7.6,ec:0.57,n:0.07,c:2.96,cn:42.3,wp:19,srFC:30,sat:44,bagFC:27.4,caco3:16.9,inorgC:1.41},
+        {d:'12-20"',silt:21,sand:69,clay:10,tex:'Sandy Loam',pH:7.48,ec:0.38,n:0.031,c:0.72,cn:23.2,wp:7,srFC:15,sat:41,bagFC:18.6,caco3:1.9,inorgC:0.16}]},
       'TWC01': { name:'TWC01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:25,sand:57,clay:18,tex:'Sandy Loam',pH:7.58,ec:0.83,n:0.053,c:0.91,cn:17.2,wp:11,srFC:21,sat:45,bagFC:21.9,caco3:3.9,inorgC:0.33},
-        {d:'6-12"',silt:27,sand:45,clay:28,tex:'Sandy Clay Loam',pH:7.42,ec:1.83,n:0.065,c:1.56,cn:24,wp:17,srFC:29,sat:50,bagFC:25.9,caco3:8.6,inorgC:0.72},
-        {d:'12-20"',silt:25,sand:47,clay:28,tex:'Sandy Clay Loam',pH:7.39,ec:2.15,n:0.052,c:1.03,cn:19.8,wp:17,srFC:28,sat:50,bagFC:24.1,caco3:5.9,inorgC:0.49}]},
+        {d:'0-6"',silt:25,sand:57,clay:18,tex:'Sandy Loam',pH:7.58,ec:0.83,n:0.053,c:0.91,cn:17.2,wp:12,srFC:22,sat:41,bagFC:21.9,caco3:3.9,inorgC:0.33},
+        {d:'6-12"',silt:27,sand:45,clay:28,tex:'Sandy Clay Loam',pH:7.42,ec:1.83,n:0.065,c:1.56,cn:24,wp:18,srFC:30,sat:43,bagFC:25.9,caco3:8.6,inorgC:0.72},
+        {d:'12-20"',silt:25,sand:47,clay:28,tex:'Sandy Clay Loam',pH:7.39,ec:2.15,n:0.052,c:1.03,cn:19.8,wp:17,srFC:29,sat:42,bagFC:24.1,caco3:5.9,inorgC:0.49}]},
       'SBT01': { name:'SBT01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:22,sand:58,clay:20,tex:'Sandy Loam',pH:7.31,ec:0.23,n:0.1,c:1.04,cn:10.4,wp:12,srFC:22,sat:45,bagFC:23.4,caco3:0.7,inorgC:0.06},
-        {d:'6-12"',silt:23,sand:61,clay:16,tex:'Sandy Loam',pH:7.5,ec:0.2,n:0.064,c:0.72,cn:11.2,wp:10,srFC:19,sat:43,bagFC:21.1,caco3:0.9,inorgC:0.07},
-        {d:'12-20"',silt:33,sand:49,clay:18,tex:'Sandy Loam',pH:7.47,ec:0.23,n:0.081,c:0.79,cn:9.8,wp:11,srFC:22,sat:45,bagFC:24.3,caco3:0.9,inorgC:0.07}]},
+        {d:'0-6"',silt:22,sand:58,clay:20,tex:'Sandy Loam',pH:7.31,ec:0.23,n:0.1,c:1.04,cn:10.4,wp:13,srFC:23,sat:42,bagFC:23.4,caco3:0.7,inorgC:0.06},
+        {d:'6-12"',silt:23,sand:61,clay:16,tex:'Sandy Loam',pH:7.5,ec:0.2,n:0.064,c:0.72,cn:11.2,wp:10,srFC:20,sat:41,bagFC:21.1,caco3:0.9,inorgC:0.07},
+        {d:'12-20"',silt:33,sand:49,clay:18,tex:'Sandy Loam',pH:7.47,ec:0.23,n:0.081,c:0.79,cn:9.8,wp:12,srFC:24,sat:42,bagFC:24.3,caco3:0.9,inorgC:0.07}]},
       'SAN01': { name:'SAN01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:13,sand:73,clay:14,tex:'Loamy Sand',pH:7.62,ec:0.3,n:0.084,c:0.96,cn:11.4,wp:8,srFC:15,sat:41,bagFC:18.9,caco3:1.9,inorgC:0.16},
-        {d:'6-12"',silt:14,sand:74,clay:12,tex:'Loamy Sand',pH:7.56,ec:0.17,n:0.057,c:0.74,cn:13,wp:7,srFC:14,sat:40,bagFC:17.4,caco3:2,inorgC:0.17},
-        {d:'12-20"',silt:13,sand:69,clay:18,tex:'Sandy Loam',pH:7.62,ec:0.2,n:0.049,c:1.58,cn:32.2,wp:11,srFC:18,sat:43,bagFC:20,caco3:9.4,inorgC:0.79}]},
+        {d:'0-6"',silt:13,sand:73,clay:14,tex:'Loamy Sand',pH:7.62,ec:0.3,n:0.084,c:0.96,cn:11.4,wp:9,srFC:17,sat:41,bagFC:18.9,caco3:1.9,inorgC:0.16},
+        {d:'6-12"',silt:14,sand:74,clay:12,tex:'Loamy Sand',pH:7.56,ec:0.17,n:0.057,c:0.74,cn:13,wp:8,srFC:15,sat:41,bagFC:17.4,caco3:2,inorgC:0.17},
+        {d:'12-20"',silt:13,sand:69,clay:18,tex:'Sandy Loam',pH:7.62,ec:0.2,n:0.049,c:1.58,cn:32.2,wp:12,srFC:20,sat:41,bagFC:20,caco3:9.4,inorgC:0.79}]},
       'WFD01': { name:'WFD01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:24,sand:50,clay:26,tex:'Loam',pH:7.55,ec:0.2,n:0.111,c:1.81,cn:16.3,wp:16,srFC:27,sat:49,bagFC:26.1,caco3:8.1,inorgC:0.67},
-        {d:'6-12"',silt:24,sand:44,clay:32,tex:'Clay Loam',pH:7.59,ec:0.18,n:0.101,c:2.66,cn:26.3,wp:19,srFC:31,sat:52,bagFC:28.9,caco3:14.8,inorgC:1.24},
-        {d:'12-20"',silt:23,sand:45,clay:32,tex:'Sandy Clay Loam',pH:7.64,ec:0.24,n:0.092,c:2.66,cn:28.9,wp:19,srFC:31,sat:52,bagFC:28.2,caco3:16.2,inorgC:1.35}]},
+        {d:'0-6"',silt:24,sand:50,clay:26,tex:'Loam',pH:7.55,ec:0.2,n:0.111,c:1.81,cn:16.3,wp:17,srFC:28,sat:44,bagFC:26.1,caco3:8.1,inorgC:0.67},
+        {d:'6-12"',silt:24,sand:44,clay:32,tex:'Clay Loam',pH:7.59,ec:0.18,n:0.101,c:2.66,cn:26.3,wp:20,srFC:33,sat:45,bagFC:28.9,caco3:14.8,inorgC:1.24},
+        {d:'12-20"',silt:23,sand:45,clay:32,tex:'Sandy Clay Loam',pH:7.64,ec:0.24,n:0.092,c:2.66,cn:28.9,wp:20,srFC:32,sat:45,bagFC:28.2,caco3:16.2,inorgC:1.35}]},
       'NWD01': { name:'NWD01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:36,sand:36,clay:28,tex:'Clay Loam',pH:7.28,ec:0.5,n:0.217,c:2.44,cn:11.2,wp:17,srFC:30,sat:51,bagFC:33.7,caco3:1.3,inorgC:0.11},
-        {d:'6-12"',silt:33,sand:37,clay:30,tex:'Clay Loam',pH:7.42,ec:3.52,n:0.109,c:1.96,cn:18,wp:18,srFC:31,sat:52,bagFC:29.5,caco3:7.8,inorgC:0.65},
-        {d:'12-20"',silt:29,sand:39,clay:32,tex:'Clay Loam',pH:7.61,ec:5.49,n:0.087,c:3.65,cn:42,wp:19,srFC:32,sat:52,bagFC:30.6,caco3:24.4,inorgC:2.04}]},
+        {d:'0-6"',silt:36,sand:36,clay:28,tex:'Clay Loam',pH:7.28,ec:0.5,n:0.217,c:2.44,cn:11.2,wp:19,srFC:33,sat:50,bagFC:33.7,caco3:1.3,inorgC:0.11},
+        {d:'6-12"',silt:33,sand:37,clay:30,tex:'Clay Loam',pH:7.42,ec:3.52,n:0.109,c:1.96,cn:18,wp:19,srFC:33,sat:46,bagFC:29.5,caco3:7.8,inorgC:0.65},
+        {d:'12-20"',silt:29,sand:39,clay:32,tex:'Clay Loam',pH:7.61,ec:5.49,n:0.087,c:3.65,cn:42,wp:20,srFC:34,sat:47,bagFC:30.6,caco3:24.4,inorgC:2.04}]},
       'YJK01': { name:'YJK01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:39,sand:43,clay:18,tex:'Loam',pH:7.45,ec:0.06,n:0.074,c:0.74,cn:10,wp:11,srFC:24,sat:47,bagFC:25.5,caco3:0.7,inorgC:0.06},
-        {d:'6-12"',silt:41,sand:41,clay:18,tex:'Loam',pH:7.47,ec:0,n:0.057,c:0.54,cn:9.5,wp:11,srFC:24,sat:47,bagFC:25.3,caco3:0.7,inorgC:0.06},
-        {d:'12-20"',silt:38,sand:34,clay:28,tex:'Clay Loam',pH:7.42,ec:0,n:0.05,c:0.42,cn:8.4,wp:17,srFC:30,sat:51,bagFC:26.2,caco3:0.9,inorgC:0.07}]},
+        {d:'0-6"',silt:39,sand:43,clay:18,tex:'Loam',pH:7.45,ec:0.06,n:0.074,c:0.74,cn:10,wp:12,srFC:25,sat:42,bagFC:25.5,caco3:0.7,inorgC:0.06},
+        {d:'6-12"',silt:41,sand:41,clay:18,tex:'Loam',pH:7.47,ec:0,n:0.057,c:0.54,cn:9.5,wp:12,srFC:25,sat:41,bagFC:25.3,caco3:0.7,inorgC:0.06},
+        {d:'12-20"',silt:38,sand:34,clay:28,tex:'Clay Loam',pH:7.42,ec:0,n:0.05,c:0.42,cn:8.4,wp:17,srFC:31,sat:43,bagFC:26.2,caco3:0.9,inorgC:0.07}]},
       'DVC01': { name:'DVC01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:32,sand:44,clay:24,tex:'Loam',pH:7.64,ec:0.24,n:0.105,c:2.47,cn:23.5,wp:14,srFC:27,sat:49,bagFC:28,caco3:13.7,inorgC:1.14},
-        {d:'6-12"',silt:27,sand:47,clay:26,tex:'Loam',pH:7.57,ec:0.21,n:0.102,c:4.5,cn:44.1,wp:16,srFC:27,sat:49,bagFC:28.7,caco3:35,inorgC:2.91},
-        {d:'12-20"',silt:21,sand:61,clay:18,tex:'Sandy Loam',pH:7.6,ec:0.22,n:0.063,c:4.28,cn:67.9,wp:11,srFC:20,sat:44,bagFC:25.6,caco3:31.8,inorgC:2.65}]},
+        {d:'0-6"',silt:32,sand:44,clay:24,tex:'Loam',pH:7.64,ec:0.24,n:0.105,c:2.47,cn:23.5,wp:16,srFC:29,sat:45,bagFC:28,caco3:13.7,inorgC:1.14},
+        {d:'6-12"',silt:27,sand:47,clay:26,tex:'Loam',pH:7.57,ec:0.21,n:0.102,c:4.5,cn:44.1,wp:17,srFC:30,sat:45,bagFC:28.7,caco3:35,inorgC:2.91},
+        {d:'12-20"',silt:21,sand:61,clay:18,tex:'Sandy Loam',pH:7.6,ec:0.22,n:0.063,c:4.28,cn:67.9,wp:13,srFC:23,sat:45,bagFC:25.6,caco3:31.8,inorgC:2.65}]},
       'FTC01': { name:'FTC01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:19,sand:55,clay:26,tex:'Loam',pH:7.41,ec:0.33,n:0.253,c:3.29,cn:13,wp:16,srFC:26,sat:48,bagFC:32.3,caco3:7.9,inorgC:0.66},
-        {d:'6-12"',silt:18,sand:50,clay:32,tex:'Sandy Clay Loam',pH:7.49,ec:0.25,n:0.139,c:2.52,cn:18.1,wp:19,srFC:30,sat:51,bagFC:28.6,caco3:11.6,inorgC:0.96},
-        {d:'12-20"',silt:20,sand:46,clay:34,tex:'Sandy Clay Loam',pH:7.64,ec:0.2,n:0.102,c:2.64,cn:25.9,wp:20,srFC:32,sat:52,bagFC:27.7,caco3:17.1,inorgC:1.43}]},
+        {d:'0-6"',silt:19,sand:55,clay:26,tex:'Loam',pH:7.41,ec:0.33,n:0.253,c:3.29,cn:13,wp:18,srFC:30,sat:48,bagFC:32.3,caco3:7.9,inorgC:0.66},
+        {d:'6-12"',silt:18,sand:50,clay:32,tex:'Sandy Clay Loam',pH:7.49,ec:0.25,n:0.139,c:2.52,cn:18.1,wp:20,srFC:32,sat:45,bagFC:28.6,caco3:11.6,inorgC:0.96},
+        {d:'12-20"',silt:20,sand:46,clay:34,tex:'Sandy Clay Loam',pH:7.64,ec:0.2,n:0.102,c:2.64,cn:25.9,wp:21,srFC:33,sat:44,bagFC:27.7,caco3:17.1,inorgC:1.43}]},
       'LJR01': { name:'LJR01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:16,sand:68,clay:16,tex:'Sandy Loam',pH:8.05,ec:3.11,n:0.105,c:2.63,cn:25,wp:9,srFC:17,sat:42,bagFC:27,caco3:4.1,inorgC:0.34},
-        {d:'6-12"',silt:18,sand:68,clay:14,tex:'Sandy Loam',pH:7.93,ec:2.85,n:0.058,c:0.81,cn:14,wp:8,srFC:16,sat:41,bagFC:18.5,caco3:4.4,inorgC:0.37},
-        {d:'12-20"',silt:23,sand:65,clay:12,tex:'Sandy Loam',pH:7.75,ec:1.93,n:0.033,c:0.83,cn:25.2,wp:7,srFC:16,sat:41,bagFC:18.7,caco3:5.9,inorgC:0.49}]},
+        {d:'0-6"',silt:16,sand:68,clay:16,tex:'Sandy Loam',pH:8.05,ec:3.11,n:0.105,c:2.63,cn:25,wp:13,srFC:22,sat:47,bagFC:27,caco3:4.1,inorgC:0.34},
+        {d:'6-12"',silt:18,sand:68,clay:14,tex:'Sandy Loam',pH:7.93,ec:2.85,n:0.058,c:0.81,cn:14,wp:9,srFC:17,sat:40,bagFC:18.5,caco3:4.4,inorgC:0.37},
+        {d:'12-20"',silt:23,sand:65,clay:12,tex:'Sandy Loam',pH:7.75,ec:1.93,n:0.033,c:0.83,cn:25.2,wp:8,srFC:16,sat:40,bagFC:18.7,caco3:5.9,inorgC:0.49}]},
       'OTH01': { name:'OTH01', network:'CoAgMET', depths:[
-        {d:'0-6"',silt:32,sand:18,clay:50,tex:'Clay',pH:7.37,ec:5.23,n:0.153,c:4.71,cn:30.8,wp:29,srFC:43,sat:60,bagFC:36.8,caco3:31.8,inorgC:2.65},
-        {d:'6-12"',silt:45,sand:45,clay:10,tex:'Sandy Loam',pH:7.9,ec:6.74,n:0.066,c:2.31,cn:35,wp:6,srFC:19,sat:43,bagFC:25.6,caco3:17.2,inorgC:1.43},
-        {d:'12-20"',silt:51,sand:45,clay:4,tex:'Silt Loam',pH:8.22,ec:7.88,n:0.05,c:2.16,cn:43.2,wp:3,srFC:16,sat:41,bagFC:25.4,caco3:15.8,inorgC:1.31}]},
+        {d:'0-6"',silt:32,sand:18,clay:50,tex:'Clay',pH:7.37,ec:5.23,n:0.153,c:4.71,cn:30.8,wp:30,srFC:42,sat:52,bagFC:36.8,caco3:31.8,inorgC:2.65},
+        {d:'6-12"',silt:45,sand:45,clay:10,tex:'Sandy Loam',pH:7.9,ec:6.74,n:0.066,c:2.31,cn:35,wp:7,srFC:21,sat:43,bagFC:25.6,caco3:17.2,inorgC:1.43},
+        {d:'12-20"',silt:51,sand:45,clay:4,tex:'Silt Loam',pH:8.22,ec:7.88,n:0.05,c:2.16,cn:43.2,wp:4,srFC:19,sat:43,bagFC:25.4,caco3:15.8,inorgC:1.31}]},
     };
 
         const RAWS_SOIL = {
       'FT CARSON': { name:'FT CARSON', network:'RAWS', depths:[
-        {d:'0-4"',silt:25.4,sand:43,clay:31.6,tex:'Clay Loam',pH:7.7,ec:0.15,n:0.12,c:1.2,cn:10,wp:19,srFC:31,sat:52,bagFC:27.5,caco3:1.3,inorgC:0.1,cf:null},
-        {d:'4-12"',silt:25.4,sand:35,clay:39.6,tex:'Clay Loam',pH:7.49,ec:0.09,n:0.098,c:0.84,cn:8.6,wp:24,srFC:36,sat:55,bagFC:27.7,caco3:0.6,inorgC:0.05,cf:null},
-        {d:'12-20"',silt:34.4,sand:32,clay:33.6,tex:'Clay Loam',pH:7.79,ec:0.16,n:0.066,c:0.48,cn:7.3,wp:20,srFC:34,sat:54,bagFC:26.7,caco3:0.7,inorgC:0.06,cf:null}]},
+        {d:'0-4"',silt:25.4,sand:43,clay:31.6,tex:'Clay Loam',pH:7.7,ec:0.15,n:0.12,c:1.2,cn:10,wp:20,srFC:32,sat:44,bagFC:27.5,caco3:1.3,inorgC:0.1,cf:null},
+        {d:'4-12"',silt:25.4,sand:35,clay:39.6,tex:'Clay Loam',pH:7.49,ec:0.09,n:0.098,c:0.84,cn:8.6,wp:24,srFC:37,sat:46,bagFC:27.7,caco3:0.6,inorgC:0.05,cf:null},
+        {d:'12-20"',silt:34.4,sand:32,clay:33.6,tex:'Clay Loam',pH:7.79,ec:0.16,n:0.066,c:0.48,cn:7.3,wp:20,srFC:34,sat:44,bagFC:26.7,caco3:0.7,inorgC:0.06,cf:null}]},
       'BUCKLES': { name:'BUCKLES', network:'RAWS', depths:[
-        {d:'0-4"',silt:28.4,sand:50,clay:21.6,tex:'Loam',pH:6.85,ec:0.32,n:0.479,c:5.38,cn:11.2,wp:13,srFC:24,sat:47,bagFC:43.3,caco3:0.6,inorgC:0.05,cf:null},
-        {d:'4-12"',silt:29.4,sand:43,clay:27.6,tex:'Clay Loam',pH:6.7,ec:0.17,n:0.252,c:2.94,cn:11.7,wp:17,srFC:29,sat:50,bagFC:35.1,caco3:0.7,inorgC:0.06,cf:null},
-        {d:'12-20"',silt:24.4,sand:44,clay:31.6,tex:'Clay Loam',pH:6.54,ec:0.08,n:0.188,c:2.22,cn:11.8,wp:19,srFC:31,sat:52,bagFC:32.4,caco3:0.7,inorgC:0.06,cf:null}]},
+        {d:'0-4"',silt:28.4,sand:50,clay:21.6,tex:'Loam',pH:6.85,ec:0.32,n:0.479,c:5.38,cn:11.2,bagFC:43.3,caco3:0.6,inorgC:0.05,cf:null},
+        {d:'4-12"',silt:29.4,sand:43,clay:27.6,tex:'Clay Loam',pH:6.7,ec:0.17,n:0.252,c:2.94,cn:11.7,wp:19,srFC:33,sat:50,bagFC:35.1,caco3:0.7,inorgC:0.06,cf:null},
+        {d:'12-20"',silt:24.4,sand:44,clay:31.6,tex:'Clay Loam',pH:6.54,ec:0.08,n:0.188,c:2.22,cn:11.8,wp:21,srFC:33,sat:47,bagFC:32.4,caco3:0.7,inorgC:0.06,cf:null}]},
       'BLACK MOUNTAIN': { name:'BLACK MOUNTAIN', network:'RAWS', depths:[
-        {d:'0-4"',silt:23.4,sand:69,clay:7.6,tex:'Sandy Loam',pH:6.81,ec:0.04,n:0.137,c:1.43,cn:10.4,wp:4,srFC:12,sat:38,bagFC:21.6,caco3:0.7,inorgC:0.06,cf:17},
-        {d:'4-12"',silt:15.4,sand:67,clay:17.6,tex:'Sandy Loam',pH:6.84,ec:0.07,n:0.129,c:1.3,cn:10.1,wp:10,srFC:18,sat:43,bagFC:22.6,caco3:0.7,inorgC:0.06,cf:17.4},
-        {d:'12-20"',silt:10.4,sand:70,clay:19.6,tex:'Sandy Loam',pH:7.03,ec:0.03,n:0.072,c:0.75,cn:10.4,wp:12,srFC:19,sat:43,bagFC:19.4,caco3:0.7,inorgC:0.06,cf:40.3}]},
+        {d:'0-4"',silt:23.4,sand:69,clay:7.6,tex:'Sandy Loam',pH:6.81,ec:0.04,n:0.137,c:1.43,cn:10.4,wp:7,srFC:16,sat:45,bagFC:21.6,caco3:0.7,inorgC:0.06,cf:17},
+        {d:'4-12"',silt:15.4,sand:67,clay:17.6,tex:'Sandy Loam',pH:6.84,ec:0.07,n:0.129,c:1.3,cn:10.1,wp:12,srFC:21,sat:43,bagFC:22.6,caco3:0.7,inorgC:0.06,cf:17.4},
+        {d:'12-20"',silt:10.4,sand:70,clay:19.6,tex:'Sandy Loam',pH:7.03,ec:0.03,n:0.072,c:0.75,cn:10.4,wp:13,srFC:20,sat:41,bagFC:19.4,caco3:0.7,inorgC:0.06,cf:40.3}]},
       'BOSQUE': { name:'BOSQUE', network:'RAWS', depths:[
-        {d:'0-4"',silt:21.4,sand:61,clay:17.6,tex:'Sandy Loam',pH:6.76,ec:0,n:0.076,c:0.98,cn:12.9,wp:10,srFC:20,sat:44,bagFC:22.4,caco3:0.7,inorgC:0.06,cf:null},
-        {d:'4-12"',silt:18.4,sand:60,clay:21.6,tex:'Loam',pH:6.72,ec:0,n:0.033,c:0.51,cn:15.5,wp:13,srFC:22,sat:45,bagFC:20.6,caco3:0.7,inorgC:0.06,cf:null},
-        {d:'12-20"',silt:12.4,sand:54,clay:33.6,tex:'Sandy Clay Loam',pH:6.75,ec:0,n:0.029,c:0.33,cn:11.4,wp:20,srFC:30,sat:51,bagFC:21.2,caco3:0.7,inorgC:0.06,cf:null}]},
+        {d:'0-4"',silt:21.4,sand:61,clay:17.6,tex:'Sandy Loam',pH:6.76,ec:0,n:0.076,c:0.98,cn:12.9,wp:12,srFC:21,sat:42,bagFC:22.4,caco3:0.7,inorgC:0.06,cf:null},
+        {d:'4-12"',silt:18.4,sand:60,clay:21.6,tex:'Loam',pH:6.72,ec:0,n:0.033,c:0.51,cn:15.5,wp:13,srFC:23,sat:40,bagFC:20.6,caco3:0.7,inorgC:0.06,cf:null},
+        {d:'12-20"',silt:12.4,sand:54,clay:33.6,tex:'Sandy Clay Loam',pH:6.75,ec:0,n:0.029,c:0.33,cn:11.4,wp:20,srFC:31,sat:41,bagFC:21.2,caco3:0.7,inorgC:0.06,cf:null}]},
       'CHEESEMAN': { name:'CHEESEMAN', network:'RAWS', depths:[
-        {d:'0-4"',silt:24.4,sand:58,clay:17.6,tex:'Sandy Loam',pH:6.75,ec:0.05,n:0.115,c:1.54,cn:13.4,wp:11,srFC:20,sat:44,bagFC:25.4,caco3:0.9,inorgC:0.07,cf:62.2},
-        {d:'4-12"',silt:10.4,sand:80,clay:9.6,tex:'Loamy Sand',pH:6.7,ec:0,n:0.061,c:0.83,cn:13.6,wp:5,srFC:11,sat:38,bagFC:16.6,caco3:0.9,inorgC:0.07,cf:71},
-        {d:'12-20"',silt:2.4,sand:90,clay:7.6,tex:'Sand',pH:6.72,ec:0,n:0.029,c:0.37,cn:12.8,wp:4,srFC:8,sat:36,bagFC:11.7,caco3:0.9,inorgC:0.07,cf:73.3}]},
+        {d:'0-4"',silt:24.4,sand:58,clay:17.6,tex:'Sandy Loam',pH:6.75,ec:0.05,n:0.115,c:1.54,cn:13.4,wp:12,srFC:23,sat:44,bagFC:25.4,caco3:0.9,inorgC:0.07,cf:62.2},
+        {d:'4-12"',silt:10.4,sand:80,clay:9.6,tex:'Loamy Sand',pH:6.7,ec:0,n:0.061,c:0.83,cn:13.6,wp:7,srFC:13,sat:42,bagFC:16.6,caco3:0.9,inorgC:0.07,cf:71},
+        {d:'12-20"',silt:2.4,sand:90,clay:7.6,tex:'Sand',pH:6.72,ec:0,n:0.029,c:0.37,cn:12.8,wp:4,srFC:8,sat:41,bagFC:11.7,caco3:0.9,inorgC:0.07,cf:73.3}]},
       'CORRAL CREEK': { name:'CORRAL CREEK', network:'RAWS', depths:[
-        {d:'0-4"',silt:16.4,sand:68,clay:15.6,tex:'Sandy Loam',pH:6.28,ec:0.21,n:0.278,c:3.1,cn:11.2,wp:9,srFC:17,sat:42,bagFC:30.4,caco3:0.7,inorgC:0.06,cf:null},
-        {d:'4-12"',silt:19.4,sand:67,clay:13.6,tex:'Sandy Loam',pH:6.31,ec:0.05,n:0.141,c:1.48,cn:10.5,wp:8,srFC:16,sat:41,bagFC:22.9,caco3:0.7,inorgC:0.06,cf:31.2},
-        {d:'12-20"',silt:13.4,sand:75,clay:11.6,tex:'Loamy Sand',pH:6.53,ec:0,n:0.058,c:0.64,cn:11,wp:7,srFC:13,sat:39,bagFC:17.2,caco3:0.7,inorgC:0.06,cf:45.2}]},
+        {d:'0-4"',silt:16.4,sand:68,clay:15.6,tex:'Sandy Loam',pH:6.28,ec:0.21,n:0.278,c:3.1,cn:11.2,wp:14,srFC:24,sat:50,bagFC:30.4,caco3:0.7,inorgC:0.06,cf:null},
+        {d:'4-12"',silt:19.4,sand:67,clay:13.6,tex:'Sandy Loam',pH:6.31,ec:0.05,n:0.141,c:1.48,cn:10.5,wp:10,srFC:19,sat:44,bagFC:22.9,caco3:0.7,inorgC:0.06,cf:31.2},
+        {d:'12-20"',silt:13.4,sand:75,clay:11.6,tex:'Loamy Sand',pH:6.53,ec:0,n:0.058,c:0.64,cn:11,wp:8,srFC:14,sat:41,bagFC:17.2,caco3:0.7,inorgC:0.06,cf:45.2}]},
       'HARBISON': { name:'HARBISON', network:'RAWS', depths:[
-        {d:'0-4"',silt:34,sand:44,clay:22,tex:'Loam',pH:5.72,ec:1.49,n:0.601,c:6.75,cn:11.2,wp:13,srFC:26,sat:48,bagFC:48.7,caco3:0.7,inorgC:0.06,cf:null},
-        {d:'4-12"',silt:20,sand:66,clay:14,tex:'Sandy Loam',pH:6.31,ec:0,n:0.07,c:0.73,cn:10.4,wp:8,srFC:16,sat:41,bagFC:19.9,caco3:0.7,inorgC:0.06,cf:59.7},
-        {d:'12-20"',silt:36,sand:40,clay:24,tex:'Loam',pH:6.09,ec:0,n:0.163,c:1.42,cn:8.7,wp:15,srFC:27,sat:49,bagFC:28.8,caco3:0.9,inorgC:0.07,cf:null}]},
+        {d:'0-4"',silt:34,sand:44,clay:22,tex:'Loam',pH:5.72,ec:1.49,n:0.601,c:6.75,cn:11.2,bagFC:48.7,caco3:0.7,inorgC:0.06,cf:null},
+        {d:'4-12"',silt:20,sand:66,clay:14,tex:'Sandy Loam',pH:6.31,ec:0,n:0.07,c:0.73,cn:10.4,wp:9,srFC:18,sat:41,bagFC:19.9,caco3:0.7,inorgC:0.06,cf:59.7},
+        {d:'12-20"',silt:36,sand:40,clay:24,tex:'Loam',pH:6.09,ec:0,n:0.163,c:1.42,cn:8.7,wp:16,srFC:30,sat:46,bagFC:28.8,caco3:0.9,inorgC:0.07,cf:null}]},
       'ESTES PARK': { name:'ESTES PARK', network:'RAWS', depths:[
-        {d:'0-4"',silt:9,sand:81,clay:10,tex:'Loamy Sand',pH:6.58,ec:0.06,n:0.096,c:1.22,cn:12.7,wp:6,srFC:11,sat:38,bagFC:18.4,caco3:0.6,inorgC:0.05,cf:21.8},
-        {d:'4-12"',silt:12,sand:78,clay:10,tex:'Loamy Sand',pH:6.72,ec:0,n:0.092,c:1.09,cn:11.8,wp:6,srFC:12,sat:38,bagFC:18.4,caco3:0.7,inorgC:0.06,cf:21.3},
-        {d:'12-20"',silt:12,sand:78,clay:10,tex:'Loamy Sand',pH:6.91,ec:0,n:0.032,c:0.41,cn:12.8,wp:6,srFC:12,sat:38,bagFC:15.3,caco3:0.7,inorgC:0.06,cf:16.1}]},
+        {d:'0-4"',silt:9,sand:81,clay:10,tex:'Loamy Sand',pH:6.58,ec:0.06,n:0.096,c:1.22,cn:12.7,wp:8,srFC:14,sat:43,bagFC:18.4,caco3:0.6,inorgC:0.05,cf:21.8},
+        {d:'4-12"',silt:12,sand:78,clay:10,tex:'Loamy Sand',pH:6.72,ec:0,n:0.092,c:1.09,cn:11.8,wp:7,srFC:14,sat:43,bagFC:18.4,caco3:0.7,inorgC:0.06,cf:21.3},
+        {d:'12-20"',silt:12,sand:78,clay:10,tex:'Loamy Sand',pH:6.91,ec:0,n:0.032,c:0.41,cn:12.8,wp:6,srFC:12,sat:40,bagFC:15.3,caco3:0.7,inorgC:0.06,cf:16.1}]},
       'SILVER JACK': { name:'SILVER JACK', network:'RAWS', depths:[
-        {d:'0-4"',silt:46,sand:32,clay:22,tex:'Loam',pH:6.63,ec:0.31,n:0.395,c:6,cn:15.2,wp:13,srFC:28,sat:50,bagFC:45.3,caco3:0.7,inorgC:0.06,cf:15.1},
-        {d:'4-12"',silt:44,sand:32,clay:24,tex:'Loam',pH:6.62,ec:0.2,n:0.338,c:5.03,cn:14.9,wp:15,srFC:29,sat:50,bagFC:42.8,caco3:0.7,inorgC:0.06,cf:null},
-        {d:'12-20"',silt:42,sand:32,clay:26,tex:'Loam',pH:6.63,ec:0.18,n:0.326,c:4.68,cn:14.4,wp:16,srFC:30,sat:51,bagFC:42.2,caco3:0.7,inorgC:0.06,cf:null}]},
+        {d:'0-4"',silt:46,sand:32,clay:22,tex:'Loam',pH:6.63,ec:0.31,n:0.395,c:6,cn:15.2,bagFC:45.3,caco3:0.7,inorgC:0.06,cf:15.1},
+        {d:'4-12"',silt:44,sand:32,clay:24,tex:'Loam',pH:6.62,ec:0.2,n:0.338,c:5.03,cn:14.9,bagFC:42.8,caco3:0.7,inorgC:0.06,cf:null},
+        {d:'12-20"',silt:42,sand:32,clay:26,tex:'Loam',pH:6.63,ec:0.18,n:0.326,c:4.68,cn:14.4,wp:20,srFC:37,sat:60,bagFC:42.2,caco3:0.7,inorgC:0.06,cf:null}]},
       'SANBORN PARK': { name:'SANBORN PARK', network:'RAWS', depths:[
-        {d:'0-4"',silt:43,sand:29,clay:28,tex:'Clay Loam',pH:6.87,ec:0.25,n:0.269,c:3.31,cn:12.3,wp:17,srFC:31,sat:52,bagFC:37.9,caco3:0.9,inorgC:0.07,cf:null},
-        {d:'4-12"',silt:37,sand:25,clay:38,tex:'Clay Loam',pH:6.8,ec:0.1,n:0.172,c:2.11,cn:12.3,wp:23,srFC:37,sat:56,bagFC:34.9,caco3:0.9,inorgC:0.07,cf:null},
-        {d:'12-20"',silt:30,sand:24,clay:46,tex:'Clay',pH:6.92,ec:0.06,n:0.1,c:1.09,cn:10.9,wp:27,srFC:41,sat:59,bagFC:30.7,caco3:0.9,inorgC:0.07,cf:null}]},
+        {d:'0-4"',silt:43,sand:29,clay:28,tex:'Clay Loam',pH:6.87,ec:0.25,n:0.269,c:3.31,cn:12.3,wp:19,srFC:36,sat:55,bagFC:37.9,caco3:0.9,inorgC:0.07,cf:null},
+        {d:'4-12"',silt:37,sand:25,clay:38,tex:'Clay Loam',pH:6.8,ec:0.1,n:0.172,c:2.11,cn:12.3,wp:24,srFC:38,sat:50,bagFC:34.9,caco3:0.9,inorgC:0.07,cf:null},
+        {d:'12-20"',silt:30,sand:24,clay:46,tex:'Clay',pH:6.92,ec:0.06,n:0.1,c:1.09,cn:10.9,wp:28,srFC:41,sat:49,bagFC:30.7,caco3:0.9,inorgC:0.07,cf:null}]},
       'GRAND MESA': { name:'GRAND MESA', network:'RAWS', depths:[
-        {d:'0-4"',silt:44,sand:36,clay:20,tex:'Loam',pH:6.03,ec:0.06,n:0.212,c:2.72,cn:12.8,wp:12,srFC:26,sat:48,bagFC:33.7,caco3:0.7,inorgC:0.06,cf:null},
-        {d:'4-12"',silt:44,sand:34,clay:22,tex:'Loam',pH:6.07,ec:0,n:0.155,c:2.07,cn:13.4,wp:13,srFC:28,sat:50,bagFC:32.1,caco3:0.9,inorgC:0.07,cf:18.8},
-        {d:'12-20"',silt:34,sand:38,clay:28,tex:'Clay Loam',pH:6.05,ec:0,n:0.087,c:1.28,cn:14.7,wp:17,srFC:30,sat:51,bagFC:28.8,caco3:0.9,inorgC:0.07,cf:null}]},
+        {d:'0-4"',silt:44,sand:36,clay:20,tex:'Loam',pH:6.03,ec:0.06,n:0.212,c:2.72,cn:12.8,wp:15,srFC:31,sat:52,bagFC:33.7,caco3:0.7,inorgC:0.06,cf:null},
+        {d:'4-12"',silt:44,sand:34,clay:22,tex:'Loam',pH:6.07,ec:0,n:0.155,c:2.07,cn:13.4,wp:15,srFC:31,sat:49,bagFC:32.1,caco3:0.9,inorgC:0.07,cf:18.8},
+        {d:'12-20"',silt:34,sand:38,clay:28,tex:'Clay Loam',pH:6.05,ec:0,n:0.087,c:1.28,cn:14.7,wp:18,srFC:31,sat:45,bagFC:28.8,caco3:0.9,inorgC:0.07,cf:null}]},
       'WILLIS CREEK': { name:'WILLIS CREEK', network:'RAWS', depths:[
-        {d:'0-4"',silt:36,sand:44,clay:20,tex:'Loam',pH:6.44,ec:0.12,n:0.25,c:3.26,cn:13,wp:12,srFC:24,sat:47,bagFC:34.7,caco3:0.9,inorgC:0.07,cf:15.5},
-        {d:'4-12"',silt:36,sand:44,clay:20,tex:'Loam',pH:6.42,ec:0.03,n:0.163,c:2.52,cn:15.5,wp:12,srFC:24,sat:47,bagFC:31.9,caco3:0.9,inorgC:0.07,cf:18},
-        {d:'12-20"',silt:34,sand:46,clay:20,tex:'Loam',pH:6.48,ec:0,n:0.097,c:1.74,cn:17.9,wp:12,srFC:24,sat:47,bagFC:28.7,caco3:0.7,inorgC:0.06,cf:16.1}]},
+        {d:'0-4"',silt:36,sand:44,clay:20,tex:'Loam',pH:6.44,ec:0.12,n:0.25,c:3.26,cn:13,wp:16,srFC:31,sat:53,bagFC:34.7,caco3:0.9,inorgC:0.07,cf:15.5},
+        {d:'4-12"',silt:36,sand:44,clay:20,tex:'Loam',pH:6.42,ec:0.03,n:0.163,c:2.52,cn:15.5,wp:15,srFC:29,sat:50,bagFC:31.9,caco3:0.9,inorgC:0.07,cf:18},
+        {d:'12-20"',silt:34,sand:46,clay:20,tex:'Loam',pH:6.48,ec:0,n:0.097,c:1.74,cn:17.9,wp:14,srFC:27,sat:46,bagFC:28.7,caco3:0.7,inorgC:0.06,cf:16.1}]},
       'RED CREEK': { name:'RED CREEK', network:'RAWS', depths:[
-        {d:'0-4"',silt:28,sand:46,clay:26,tex:'Loam',pH:7.54,ec:0.28,n:0.184,c:5.36,cn:29.1,wp:16,srFC:27,sat:49,bagFC:34.7,caco3:29,inorgC:2.42,cf:34},
-        {d:'4-12"',silt:28,sand:46,clay:26,tex:'Loam',pH:7.7,ec:0.25,n:0.161,c:4.98,cn:30.9,wp:16,srFC:27,sat:49,bagFC:32.3,caco3:31.3,inorgC:2.61,cf:32.4},
-        {d:'12-20"',silt:27,sand:45,clay:28,tex:'Sandy Clay Loam',pH:7.72,ec:0.21,n:0.152,c:4.69,cn:30.9,wp:17,srFC:29,sat:50,bagFC:31.9,caco3:29.9,inorgC:2.49,cf:26.9}]},
+        {d:'0-4"',silt:28,sand:46,clay:26,tex:'Loam',pH:7.54,ec:0.28,n:0.184,c:5.36,cn:29.1,wp:18,srFC:32,sat:50,bagFC:34.7,caco3:29,inorgC:2.42,cf:34},
+        {d:'4-12"',silt:28,sand:46,clay:26,tex:'Loam',pH:7.7,ec:0.25,n:0.161,c:4.98,cn:30.9,wp:18,srFC:31,sat:48,bagFC:32.3,caco3:31.3,inorgC:2.61,cf:32.4},
+        {d:'12-20"',silt:27,sand:45,clay:28,tex:'Sandy Clay Loam',pH:7.72,ec:0.21,n:0.152,c:4.69,cn:30.9,wp:19,srFC:32,sat:48,bagFC:31.9,caco3:29.9,inorgC:2.49,cf:26.9}]},
       'REDSTONE': { name:'REDSTONE', network:'RAWS', depths:[
-        {d:'0-4"',silt:18,sand:68,clay:14,tex:'Sandy Loam',pH:7.16,ec:0.16,n:0.226,c:2.57,cn:11.4,wp:8,srFC:16,sat:41,bagFC:27.6,caco3:0.9,inorgC:0.07,cf:null},
-        {d:'4-12"',silt:16,sand:70,clay:14,tex:'Loamy Sand',pH:6.82,ec:0,n:0.122,c:1.29,cn:10.6,wp:8,srFC:16,sat:41,bagFC:21.5,caco3:0.7,inorgC:0.06,cf:null},
-        {d:'12-20"',silt:15,sand:63,clay:22,tex:'Loam',pH:6.66,ec:0.08,n:0.127,c:1.35,cn:10.6,wp:13,srFC:22,sat:45,bagFC:24,caco3:0.9,inorgC:0.07,cf:null}]},
+        {d:'0-4"',silt:18,sand:68,clay:14,tex:'Sandy Loam',pH:7.16,ec:0.16,n:0.226,c:2.57,cn:11.4,wp:12,srFC:22,sat:48,bagFC:27.6,caco3:0.9,inorgC:0.07,cf:null},
+        {d:'4-12"',silt:16,sand:70,clay:14,tex:'Loamy Sand',pH:6.82,ec:0,n:0.122,c:1.29,cn:10.6,wp:10,srFC:18,sat:43,bagFC:21.5,caco3:0.7,inorgC:0.06,cf:null},
+        {d:'12-20"',silt:15,sand:63,clay:22,tex:'Loam',pH:6.66,ec:0.08,n:0.127,c:1.35,cn:10.6,wp:15,srFC:24,sat:43,bagFC:24,caco3:0.9,inorgC:0.07,cf:null}]},
       'LODGEPOLE FLATS': { name:'LODGEPOLE FLATS', network:'RAWS', depths:[
-        {d:'0-4"',silt:5,sand:67,clay:28,tex:'Sandy Clay Loam',pH:6.61,ec:0,n:0.031,c:0.53,cn:17.1,wp:17,srFC:25,sat:48,bagFC:19.3,caco3:0.7,inorgC:0.06,cf:null},
-        {d:'4-12"',silt:12,sand:82,clay:6,tex:'Loamy Sand',pH:6.41,ec:0,n:0.017,c:0.32,cn:18.8,wp:3,srFC:9,sat:36,bagFC:13.6,caco3:0.7,inorgC:0.06,cf:null},
-        {d:'12-20"',silt:6,sand:86,clay:8,tex:'Sand',pH:6.5,ec:0,n:0.015,c:0.26,cn:17.3,wp:4,srFC:9,sat:36,bagFC:12.3,caco3:0.7,inorgC:0.06,cf:null}]},
+        {d:'0-4"',silt:5,sand:67,clay:28,tex:'Sandy Clay Loam',pH:6.61,ec:0,n:0.031,c:0.53,cn:17.1,wp:17,srFC:26,sat:40,bagFC:19.3,caco3:0.7,inorgC:0.06,cf:null},
+        {d:'4-12"',silt:12,sand:82,clay:6,tex:'Loamy Sand',pH:6.41,ec:0,n:0.017,c:0.32,cn:18.8,wp:3,srFC:9,sat:41,bagFC:13.6,caco3:0.7,inorgC:0.06,cf:null},
+        {d:'12-20"',silt:6,sand:86,clay:8,tex:'Sand',pH:6.5,ec:0,n:0.015,c:0.26,cn:17.3,wp:5,srFC:9,sat:41,bagFC:12.3,caco3:0.7,inorgC:0.06,cf:null}]},
       'RED DEER': { name:'RED DEER', network:'RAWS', depths:[
-        {d:'0-4"',silt:19,sand:67,clay:14,tex:'Sandy Loam',pH:6.78,ec:0.07,n:0.147,c:1.57,cn:10.7,wp:8,srFC:16,sat:41,bagFC:23.4,caco3:0.7,inorgC:0.06,cf:null},
-        {d:'4-12"',silt:18,sand:68,clay:14,tex:'Sandy Loam',pH:6.77,ec:0,n:0.083,c:0.85,cn:10.2,wp:8,srFC:16,sat:41,bagFC:19.9,caco3:0.9,inorgC:0.07,cf:null},
-        {d:'12-20"',silt:16,sand:70,clay:14,tex:'Loamy Sand',pH:6.84,ec:0,n:0.063,c:0.67,cn:10.6,wp:8,srFC:16,sat:41,bagFC:18.7,caco3:0.7,inorgC:0.06,cf:null}]},
+        {d:'0-4"',silt:19,sand:67,clay:14,tex:'Sandy Loam',pH:6.78,ec:0.07,n:0.147,c:1.57,cn:10.7,wp:10,srFC:20,sat:44,bagFC:23.4,caco3:0.7,inorgC:0.06,cf:null},
+        {d:'4-12"',silt:18,sand:68,clay:14,tex:'Sandy Loam',pH:6.77,ec:0,n:0.083,c:0.85,cn:10.2,wp:9,srFC:18,sat:41,bagFC:19.9,caco3:0.9,inorgC:0.07,cf:null},
+        {d:'12-20"',silt:16,sand:70,clay:14,tex:'Loamy Sand',pH:6.84,ec:0,n:0.063,c:0.67,cn:10.6,wp:9,srFC:17,sat:41,bagFC:18.7,caco3:0.7,inorgC:0.06,cf:null}]},
       'UTE CANYON': { name:'UTE CANYON', network:'RAWS', depths:[
-        {d:'0-4"',silt:10,sand:78,clay:12,tex:'Loamy Sand',pH:7.36,ec:0.42,n:0.166,c:1.93,cn:11.6,wp:7,srFC:13,sat:39,bagFC:21.3,caco3:3.9,inorgC:0.33,cf:null},
-        {d:'4-12"',silt:6,sand:80,clay:14,tex:'Loamy Sand',pH:7.5,ec:0.25,n:0.131,c:2.32,cn:17.7,wp:8,srFC:14,sat:40,bagFC:21.5,caco3:8.1,inorgC:0.67,cf:null},
-        {d:'12-20"',silt:4,sand:86,clay:10,tex:'Sand',pH:7.61,ec:0.15,n:0.063,c:1.47,cn:23.3,wp:5,srFC:10,sat:37,bagFC:15.9,caco3:6.9,inorgC:0.58,cf:null}]},
+        {d:'0-4"',silt:10,sand:78,clay:12,tex:'Loamy Sand',pH:7.36,ec:0.42,n:0.166,c:1.93,cn:11.6,wp:9,srFC:17,sat:45,bagFC:21.3,caco3:3.9,inorgC:0.33,cf:null},
+        {d:'4-12"',silt:6,sand:80,clay:14,tex:'Loamy Sand',pH:7.5,ec:0.25,n:0.131,c:2.32,cn:17.7,wp:11,srFC:17,sat:44,bagFC:21.5,caco3:8.1,inorgC:0.67,cf:null},
+        {d:'12-20"',silt:4,sand:86,clay:10,tex:'Sand',pH:7.61,ec:0.15,n:0.063,c:1.47,cn:23.3,wp:7,srFC:12,sat:42,bagFC:15.9,caco3:6.9,inorgC:0.58,cf:null}]},
       'PINION CANYON': { name:'PINION CANYON', network:'RAWS', depths:[
-        {d:'0-4"',silt:24,sand:22,clay:54,tex:'Clay',pH:7.38,ec:0.96,n:0.105,c:2.28,cn:21.7,wp:32,srFC:45,sat:62,bagFC:31.4,caco3:14.1,inorgC:1.18,cf:null},
-        {d:'4-12"',silt:22,sand:28,clay:50,tex:'Clay',pH:7.33,ec:2.5,n:0.084,c:1.99,cn:23.7,wp:30,srFC:42,sat:59,bagFC:28.7,caco3:14.6,inorgC:1.22,cf:null},
-        {d:'12-20"',silt:32,sand:26,clay:42,tex:'Clay',pH:7.3,ec:2.6,n:0.108,c:2.13,cn:19.7,wp:25,srFC:38,sat:57,bagFC:30.7,caco3:12.5,inorgC:1.04,cf:null}]},
+        {d:'0-4"',silt:24,sand:22,clay:54,tex:'Clay',pH:7.38,ec:0.96,n:0.105,c:2.28,cn:21.7,wp:32,srFC:44,sat:51,bagFC:31.4,caco3:14.1,inorgC:1.18,cf:null},
+        {d:'4-12"',silt:22,sand:28,clay:50,tex:'Clay',pH:7.33,ec:2.5,n:0.084,c:1.99,cn:23.7,wp:30,srFC:42,sat:49,bagFC:28.7,caco3:14.6,inorgC:1.22,cf:null},
+        {d:'12-20"',silt:32,sand:26,clay:42,tex:'Clay',pH:7.3,ec:2.6,n:0.108,c:2.13,cn:19.7,wp:25,srFC:39,sat:48,bagFC:30.7,caco3:12.5,inorgC:1.04,cf:null}]},
     };
 
     // ── SNOTEL soil data (texture/pH/WP/FC/Sat) ──────────────────────────
@@ -917,10 +928,17 @@
     //   'modeled'  -- everyone else with a soil moisture sensor (SMS), via SSURGO:
     //     dominant map-unit component's horizons, containment-snapped to this
     //     station's real sensor depths (smsDepths from AWDB, same as loadSNOTEL()
-    //     fetches live), WP/FC/Sat computed via Saxton-Rawls (2006) from that
-    //     horizon's sand/clay/OM -- including Sat, which is NOT read from
-    //     SSURGO's own wsatiated_r (mixing that with our own SR-computed WP/FC
-    //     produced physically impossible Sat<FC rows for some horizons).
+    //     fetches live), WP/FC/Sat computed via Saxton-Rawls (2006) Eq. 1/2/5 from
+    //     that horizon's sand/clay/OM -- verified directly against the published
+    //     paper (Saxton & Rawls, 2006, Table 1), not just against the R script's
+    //     port of it. Sat is NOT read from SSURGO's own wsatiated_r (mixing that
+    //     with our own SR-computed WP/FC produced physically impossible Sat<FC
+    //     rows for some horizons). Horizons with OM > 8%w (organic/histic surface
+    //     layers, e.g. Wild Basin's 2" horizon at 85% OM) get NO wp/srFC/sat at
+    //     all -- the paper explicitly excluded OM > 8% samples from its entire
+    //     regression dataset, so applying it there isn't just imprecise, it's
+    //     outside where the equations mean anything (this used to silently clamp
+    //     to a plausible-looking 80%/95%, not a real value).
     // Stations with no soil moisture sensor at all (most CO SNOTEL stations --
     // only 53 of 118 have one) aren't included here; there's no sensor depth to
     // key a row to. Stations with a sensor but no SSURGO mapunit match at their
@@ -932,18 +950,18 @@
 
     const SNOTEL_SOIL = {
       '335': { name:'Berthoud Summit', network:'SNOTEL', depths:[
-        {d:'2"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:40.7,cf:31,src:'modeled'},
-        {d:'4"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:40.7,cf:31,src:'modeled'},
-        {d:'8"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:40.7,cf:31,src:'modeled'},
-        {d:'20"',tex:'CBV-SL',sand:70.0,silt:24.0,clay:6.0,pH:5.6,ec:0.0,c:0.29,caco3:0,wp:3.8,srFC:11.9,sat:42.7,cf:31,src:'modeled'}]},
+        {d:'2"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:43.6,cf:31,src:'modeled'},
+        {d:'4"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:43.6,cf:31,src:'modeled'},
+        {d:'8"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:43.6,cf:31,src:'modeled'},
+        {d:'20"',tex:'CBV-SL',sand:70.0,silt:24.0,clay:6.0,pH:5.6,ec:0.0,c:0.29,caco3:0,wp:3.8,srFC:11.9,sat:40.2,cf:31,src:'modeled'}]},
       '378': { name:'Burro Mountain', network:'SNOTEL', depths:[
-        {d:'2"',tex:'L',sand:43.8,silt:40.2,clay:16.0,pH:7.0,ec:0.5,c:2.9,caco3:0,wp:13.2,srFC:28.6,sat:52.8,cf:0,src:'modeled'},
-        {d:'8"',tex:'CB-L',sand:41.6,silt:37.4,clay:21.0,pH:7.0,ec:0.5,c:0.44,caco3:0,wp:13.2,srFC:26.2,sat:41.1,cf:35,src:'modeled'},
-        {d:'20"',tex:'CBV-CL',sand:30.2,silt:32.3,clay:37.5,pH:7.0,ec:0.5,c:0.44,caco3:0,wp:22.6,srFC:36.1,sat:43.9,cf:58,src:'modeled'}]},
+        {d:'2"',tex:'L',sand:43.8,silt:40.2,clay:16.0,pH:7.0,ec:0.5,c:2.9,caco3:0,wp:13.2,srFC:28.6,sat:52.9,cf:0,src:'modeled'},
+        {d:'8"',tex:'CB-L',sand:41.6,silt:37.4,clay:21.0,pH:7.0,ec:0.5,c:0.44,caco3:0,wp:13.2,srFC:26.2,sat:41.4,cf:35,src:'modeled'},
+        {d:'20"',tex:'CBV-CL',sand:30.2,silt:32.3,clay:37.5,pH:7.0,ec:0.5,c:0.44,caco3:0,wp:22.6,srFC:36.1,sat:45.3,cf:58,src:'modeled'}]},
       '380': { name:'Butte', network:'SNOTEL', depths:[
-        {d:'2"',tex:'SL',sand:65.9,silt:19.1,clay:15.0,pH:6.8,ec:0.0,c:1.16,caco3:0,wp:10.5,srFC:19.6,sat:45.0,cf:0,src:'modeled'},
-        {d:'8"',tex:'SL',sand:65.9,silt:19.1,clay:15.0,pH:6.8,ec:0.0,c:1.16,caco3:0,wp:10.5,srFC:19.6,sat:45.0,cf:0,src:'modeled'},
-        {d:'20"',tex:'SL',sand:65.9,silt:19.1,clay:15.0,pH:7.0,ec:0.0,c:0.44,caco3:0,wp:9.5,srFC:18.0,sat:42.1,cf:0,src:'modeled'}]},
+        {d:'2"',tex:'SL',sand:65.9,silt:19.1,clay:15.0,pH:6.8,ec:0.0,c:1.16,caco3:0,wp:10.5,srFC:19.6,sat:42.9,cf:0,src:'modeled'},
+        {d:'8"',tex:'SL',sand:65.9,silt:19.1,clay:15.0,pH:6.8,ec:0.0,c:1.16,caco3:0,wp:10.5,srFC:19.6,sat:42.9,cf:0,src:'modeled'},
+        {d:'20"',tex:'SL',sand:65.9,silt:19.1,clay:15.0,pH:7.0,ec:0.0,c:0.44,caco3:0,wp:9.5,srFC:18.0,sat:40.0,cf:0,src:'modeled'}]},
       '387': { name:'Cascade #2', network:'SNOTEL', depths:[
         {d:'2"',sand:50.1,silt:34.5,clay:15.4,pH:5.2,ec:1.87,c:0.21,wp:10.1,srFC:27.6,sat:51.7,cf:5.3,src:'measured'},
         {d:'4"',sand:50.1,silt:35.9,clay:14,pH:5.3,ec:0.82,c:0.09,wp:6.6,srFC:24.5,sat:50.9,cf:8.8,src:'measured'},
@@ -951,19 +969,19 @@
         {d:'20"',sand:53.9,silt:33.8,clay:12.3,pH:5.5,ec:0.29,c:0.01,wp:5.6,srFC:19.1,sat:48.7,cf:6.2,src:'measured'},
         {d:'40"',sand:66.3,silt:24.9,clay:8.8,pH:5.6,ec:0.17,c:0.47,wp:3.4,srFC:11.4,sat:43.8,cf:16.3,src:'measured'}]},
       '415': { name:'Copper Mountain', network:'SNOTEL', depths:[
-        {d:'2"',tex:'L',sand:40.0,silt:45.0,clay:15.0,pH:5.3,ec:0.0,c:1.16,caco3:0,wp:10.6,srFC:25.2,sat:44.1,cf:0,src:'modeled'},
-        {d:'4"',tex:'GR-SIL',sand:20.0,silt:65.0,clay:15.0,pH:4.8,ec:0.0,c:0.44,caco3:0,wp:10.0,srFC:28.5,sat:39.4,cf:0,src:'modeled'},
-        {d:'8"',tex:'GR-SIL',sand:20.0,silt:65.0,clay:15.0,pH:4.8,ec:0.0,c:0.44,caco3:0,wp:10.0,srFC:28.5,sat:39.4,cf:0,src:'modeled'},
-        {d:'20"',tex:'CBV-FSL',sand:60.0,silt:30.0,clay:10.0,pH:4.8,ec:0.0,c:0.29,caco3:0,wp:6.3,srFC:16.3,sat:41.1,cf:31,src:'modeled'},
-        {d:'40"',tex:'CBX-CL',sand:35.0,silt:31.0,clay:34.0,pH:4.8,ec:0.0,c:0.29,caco3:0,wp:20.6,srFC:33.6,sat:42.6,cf:34,src:'modeled'}]},
+        {d:'2"',tex:'L',sand:40.0,silt:45.0,clay:15.0,pH:5.3,ec:0.0,c:1.16,caco3:0,wp:10.6,srFC:25.2,sat:44.5,cf:0,src:'modeled'},
+        {d:'4"',tex:'GR-SIL',sand:20.0,silt:65.0,clay:15.0,pH:4.8,ec:0.0,c:0.44,caco3:0,wp:10.0,srFC:28.5,sat:41.8,cf:0,src:'modeled'},
+        {d:'8"',tex:'GR-SIL',sand:20.0,silt:65.0,clay:15.0,pH:4.8,ec:0.0,c:0.44,caco3:0,wp:10.0,srFC:28.5,sat:41.8,cf:0,src:'modeled'},
+        {d:'20"',tex:'CBV-FSL',sand:60.0,silt:30.0,clay:10.0,pH:4.8,ec:0.0,c:0.29,caco3:0,wp:6.3,srFC:16.3,sat:39.6,cf:31,src:'modeled'},
+        {d:'40"',tex:'CBX-CL',sand:35.0,silt:31.0,clay:34.0,pH:4.8,ec:0.0,c:0.29,caco3:0,wp:20.6,srFC:33.6,sat:43.5,cf:34,src:'modeled'}]},
       '430': { name:'Culebra #2', network:'SNOTEL', depths:[
-        {d:'2"',tex:'GRV-SL',sand:65.0,silt:26.0,clay:9.0,pH:5.6,ec:0.5,c:0.29,caco3:0,wp:5.7,srFC:14.6,sat:41.8,cf:23,src:'modeled'},
-        {d:'8"',tex:'GRV-SL',sand:60.0,silt:28.0,clay:12.0,pH:5.4,ec:0.5,c:0.58,caco3:0,wp:8.0,srFC:18.0,sat:42.4,cf:22,src:'modeled'},
-        {d:'20"',tex:'GRV-SL',sand:60.0,silt:30.0,clay:10.0,pH:5.6,ec:0.5,c:0.29,caco3:0,wp:6.3,srFC:16.3,sat:41.1,cf:22,src:'modeled'}]},
+        {d:'2"',tex:'GRV-SL',sand:65.0,silt:26.0,clay:9.0,pH:5.6,ec:0.5,c:0.29,caco3:0,wp:5.7,srFC:14.6,sat:39.8,cf:23,src:'modeled'},
+        {d:'8"',tex:'GRV-SL',sand:60.0,silt:28.0,clay:12.0,pH:5.4,ec:0.5,c:0.58,caco3:0,wp:8.0,srFC:18.0,sat:40.9,cf:22,src:'modeled'},
+        {d:'20"',tex:'GRV-SL',sand:60.0,silt:30.0,clay:10.0,pH:5.6,ec:0.5,c:0.29,caco3:0,wp:6.3,srFC:16.3,sat:39.6,cf:22,src:'modeled'}]},
       '457': { name:'Dry Lake', network:'SNOTEL', depths:[
         {d:'2"',tex:'MUCK',pH:5.0,ec:0.0,c:23.2,caco3:0,cf:0,src:'modeled'},
-        {d:'8"',tex:'MK-SICL',sand:19.0,silt:53.0,clay:28.0,pH:6.4,ec:0.0,c:6.09,caco3:0,wp:20.9,srFC:40.5,sat:66.6,cf:0,src:'modeled'},
-        {d:'20"',tex:'GRV-CL',sand:28.0,silt:40.0,clay:32.0,pH:6.8,ec:0.0,c:1.74,caco3:0,wp:20.3,srFC:35.2,sat:47.3,cf:6,src:'modeled'}]},
+        {d:'8"',tex:'MK-SICL',sand:19.0,silt:53.0,clay:28.0,pH:6.4,ec:0.0,c:6.09,caco3:0,cf:0,src:'modeled'},
+        {d:'20"',tex:'GRV-CL',sand:28.0,silt:40.0,clay:32.0,pH:6.8,ec:0.0,c:1.74,caco3:0,wp:20.3,srFC:35.2,sat:48.9,cf:6,src:'modeled'}]},
       '485': { name:'Fremont Pass', network:'SNOTEL', depths:[
         {d:'2"',sand:15,silt:33.9,clay:51.1,pH:4.8,c:3.11,wp:34.3,srFC:37.2,sat:56.2,cf:0.9,src:'measured'},
         {d:'4"',sand:15,silt:33.9,clay:51.1,pH:4.8,c:0.75,wp:34.3,srFC:37.2,sat:56.2,cf:0.9,src:'measured'},
@@ -977,32 +995,32 @@
         {d:'20"',tex:'Very cobbly Sandy loam',sand:64.4,silt:30.4,clay:5.2,pH:5.1,c:0.15,wp:4.2,srFC:19,sat:44.5,cf:20.5,src:'measured'},
         {d:'40"',tex:'Very cobbly Sandy loam',sand:71.3,silt:25.2,clay:3.5,pH:5.2,c:0.09,wp:3.5,cf:0,src:'measured'}]},
       '556': { name:'Kiln', network:'SNOTEL', depths:[
-        {d:'2"',tex:'GR-SIL',sand:20.0,silt:65.0,clay:15.0,pH:7.0,ec:0.0,c:0.44,caco3:0,wp:10.0,srFC:28.5,sat:39.4,cf:0,src:'modeled'},
-        {d:'4"',tex:'GR-SIL',sand:20.0,silt:65.0,clay:15.0,pH:7.0,ec:0.0,c:0.44,caco3:0,wp:10.0,srFC:28.5,sat:39.4,cf:0,src:'modeled'},
-        {d:'8"',tex:'GR-SIL',sand:20.0,silt:65.0,clay:15.0,pH:7.0,ec:0.0,c:0.44,caco3:0,wp:10.0,srFC:28.5,sat:39.4,cf:0,src:'modeled'},
-        {d:'20"',tex:'CBV-LFS',sand:80.0,silt:13.0,clay:7.0,pH:5.8,ec:0.0,c:0.44,caco3:0,wp:4.4,srFC:10.5,sat:44.7,cf:63,src:'modeled'},
-        {d:'40"',tex:'CBV-COS',sand:92.0,silt:3.0,clay:5.0,pH:5.8,ec:0.0,c:0.29,caco3:0,wp:2.7,srFC:6.6,sat:46.7,cf:61,src:'modeled'}]},
+        {d:'2"',tex:'GR-SIL',sand:20.0,silt:65.0,clay:15.0,pH:7.0,ec:0.0,c:0.44,caco3:0,wp:10.0,srFC:28.5,sat:41.8,cf:0,src:'modeled'},
+        {d:'4"',tex:'GR-SIL',sand:20.0,silt:65.0,clay:15.0,pH:7.0,ec:0.0,c:0.44,caco3:0,wp:10.0,srFC:28.5,sat:41.8,cf:0,src:'modeled'},
+        {d:'8"',tex:'GR-SIL',sand:20.0,silt:65.0,clay:15.0,pH:7.0,ec:0.0,c:0.44,caco3:0,wp:10.0,srFC:28.5,sat:41.8,cf:0,src:'modeled'},
+        {d:'20"',tex:'CBV-LFS',sand:80.0,silt:13.0,clay:7.0,pH:5.8,ec:0.0,c:0.44,caco3:0,wp:4.4,srFC:10.5,sat:41.3,cf:63,src:'modeled'},
+        {d:'40"',tex:'CBV-COS',sand:92.0,silt:3.0,clay:5.0,pH:5.8,ec:0.0,c:0.29,caco3:0,wp:2.7,srFC:6.6,sat:42.1,cf:61,src:'modeled'}]},
       '580': { name:'Lily Pond', network:'SNOTEL', depths:[
-        {d:'2"',tex:'HPM',sand:30.0,silt:59.0,clay:11.0,pH:5.6,ec:0.5,c:49.3,caco3:0,wp:65.9,srFC:80.0,sat:95.0,cf:0,src:'modeled'},
-        {d:'8"',tex:'CB-SIL',sand:30.0,silt:59.0,clay:11.0,pH:6.3,ec:0.0,c:0.44,caco3:0,wp:7.6,srFC:24.4,sat:39.3,cf:25,src:'modeled'},
-        {d:'20"',tex:'CB-FSL',sand:55.0,silt:33.0,clay:12.0,pH:6.3,ec:0.0,c:0.29,caco3:0,wp:7.6,srFC:18.4,sat:40.6,cf:25,src:'modeled'}]},
+        {d:'2"',tex:'HPM',sand:30.0,silt:59.0,clay:11.0,pH:5.6,ec:0.5,c:49.3,caco3:0,cf:0,src:'modeled'},
+        {d:'8"',tex:'CB-SIL',sand:30.0,silt:59.0,clay:11.0,pH:6.3,ec:0.0,c:0.44,caco3:0,wp:7.6,srFC:24.4,sat:40.6,cf:25,src:'modeled'},
+        {d:'20"',tex:'CB-FSL',sand:55.0,silt:33.0,clay:12.0,pH:6.3,ec:0.0,c:0.29,caco3:0,wp:7.6,srFC:18.4,sat:39.6,cf:25,src:'modeled'}]},
       '586': { name:'Lizard Head Pass', network:'SNOTEL', depths:[
         {d:'2"',sand:18.5,silt:45,clay:36.5,pH:5.8,ec:0.67,c:0.41,wp:27.9,srFC:36.2,sat:53.6,cf:20.0,src:'measured'},
         {d:'4"',sand:18.5,silt:45,clay:36.5,pH:5.8,ec:0.67,c:0.41,wp:27.9,srFC:36.2,sat:53.6,cf:20.0,src:'measured'},
         {d:'8"',sand:18.5,silt:45,clay:36.5,pH:5.8,ec:0.67,c:0.41,wp:27.9,srFC:36.2,sat:53.6,cf:20.0,src:'measured'},
         {d:'20"',sand:35.2,silt:43.1,clay:21.7,pH:6,ec:0.14,c:0.23,wp:10.1,srFC:24.6,sat:42.3,cf:34.1,src:'measured'}]},
       '589': { name:'Lone Cone', network:'SNOTEL', depths:[
-        {d:'2"',tex:'GR-L',sand:41.4,silt:37.1,clay:21.5,pH:6.7,ec:0.0,c:0.87,caco3:0,wp:13.9,srFC:27.3,sat:43.0,cf:5,src:'modeled'},
-        {d:'8"',tex:'GRV-L',sand:39.8,silt:37.7,clay:22.5,pH:6.7,ec:0.0,c:0.44,caco3:0,wp:14.1,srFC:27.3,sat:41.2,cf:10,src:'modeled'},
-        {d:'20"',tex:'GRV-SCL',sand:56.3,silt:17.7,clay:26.0,pH:6.7,ec:0.0,c:0.15,caco3:0,wp:15.7,srFC:25.6,sat:40.9,cf:15,src:'modeled'}]},
+        {d:'2"',tex:'GR-L',sand:41.4,silt:37.1,clay:21.5,pH:6.7,ec:0.0,c:0.87,caco3:0,wp:13.9,srFC:27.3,sat:43.3,cf:5,src:'modeled'},
+        {d:'8"',tex:'GRV-L',sand:39.8,silt:37.7,clay:22.5,pH:6.7,ec:0.0,c:0.44,caco3:0,wp:14.1,srFC:27.3,sat:41.7,cf:10,src:'modeled'},
+        {d:'20"',tex:'GRV-SCL',sand:56.3,silt:17.7,clay:26.0,pH:6.7,ec:0.0,c:0.15,caco3:0,wp:15.7,srFC:25.6,sat:39.8,cf:15,src:'modeled'}]},
       '607': { name:'Lynx Pass', network:'SNOTEL', depths:[
-        {d:'4"',tex:'GR-L',sand:44.0,silt:41.0,clay:15.0,pH:6.4,ec:0.0,c:2.9,caco3:0,wp:12.7,srFC:28.2,sat:53.0,cf:9,src:'modeled'},
-        {d:'8"',tex:'GR-L',sand:44.0,silt:41.0,clay:15.0,pH:6.4,ec:0.0,c:2.9,caco3:0,wp:12.7,srFC:28.2,sat:53.0,cf:9,src:'modeled'},
+        {d:'4"',tex:'GR-L',sand:44.0,silt:41.0,clay:15.0,pH:6.4,ec:0.0,c:2.9,caco3:0,wp:12.7,srFC:28.2,sat:53.1,cf:9,src:'modeled'},
+        {d:'8"',tex:'GR-L',sand:44.0,silt:41.0,clay:15.0,pH:6.4,ec:0.0,c:2.9,caco3:0,wp:12.7,srFC:28.2,sat:53.1,cf:9,src:'modeled'},
         {d:'20"',tex:'GRV-CL',sand:44.0,silt:26.0,clay:30.0,pH:6.4,ec:0.0,c:0.52,caco3:0,wp:18.5,srFC:30.5,sat:42.5,cf:15,src:'modeled'}]},
       '680': { name:'Park Cone', network:'SNOTEL', depths:[
-        {d:'2"',tex:'SL',sand:65.9,silt:19.1,clay:15.0,pH:6.8,ec:0.0,c:1.16,caco3:0,wp:10.5,srFC:19.6,sat:45.0,cf:0,src:'modeled'},
-        {d:'8"',tex:'SL',sand:65.9,silt:19.1,clay:15.0,pH:6.8,ec:0.0,c:1.16,caco3:0,wp:10.5,srFC:19.6,sat:45.0,cf:0,src:'modeled'},
-        {d:'20"',tex:'SL',sand:65.9,silt:19.1,clay:15.0,pH:7.0,ec:0.0,c:0.44,caco3:0,wp:9.5,srFC:18.0,sat:42.1,cf:0,src:'modeled'}]},
+        {d:'2"',tex:'SL',sand:65.9,silt:19.1,clay:15.0,pH:6.8,ec:0.0,c:1.16,caco3:0,wp:10.5,srFC:19.6,sat:42.9,cf:0,src:'modeled'},
+        {d:'8"',tex:'SL',sand:65.9,silt:19.1,clay:15.0,pH:6.8,ec:0.0,c:1.16,caco3:0,wp:10.5,srFC:19.6,sat:42.9,cf:0,src:'modeled'},
+        {d:'20"',tex:'SL',sand:65.9,silt:19.1,clay:15.0,pH:7.0,ec:0.0,c:0.44,caco3:0,wp:9.5,srFC:18.0,sat:40.0,cf:0,src:'modeled'}]},
       '682': { name:'Park Reservoir', network:'SNOTEL', depths:[
         {d:'2"',sand:18.7,silt:43,clay:38.3,pH:4.8,ec:0.65,c:0.1,wp:21.1,srFC:41.1,sat:53.2,cf:0,src:'measured'},
         {d:'4"',sand:18.7,silt:43,clay:38.3,pH:4.8,ec:0.65,c:0.1,wp:21.1,srFC:41.1,sat:53.2,cf:0,src:'measured'},
@@ -1020,14 +1038,14 @@
         {d:'8"',sand:52.2,silt:35.9,clay:11.9,pH:5.2,c:0.02,wp:9.4,srFC:23.2,sat:40.8,cf:13.6,src:'measured'},
         {d:'20"',sand:47.9,silt:38.6,clay:13.5,pH:5.1,c:0.04,wp:9.8,srFC:33.7,sat:56.6,cf:17.8,src:'measured'}]},
       '709': { name:'Rabbit Ears', network:'SNOTEL', depths:[
-        {d:'2"',tex:'GR-SL',sand:55.0,silt:31.0,clay:14.0,pH:5.5,ec:0.0,c:0.93,caco3:0,wp:9.7,srFC:20.9,sat:43.6,cf:15,src:'modeled'},
-        {d:'8"',tex:'GRV-SL',sand:57.0,silt:27.0,clay:16.0,pH:5.5,ec:0.0,c:0.46,caco3:0,wp:10.2,srFC:20.5,sat:41.6,cf:18,src:'modeled'},
-        {d:'20"',tex:'GRV-SL',sand:57.0,silt:27.0,clay:16.0,pH:5.5,ec:0.0,c:0.46,caco3:0,wp:10.2,srFC:20.5,sat:41.6,cf:18,src:'modeled'},
-        {d:'40"',tex:'GRV-LS',sand:78.0,silt:17.0,clay:5.0,pH:5.4,ec:0.0,c:0.17,caco3:0,wp:2.8,srFC:9.3,sat:43.7,cf:20,src:'modeled'}]},
+        {d:'2"',tex:'GR-SL',sand:55.0,silt:31.0,clay:14.0,pH:5.5,ec:0.0,c:0.93,caco3:0,wp:9.7,srFC:20.9,sat:42.5,cf:15,src:'modeled'},
+        {d:'8"',tex:'GRV-SL',sand:57.0,silt:27.0,clay:16.0,pH:5.5,ec:0.0,c:0.46,caco3:0,wp:10.2,srFC:20.5,sat:40.4,cf:18,src:'modeled'},
+        {d:'20"',tex:'GRV-SL',sand:57.0,silt:27.0,clay:16.0,pH:5.5,ec:0.0,c:0.46,caco3:0,wp:10.2,srFC:20.5,sat:40.4,cf:18,src:'modeled'},
+        {d:'40"',tex:'GRV-LS',sand:78.0,silt:17.0,clay:5.0,pH:5.4,ec:0.0,c:0.17,caco3:0,wp:2.8,srFC:9.3,sat:40.4,cf:20,src:'modeled'}]},
       '713': { name:'Red Mountain Pass', network:'SNOTEL', depths:[
-        {d:'2"',tex:'STV-L',sand:43.0,silt:38.5,clay:18.5,pH:5.5,ec:0.0,c:0.87,caco3:0,wp:12.2,srFC:25.5,sat:42.9,cf:71,src:'modeled'},
-        {d:'8"',tex:'STV-SL',sand:65.9,silt:19.1,clay:15.0,pH:5.5,ec:0.0,c:0.15,caco3:0,wp:9.0,srFC:17.3,sat:41.0,cf:73,src:'modeled'},
-        {d:'20"',tex:'STX-SCL',sand:55.8,silt:17.7,clay:26.5,pH:5.5,ec:0.0,c:0.15,caco3:0,wp:16.0,srFC:26.0,sat:41.0,cf:73,src:'modeled'},
+        {d:'2"',tex:'STV-L',sand:43.0,silt:38.5,clay:18.5,pH:5.5,ec:0.0,c:0.87,caco3:0,wp:12.2,srFC:25.5,sat:43.0,cf:71,src:'modeled'},
+        {d:'8"',tex:'STV-SL',sand:65.9,silt:19.1,clay:15.0,pH:5.5,ec:0.0,c:0.15,caco3:0,wp:9.0,srFC:17.3,sat:38.9,cf:73,src:'modeled'},
+        {d:'20"',tex:'STX-SCL',sand:55.8,silt:17.7,clay:26.5,pH:5.5,ec:0.0,c:0.15,caco3:0,wp:16.0,srFC:26.0,sat:39.9,cf:73,src:'modeled'},
         {d:'40"',tex:'UWB',cf:0,src:'modeled'}]},
       '737': { name:'Schofield Pass', network:'SNOTEL', depths:[
         {d:'2"',sand:11.2,silt:64.1,clay:24.7,pH:4.6,ec:1.02,c:0.3,wp:27.5,srFC:74.3,sat:76.2,cf:8.1,src:'measured'},
@@ -1035,36 +1053,36 @@
         {d:'8"',sand:11.5,silt:66.8,clay:21.7,pH:5,ec:0.33,c:0.19,wp:17.3,srFC:60.6,sat:73.2,cf:7.2,src:'measured'},
         {d:'20"',sand:11.4,silt:69.2,clay:19.4,pH:5.3,c:0.04,wp:14.8,srFC:51.6,sat:71.3,cf:10.6,src:'measured'}]},
       '762': { name:'Slumgullion', network:'SNOTEL', depths:[
-        {d:'2"',tex:'GR-SL',sand:67.4,silt:19.6,clay:13.0,pH:5.6,ec:0.0,c:0.15,caco3:0,wp:7.8,srFC:15.9,sat:41.2,cf:0,src:'modeled'},
-        {d:'8"',tex:'GRV-SL',sand:67.4,silt:19.6,clay:13.0,pH:5.8,ec:0.0,c:0.15,caco3:0,wp:7.8,srFC:15.9,sat:41.2,cf:10,src:'modeled'},
-        {d:'20"',tex:'GRV-SL',sand:67.4,silt:19.6,clay:13.0,pH:5.8,ec:0.0,c:0.15,caco3:0,wp:7.8,srFC:15.9,sat:41.2,cf:10,src:'modeled'}]},
+        {d:'2"',tex:'GR-SL',sand:67.4,silt:19.6,clay:13.0,pH:5.6,ec:0.0,c:0.15,caco3:0,wp:7.8,srFC:15.9,sat:39.0,cf:0,src:'modeled'},
+        {d:'8"',tex:'GRV-SL',sand:67.4,silt:19.6,clay:13.0,pH:5.8,ec:0.0,c:0.15,caco3:0,wp:7.8,srFC:15.9,sat:39.0,cf:10,src:'modeled'},
+        {d:'20"',tex:'GRV-SL',sand:67.4,silt:19.6,clay:13.0,pH:5.8,ec:0.0,c:0.15,caco3:0,wp:7.8,srFC:15.9,sat:39.0,cf:10,src:'modeled'}]},
       '793': { name:'Stillwater Creek', network:'SNOTEL', depths:[
-        {d:'2"',tex:'L',sand:41.1,silt:36.9,clay:22.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:13.9,srFC:27.1,sat:41.8,cf:3,src:'modeled'},
-        {d:'4"',tex:'L',sand:41.1,silt:36.9,clay:22.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:13.9,srFC:27.1,sat:41.8,cf:3,src:'modeled'},
-        {d:'8"',tex:'GR-CL',sand:30.3,silt:30.7,clay:39.0,pH:6.0,ec:0.0,c:0.29,caco3:0,wp:23.4,srFC:36.7,sat:43.9,cf:0,src:'modeled'},
-        {d:'20"',tex:'CL',sand:30.3,silt:30.7,clay:39.0,pH:5.8,ec:0.0,c:0.29,caco3:0,wp:23.4,srFC:36.7,sat:43.9,cf:0,src:'modeled'},
-        {d:'40"',tex:'CL',sand:30.3,silt:30.7,clay:39.0,pH:5.8,ec:0.0,c:0.29,caco3:0,wp:23.4,srFC:36.7,sat:43.9,cf:0,src:'modeled'}]},
+        {d:'2"',tex:'L',sand:41.1,silt:36.9,clay:22.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:13.9,srFC:27.1,sat:42.1,cf:3,src:'modeled'},
+        {d:'4"',tex:'L',sand:41.1,silt:36.9,clay:22.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:13.9,srFC:27.1,sat:42.1,cf:3,src:'modeled'},
+        {d:'8"',tex:'GR-CL',sand:30.3,silt:30.7,clay:39.0,pH:6.0,ec:0.0,c:0.29,caco3:0,wp:23.4,srFC:36.7,sat:45.2,cf:0,src:'modeled'},
+        {d:'20"',tex:'CL',sand:30.3,silt:30.7,clay:39.0,pH:5.8,ec:0.0,c:0.29,caco3:0,wp:23.4,srFC:36.7,sat:45.2,cf:0,src:'modeled'},
+        {d:'40"',tex:'CL',sand:30.3,silt:30.7,clay:39.0,pH:5.8,ec:0.0,c:0.29,caco3:0,wp:23.4,srFC:36.7,sat:45.2,cf:0,src:'modeled'}]},
       '802': { name:'Summit Ranch', network:'SNOTEL', depths:[
-        {d:'2"',tex:'CBV-SIL',sand:20.0,silt:65.0,clay:15.0,pH:5.3,ec:0.0,c:0.58,caco3:0,wp:10.1,srFC:28.8,sat:40.3,cf:32,src:'modeled'},
-        {d:'8"',tex:'CBV-LCOS',sand:80.0,silt:15.0,clay:5.0,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:3.2,srFC:9.5,sat:45.1,cf:30,src:'modeled'},
-        {d:'20"',tex:'STX-SL',sand:65.0,silt:21.0,clay:14.0,pH:4.8,ec:0.0,c:0.29,caco3:0,wp:8.7,srFC:17.3,sat:41.5,cf:56,src:'modeled'}]},
+        {d:'2"',tex:'CBV-SIL',sand:20.0,silt:65.0,clay:15.0,pH:5.3,ec:0.0,c:0.58,caco3:0,wp:10.1,srFC:28.8,sat:42.6,cf:32,src:'modeled'},
+        {d:'8"',tex:'CBV-LCOS',sand:80.0,silt:15.0,clay:5.0,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:3.2,srFC:9.5,sat:41.7,cf:30,src:'modeled'},
+        {d:'20"',tex:'STX-SL',sand:65.0,silt:21.0,clay:14.0,pH:4.8,ec:0.0,c:0.29,caco3:0,wp:8.7,srFC:17.3,sat:39.5,cf:56,src:'modeled'}]},
       '839': { name:'Upper Rio Grande', network:'SNOTEL', depths:[
-        {d:'2"',tex:'L',sand:40.0,silt:36.0,clay:24.0,pH:7.0,ec:0.0,c:2.32,caco3:0,wp:16.7,srFC:31.2,sat:49.0,cf:0,src:'modeled'},
-        {d:'8"',tex:'L',sand:40.0,silt:35.0,clay:25.0,pH:7.0,ec:0.0,c:1.16,caco3:0,wp:16.2,srFC:29.6,sat:44.4,cf:0,src:'modeled'},
-        {d:'20"',tex:'CBV-CL',sand:40.0,silt:29.0,clay:31.0,pH:7.0,ec:0.0,c:0.58,caco3:0,wp:19.1,srFC:31.7,sat:42.9,cf:24,src:'modeled'}]},
+        {d:'2"',tex:'L',sand:40.0,silt:36.0,clay:24.0,pH:7.0,ec:0.0,c:2.32,caco3:0,wp:16.7,srFC:31.2,sat:49.4,cf:0,src:'modeled'},
+        {d:'8"',tex:'L',sand:40.0,silt:35.0,clay:25.0,pH:7.0,ec:0.0,c:1.16,caco3:0,wp:16.2,srFC:29.6,sat:44.8,cf:0,src:'modeled'},
+        {d:'20"',tex:'CBV-CL',sand:40.0,silt:29.0,clay:31.0,pH:7.0,ec:0.0,c:0.58,caco3:0,wp:19.1,srFC:31.7,sat:43.3,cf:24,src:'modeled'}]},
       '840': { name:'Upper San Juan', network:'SNOTEL', depths:[
-        {d:'2"',tex:'MPM',sand:50.0,silt:16.0,clay:34.0,pH:5.6,ec:0.0,c:49.3,caco3:0,wp:59.9,srFC:80.0,sat:95.0,cf:0,src:'modeled'},
-        {d:'8"',tex:'SL',sand:65.7,silt:22.8,clay:11.5,pH:5.2,ec:0.0,c:0.44,caco3:0,wp:7.4,srFC:16.1,sat:42.3,cf:3,src:'modeled'},
-        {d:'20"',tex:'GR-SL',sand:65.7,silt:22.8,clay:11.5,pH:5.7,ec:0.0,c:0.29,caco3:0,wp:7.2,srFC:15.8,sat:41.7,cf:4,src:'modeled'}]},
+        {d:'2"',tex:'MPM',sand:50.0,silt:16.0,clay:34.0,pH:5.6,ec:0.0,c:49.3,caco3:0,cf:0,src:'modeled'},
+        {d:'8"',tex:'SL',sand:65.7,silt:22.8,clay:11.5,pH:5.2,ec:0.0,c:0.44,caco3:0,wp:7.4,srFC:16.1,sat:40.3,cf:3,src:'modeled'},
+        {d:'20"',tex:'GR-SL',sand:65.7,silt:22.8,clay:11.5,pH:5.7,ec:0.0,c:0.29,caco3:0,wp:7.2,srFC:15.8,sat:39.6,cf:4,src:'modeled'}]},
       '857': { name:'Whiskey Ck', network:'SNOTEL', depths:[
         {d:'2"',tex:'L',sand:44.8,silt:41.2,clay:14.0,pH:6.7,ec:0.0,c:2.9,caco3:0,wp:12.2,srFC:27.7,sat:53.2,cf:0,src:'modeled'},
         {d:'4"',tex:'L',sand:44.8,silt:41.2,clay:14.0,pH:6.7,ec:0.0,c:2.9,caco3:0,wp:12.2,srFC:27.7,sat:53.2,cf:0,src:'modeled'},
         {d:'8"',tex:'L',sand:44.8,silt:41.2,clay:14.0,pH:6.7,ec:0.0,c:2.9,caco3:0,wp:12.2,srFC:27.7,sat:53.2,cf:0,src:'modeled'},
-        {d:'20"',tex:'FSL',sand:68.0,silt:16.0,clay:16.0,pH:6.7,ec:0.0,c:1.74,caco3:0,wp:11.9,srFC:21.0,sat:47.2,cf:0,src:'modeled'}]},
+        {d:'20"',tex:'FSL',sand:68.0,silt:16.0,clay:16.0,pH:6.7,ec:0.0,c:1.74,caco3:0,wp:11.9,srFC:21.0,sat:44.9,cf:0,src:'modeled'}]},
       '874': { name:'Wolf Creek Summit', network:'SNOTEL', depths:[
-        {d:'2"',tex:'MPM',sand:50.0,silt:16.0,clay:34.0,pH:5.6,ec:0.0,c:49.3,caco3:0,wp:59.9,srFC:80.0,sat:95.0,cf:0,src:'modeled'},
-        {d:'8"',tex:'SL',sand:65.7,silt:22.8,clay:11.5,pH:5.2,ec:0.0,c:0.44,caco3:0,wp:7.4,srFC:16.1,sat:42.3,cf:3,src:'modeled'},
-        {d:'20"',tex:'GR-SL',sand:65.7,silt:22.8,clay:11.5,pH:5.7,ec:0.0,c:0.29,caco3:0,wp:7.2,srFC:15.8,sat:41.7,cf:4,src:'modeled'}]},
+        {d:'2"',tex:'MPM',sand:50.0,silt:16.0,clay:34.0,pH:5.6,ec:0.0,c:49.3,caco3:0,cf:0,src:'modeled'},
+        {d:'8"',tex:'SL',sand:65.7,silt:22.8,clay:11.5,pH:5.2,ec:0.0,c:0.44,caco3:0,wp:7.4,srFC:16.1,sat:40.3,cf:3,src:'modeled'},
+        {d:'20"',tex:'GR-SL',sand:65.7,silt:22.8,clay:11.5,pH:5.7,ec:0.0,c:0.29,caco3:0,wp:7.2,srFC:15.8,sat:39.6,cf:4,src:'modeled'}]},
       '914': { name:'Medano Pass', network:'SNOTEL', depths:[
         {d:'2"',sand:79.8,silt:15.3,clay:4.9,pH:5.6,c:0.03,wp:6.5,cf:0,src:'measured'},
         {d:'4"',sand:79.8,silt:15.3,clay:4.9,pH:5.6,c:0.03,wp:6.5,cf:0,src:'measured'},
@@ -1087,17 +1105,17 @@
         {d:'8"',tex:'Clay loam',sand:36.7,silt:43.3,clay:20,pH:6,c:1.03,wp:9.4,srFC:18.9,sat:45.7,cf:13.0,src:'measured'},
         {d:'20"',tex:'Very gravelly Clay',sand:43.1,silt:32.7,clay:24.2,pH:6.4,c:0.17,wp:10.7,srFC:19.5,sat:38.1,cf:22.3,src:'measured'}]},
       '940': { name:'Lost Dog', network:'SNOTEL', depths:[
-        {d:'2"',tex:'GR-L',sand:44.0,silt:41.0,clay:15.0,pH:5.1,ec:0.0,c:1.16,caco3:0,wp:10.6,srFC:24.3,sat:44.2,cf:7,src:'modeled'},
-        {d:'4"',tex:'GR-L',sand:44.0,silt:41.0,clay:15.0,pH:5.1,ec:0.0,c:1.16,caco3:0,wp:10.6,srFC:24.3,sat:44.2,cf:7,src:'modeled'},
-        {d:'8"',tex:'GR-L',sand:44.0,silt:41.0,clay:15.0,pH:5.1,ec:0.0,c:1.16,caco3:0,wp:10.6,srFC:24.3,sat:44.2,cf:7,src:'modeled'},
-        {d:'20"',tex:'GRV-SL',sand:57.0,silt:27.0,clay:16.0,pH:5.1,ec:0.0,c:0.46,caco3:0,wp:10.2,srFC:20.5,sat:41.6,cf:19,src:'modeled'},
-        {d:'40"',tex:'CBV-LS',sand:78.0,silt:17.0,clay:5.0,pH:5.1,ec:0.0,c:0.17,caco3:0,wp:2.8,srFC:9.3,sat:43.7,cf:33,src:'modeled'}]},
+        {d:'2"',tex:'GR-L',sand:44.0,silt:41.0,clay:15.0,pH:5.1,ec:0.0,c:1.16,caco3:0,wp:10.6,srFC:24.3,sat:44.3,cf:7,src:'modeled'},
+        {d:'4"',tex:'GR-L',sand:44.0,silt:41.0,clay:15.0,pH:5.1,ec:0.0,c:1.16,caco3:0,wp:10.6,srFC:24.3,sat:44.3,cf:7,src:'modeled'},
+        {d:'8"',tex:'GR-L',sand:44.0,silt:41.0,clay:15.0,pH:5.1,ec:0.0,c:1.16,caco3:0,wp:10.6,srFC:24.3,sat:44.3,cf:7,src:'modeled'},
+        {d:'20"',tex:'GRV-SL',sand:57.0,silt:27.0,clay:16.0,pH:5.1,ec:0.0,c:0.46,caco3:0,wp:10.2,srFC:20.5,sat:40.4,cf:19,src:'modeled'},
+        {d:'40"',tex:'CBV-LS',sand:78.0,silt:17.0,clay:5.0,pH:5.1,ec:0.0,c:0.17,caco3:0,wp:2.8,srFC:9.3,sat:40.4,cf:33,src:'modeled'}]},
       '970': { name:'Jones Pass', network:'SNOTEL', depths:[
-        {d:'2"',tex:'BY-SL',sand:65.9,silt:19.1,clay:15.0,pH:5.3,ec:0.0,c:2.32,caco3:0,wp:12.2,srFC:22.3,sat:49.7,cf:46,src:'modeled'},
-        {d:'4"',tex:'BY-SL',sand:65.9,silt:19.1,clay:15.0,pH:5.3,ec:0.0,c:2.32,caco3:0,wp:12.2,srFC:22.3,sat:49.7,cf:46,src:'modeled'},
-        {d:'8"',tex:'BYX-SL',sand:65.9,silt:19.1,clay:15.0,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:9.5,srFC:18.0,sat:42.1,cf:78,src:'modeled'},
-        {d:'20"',tex:'BYX-SL',sand:65.9,silt:19.1,clay:15.0,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:9.5,srFC:18.0,sat:42.1,cf:78,src:'modeled'},
-        {d:'40"',tex:'BYX-LS',sand:83.5,silt:9.0,clay:7.5,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:4.7,srFC:10.1,sat:45.1,cf:73,src:'modeled'}]},
+        {d:'2"',tex:'BY-SL',sand:65.9,silt:19.1,clay:15.0,pH:5.3,ec:0.0,c:2.32,caco3:0,wp:12.2,srFC:22.3,sat:47.6,cf:46,src:'modeled'},
+        {d:'4"',tex:'BY-SL',sand:65.9,silt:19.1,clay:15.0,pH:5.3,ec:0.0,c:2.32,caco3:0,wp:12.2,srFC:22.3,sat:47.6,cf:46,src:'modeled'},
+        {d:'8"',tex:'BYX-SL',sand:65.9,silt:19.1,clay:15.0,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:9.5,srFC:18.0,sat:40.0,cf:78,src:'modeled'},
+        {d:'20"',tex:'BYX-SL',sand:65.9,silt:19.1,clay:15.0,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:9.5,srFC:18.0,sat:40.0,cf:78,src:'modeled'},
+        {d:'40"',tex:'BYX-LS',sand:83.5,silt:9.0,clay:7.5,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:4.7,srFC:10.1,sat:41.3,cf:73,src:'modeled'}]},
       '1014': { name:'Middle Fork Camp', network:'SNOTEL', depths:[
         {d:'2"',tex:'Gravelly Sandy loam',sand:71.4,silt:22.5,clay:6.0,pH:5.3,ec:0.05,c:0.06,wp:7.3,cf:0,src:'measured'},
         {d:'4"',tex:'Very gravelly Sandy loam',sand:91.6,silt:5.8,clay:2.6,pH:5.2,ec:0.02,c:0.06,wp:2.3,cf:0,src:'measured'},
@@ -1105,16 +1123,16 @@
         {d:'20"',tex:'Very cobbly Loamy sand',sand:90.3,silt:8.5,clay:1.2,pH:5.4,ec:0.01,c:0.11,wp:1.8,cf:0,src:'measured'}]},
       '1030': { name:'Arapaho Ridge', network:'SNOTEL', depths:[
         {d:'2"',tex:'MPM',pH:5.0,ec:0.0,c:40.6,caco3:0,cf:0,src:'modeled'},
-        {d:'8"',tex:'CBV-L',sand:44.0,silt:41.0,clay:15.0,pH:5.7,ec:0.0,c:1.16,caco3:0,wp:10.6,srFC:24.3,sat:44.2,cf:27,src:'modeled'},
-        {d:'20"',tex:'CBV-SL',sand:55.0,silt:28.0,clay:17.0,pH:5.8,ec:0.0,c:0.46,caco3:0,wp:10.8,srFC:21.4,sat:41.5,cf:23,src:'modeled'}]},
+        {d:'8"',tex:'CBV-L',sand:44.0,silt:41.0,clay:15.0,pH:5.7,ec:0.0,c:1.16,caco3:0,wp:10.6,srFC:24.3,sat:44.3,cf:27,src:'modeled'},
+        {d:'20"',tex:'CBV-SL',sand:55.0,silt:28.0,clay:17.0,pH:5.8,ec:0.0,c:0.46,caco3:0,wp:10.8,srFC:21.4,sat:40.5,cf:23,src:'modeled'}]},
       '1033': { name:'Zirkel', network:'SNOTEL', depths:[
-        {d:'2"',tex:'STV-SL',sand:55.0,silt:31.0,clay:14.0,pH:5.4,ec:0.0,c:0.7,caco3:0,wp:9.3,srFC:20.4,sat:42.5,cf:38,src:'modeled'},
-        {d:'8"',tex:'STV-SL',sand:55.0,silt:31.0,clay:14.0,pH:5.4,ec:0.0,c:0.7,caco3:0,wp:9.3,srFC:20.4,sat:42.5,cf:38,src:'modeled'},
-        {d:'20"',tex:'STV-SL',sand:58.0,silt:26.0,clay:16.0,pH:5.7,ec:0.0,c:0.52,caco3:0,wp:10.2,srFC:20.4,sat:41.9,cf:42,src:'modeled'}]},
+        {d:'2"',tex:'STV-SL',sand:55.0,silt:31.0,clay:14.0,pH:5.4,ec:0.0,c:0.7,caco3:0,wp:9.3,srFC:20.4,sat:41.5,cf:38,src:'modeled'},
+        {d:'8"',tex:'STV-SL',sand:55.0,silt:31.0,clay:14.0,pH:5.4,ec:0.0,c:0.7,caco3:0,wp:9.3,srFC:20.4,sat:41.5,cf:38,src:'modeled'},
+        {d:'20"',tex:'STV-SL',sand:58.0,silt:26.0,clay:16.0,pH:5.7,ec:0.0,c:0.52,caco3:0,wp:10.2,srFC:20.4,sat:40.6,cf:42,src:'modeled'}]},
       '1042': { name:'Wild Basin', network:'SNOTEL', depths:[
-        {d:'2"',tex:'MPM',sand:67.4,silt:19.6,clay:13.0,pH:5.6,ec:0.5,c:49.3,caco3:0,wp:80.0,srFC:80.0,sat:95.0,cf:10,src:'modeled'},
-        {d:'8"',tex:'GRV-SL',sand:65.1,silt:18.9,clay:16.0,pH:5.0,ec:0.0,c:0.44,caco3:0,wp:10.1,srFC:18.7,sat:42.0,cf:24,src:'modeled'},
-        {d:'20"',tex:'CBX-SCL',sand:61.4,silt:18.6,clay:20.0,pH:5.0,ec:0.0,c:0.29,caco3:0,wp:12.3,srFC:21.4,sat:41.2,cf:67,src:'modeled'}]},
+        {d:'2"',tex:'MPM',sand:67.4,silt:19.6,clay:13.0,pH:5.6,ec:0.5,c:49.3,caco3:0,cf:10,src:'modeled'},
+        {d:'8"',tex:'GRV-SL',sand:65.1,silt:18.9,clay:16.0,pH:5.0,ec:0.0,c:0.44,caco3:0,wp:10.1,srFC:18.7,sat:40.0,cf:24,src:'modeled'},
+        {d:'20"',tex:'CBX-SCL',sand:61.4,silt:18.6,clay:20.0,pH:5.0,ec:0.0,c:0.29,caco3:0,wp:12.3,srFC:21.4,sat:39.6,cf:67,src:'modeled'}]},
       '1059': { name:'Cochetopa Pass', network:'SNOTEL', depths:[
         {d:'2"',sand:36.8,silt:51,clay:12.2,pH:5.6,c:0.25,wp:15,cf:0,src:'measured'},
         {d:'4"',sand:36.8,silt:51,clay:12.2,pH:5.6,c:0.25,wp:15,cf:0,src:'measured'},
@@ -1122,15 +1140,15 @@
         {d:'20"',sand:41.9,silt:22.6,clay:35.5,pH:6.4,c:0.35,wp:18.1,srFC:32.2,sat:46.8,cf:16.5,src:'measured'},
         {d:'40"',sand:41.9,silt:22.6,clay:35.5,pH:6.4,c:0.35,wp:18.1,srFC:32.2,sat:46.8,cf:16.5,src:'measured'}]},
       '1060': { name:'Sharkstooth', network:'SNOTEL', depths:[
-        {d:'2"',tex:'FLX-L',sand:39.2,silt:37.3,clay:23.5,pH:5.8,ec:0.0,c:0.87,caco3:0,wp:15.1,srFC:28.6,sat:43.1,cf:78,src:'modeled'},
-        {d:'8"',tex:'FLX-L',sand:39.2,silt:37.3,clay:23.5,pH:5.8,ec:0.0,c:0.87,caco3:0,wp:15.1,srFC:28.6,sat:43.1,cf:78,src:'modeled'},
-        {d:'20"',tex:'GRV-CL',sand:34.7,silt:37.8,clay:27.5,pH:5.8,ec:0.0,c:0.15,caco3:0,wp:16.7,srFC:30.2,sat:40.8,cf:21,src:'modeled'}]},
+        {d:'2"',tex:'FLX-L',sand:39.2,silt:37.3,clay:23.5,pH:5.8,ec:0.0,c:0.87,caco3:0,wp:15.1,srFC:28.6,sat:43.6,cf:78,src:'modeled'},
+        {d:'8"',tex:'FLX-L',sand:39.2,silt:37.3,clay:23.5,pH:5.8,ec:0.0,c:0.87,caco3:0,wp:15.1,srFC:28.6,sat:43.6,cf:78,src:'modeled'},
+        {d:'20"',tex:'GRV-CL',sand:34.7,silt:37.8,clay:27.5,pH:5.8,ec:0.0,c:0.15,caco3:0,wp:16.7,srFC:30.2,sat:41.8,cf:21,src:'modeled'}]},
       '1101': { name:'Chapman Tunnel', network:'SNOTEL', depths:[
-        {d:'2"',tex:'CBV-SIL',sand:20.0,silt:65.0,clay:15.0,pH:5.3,ec:0.0,c:0.58,caco3:0,wp:10.1,srFC:28.8,sat:40.3,cf:32,src:'modeled'},
-        {d:'4"',tex:'CBV-LCOS',sand:80.0,silt:15.0,clay:5.0,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:3.2,srFC:9.5,sat:45.1,cf:30,src:'modeled'},
-        {d:'8"',tex:'CBV-LCOS',sand:80.0,silt:15.0,clay:5.0,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:3.2,srFC:9.5,sat:45.1,cf:30,src:'modeled'},
-        {d:'20"',tex:'STX-SL',sand:65.0,silt:21.0,clay:14.0,pH:4.8,ec:0.0,c:0.29,caco3:0,wp:8.7,srFC:17.3,sat:41.5,cf:56,src:'modeled'},
-        {d:'40"',tex:'CBX-SL',sand:65.0,silt:25.0,clay:10.0,pH:5.3,ec:0.0,c:0.29,caco3:0,wp:6.3,srFC:15.1,sat:41.7,cf:39,src:'modeled'}]},
+        {d:'2"',tex:'CBV-SIL',sand:20.0,silt:65.0,clay:15.0,pH:5.3,ec:0.0,c:0.58,caco3:0,wp:10.1,srFC:28.8,sat:42.6,cf:32,src:'modeled'},
+        {d:'4"',tex:'CBV-LCOS',sand:80.0,silt:15.0,clay:5.0,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:3.2,srFC:9.5,sat:41.7,cf:30,src:'modeled'},
+        {d:'8"',tex:'CBV-LCOS',sand:80.0,silt:15.0,clay:5.0,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:3.2,srFC:9.5,sat:41.7,cf:30,src:'modeled'},
+        {d:'20"',tex:'STX-SL',sand:65.0,silt:21.0,clay:14.0,pH:4.8,ec:0.0,c:0.29,caco3:0,wp:8.7,srFC:17.3,sat:39.5,cf:56,src:'modeled'},
+        {d:'40"',tex:'CBX-SL',sand:65.0,silt:25.0,clay:10.0,pH:5.3,ec:0.0,c:0.29,caco3:0,wp:6.3,srFC:15.1,sat:39.7,cf:39,src:'modeled'}]},
       '1123': { name:'Long Draw Resv', network:'SNOTEL', depths:[
         {d:'2"',sand:68.1,silt:22.7,clay:9.2,pH:4.9,c:0.03,wp:5.3,srFC:22.3,sat:46.4,cf:9.6,src:'measured'},
         {d:'4"',sand:68.1,silt:22.7,clay:9.2,pH:4.9,c:0.03,wp:5.3,srFC:22.3,sat:46.4,cf:9.6,src:'measured'},
@@ -1144,40 +1162,40 @@
         {d:'20"',sand:84.5,silt:11.3,clay:4.2,pH:5.7,c:0.08,wp:3.2,cf:0,src:'measured'},
         {d:'40"',sand:89.2,silt:8.8,clay:2,pH:6,c:0.01,wp:2.3,cf:0,src:'measured'}]},
       '1185': { name:'Black Mesa', network:'SNOTEL', depths:[
-        {d:'4"',tex:'CBV-SIL',sand:27.1,silt:54.4,clay:18.5,pH:6.1,ec:0.0,c:0.44,caco3:0,wp:11.9,srFC:28.2,sat:40.3,cf:58,src:'modeled'},
-        {d:'8"',tex:'CBV-SIL',sand:27.1,silt:54.4,clay:18.5,pH:6.1,ec:0.0,c:0.44,caco3:0,wp:11.9,srFC:28.2,sat:40.3,cf:58,src:'modeled'},
-        {d:'20"',tex:'CBV-L',sand:45.3,silt:43.2,clay:11.5,pH:6.1,ec:0.0,c:0.15,caco3:0,wp:7.3,srFC:20.2,sat:38.9,cf:58,src:'modeled'},
-        {d:'40"',tex:'CBV-L',sand:45.3,silt:43.2,clay:11.5,pH:6.1,ec:0.0,c:0.15,caco3:0,wp:7.3,srFC:20.2,sat:38.9,cf:58,src:'modeled'}]},
+        {d:'4"',tex:'CBV-SIL',sand:27.1,silt:54.4,clay:18.5,pH:6.1,ec:0.0,c:0.44,caco3:0,wp:11.9,srFC:28.2,sat:42.0,cf:58,src:'modeled'},
+        {d:'8"',tex:'CBV-SIL',sand:27.1,silt:54.4,clay:18.5,pH:6.1,ec:0.0,c:0.44,caco3:0,wp:11.9,srFC:28.2,sat:42.0,cf:58,src:'modeled'},
+        {d:'20"',tex:'CBV-L',sand:45.3,silt:43.2,clay:11.5,pH:6.1,ec:0.0,c:0.15,caco3:0,wp:7.3,srFC:20.2,sat:38.8,cf:58,src:'modeled'},
+        {d:'40"',tex:'CBV-L',sand:45.3,silt:43.2,clay:11.5,pH:6.1,ec:0.0,c:0.15,caco3:0,wp:7.3,srFC:20.2,sat:38.8,cf:58,src:'modeled'}]},
       '1187': { name:'High Lonesome', network:'SNOTEL', depths:[
-        {d:'2"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:40.7,cf:31,src:'modeled'},
-        {d:'4"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:40.7,cf:31,src:'modeled'},
-        {d:'8"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:40.7,cf:31,src:'modeled'},
-        {d:'20"',tex:'CBV-SL',sand:70.0,silt:24.0,clay:6.0,pH:5.6,ec:0.0,c:0.29,caco3:0,wp:3.8,srFC:11.9,sat:42.7,cf:31,src:'modeled'}]},
+        {d:'2"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:43.6,cf:31,src:'modeled'},
+        {d:'4"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:43.6,cf:31,src:'modeled'},
+        {d:'8"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:43.6,cf:31,src:'modeled'},
+        {d:'20"',tex:'CBV-SL',sand:70.0,silt:24.0,clay:6.0,pH:5.6,ec:0.0,c:0.29,caco3:0,wp:3.8,srFC:11.9,sat:40.2,cf:31,src:'modeled'}]},
       '1251': { name:'Sawtooth', network:'SNOTEL', depths:[
-        {d:'2"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:40.7,cf:31,src:'modeled'},
-        {d:'4"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:40.7,cf:31,src:'modeled'},
-        {d:'8"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:40.7,cf:31,src:'modeled'},
-        {d:'20"',tex:'CBV-SL',sand:70.0,silt:24.0,clay:6.0,pH:5.6,ec:0.0,c:0.29,caco3:0,wp:3.8,srFC:11.9,sat:42.7,cf:31,src:'modeled'},
-        {d:'40"',tex:'STX-LS',sand:78.0,silt:20.0,clay:2.0,pH:5.8,ec:0.0,c:0.29,caco3:0,wp:1.2,srFC:8.0,sat:44.8,cf:38,src:'modeled'}]},
+        {d:'2"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:43.6,cf:31,src:'modeled'},
+        {d:'4"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:43.6,cf:31,src:'modeled'},
+        {d:'8"',tex:'CBV-SIL',sand:15.0,silt:67.0,clay:18.0,pH:5.8,ec:0.0,c:0.58,caco3:0,wp:11.8,srFC:31.0,sat:43.6,cf:31,src:'modeled'},
+        {d:'20"',tex:'CBV-SL',sand:70.0,silt:24.0,clay:6.0,pH:5.6,ec:0.0,c:0.29,caco3:0,wp:3.8,srFC:11.9,sat:40.2,cf:31,src:'modeled'},
+        {d:'40"',tex:'STX-LS',sand:78.0,silt:20.0,clay:2.0,pH:5.8,ec:0.0,c:0.29,caco3:0,wp:1.2,srFC:8.0,sat:41.5,cf:38,src:'modeled'}]},
       '1324': { name:'Rat Creek', network:'SNOTEL', depths:[
-        {d:'2"',tex:'HPM',sand:30.0,silt:59.0,clay:11.0,pH:5.6,ec:0.5,c:49.3,caco3:0,wp:65.9,srFC:80.0,sat:95.0,cf:0,src:'modeled'},
-        {d:'8"',tex:'CB-SIL',sand:30.0,silt:59.0,clay:11.0,pH:6.3,ec:0.0,c:0.44,caco3:0,wp:7.6,srFC:24.4,sat:39.3,cf:25,src:'modeled'},
-        {d:'20"',tex:'CB-FSL',sand:55.0,silt:33.0,clay:12.0,pH:6.3,ec:0.0,c:0.29,caco3:0,wp:7.6,srFC:18.4,sat:40.6,cf:25,src:'modeled'},
-        {d:'40"',tex:'CBV-L',sand:50.0,silt:38.0,clay:12.0,pH:6.3,ec:0.0,c:0.15,caco3:0,wp:7.5,srFC:19.3,sat:39.4,cf:37,src:'modeled'}]},
+        {d:'2"',tex:'HPM',sand:30.0,silt:59.0,clay:11.0,pH:5.6,ec:0.5,c:49.3,caco3:0,cf:0,src:'modeled'},
+        {d:'8"',tex:'CB-SIL',sand:30.0,silt:59.0,clay:11.0,pH:6.3,ec:0.0,c:0.44,caco3:0,wp:7.6,srFC:24.4,sat:40.6,cf:25,src:'modeled'},
+        {d:'20"',tex:'CB-FSL',sand:55.0,silt:33.0,clay:12.0,pH:6.3,ec:0.0,c:0.29,caco3:0,wp:7.6,srFC:18.4,sat:39.6,cf:25,src:'modeled'},
+        {d:'40"',tex:'CBV-L',sand:50.0,silt:38.0,clay:12.0,pH:6.3,ec:0.0,c:0.15,caco3:0,wp:7.5,srFC:19.3,sat:38.9,cf:37,src:'modeled'}]},
       '1325': { name:'Elwood Pass', network:'SNOTEL', depths:[
-        {d:'2"',tex:'CBV-L',sand:40.0,silt:48.0,clay:12.0,pH:5.3,ec:0.0,c:2.32,caco3:0,wp:10.4,srFC:26.7,sat:50.6,cf:44,src:'modeled'},
-        {d:'8"',tex:'CBV-L',sand:40.0,silt:48.0,clay:12.0,pH:5.3,ec:0.0,c:2.32,caco3:0,wp:10.4,srFC:26.7,sat:50.6,cf:44,src:'modeled'},
-        {d:'20"',tex:'CBV-L',sand:45.0,silt:42.0,clay:13.0,pH:4.8,ec:0.0,c:1.16,caco3:0,wp:9.5,srFC:23.2,sat:44.3,cf:53,src:'modeled'},
+        {d:'2"',tex:'CBV-L',sand:40.0,silt:48.0,clay:12.0,pH:5.3,ec:0.0,c:2.32,caco3:0,wp:10.4,srFC:26.7,sat:51.0,cf:44,src:'modeled'},
+        {d:'8"',tex:'CBV-L',sand:40.0,silt:48.0,clay:12.0,pH:5.3,ec:0.0,c:2.32,caco3:0,wp:10.4,srFC:26.7,sat:51.0,cf:44,src:'modeled'},
+        {d:'20"',tex:'CBV-L',sand:45.0,silt:42.0,clay:13.0,pH:4.8,ec:0.0,c:1.16,caco3:0,wp:9.5,srFC:23.2,sat:44.2,cf:53,src:'modeled'},
         {d:'40"',tex:'UWB',cf:0,src:'modeled'}]},
       '1326': { name:'Castle Peak', network:'SNOTEL', depths:[
-        {d:'2"',tex:'CBV-SIL',sand:20.0,silt:65.0,clay:15.0,pH:5.3,ec:0.0,c:0.58,caco3:0,wp:10.1,srFC:28.8,sat:40.3,cf:32,src:'modeled'},
-        {d:'8"',tex:'CBV-LCOS',sand:80.0,silt:15.0,clay:5.0,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:3.2,srFC:9.5,sat:45.1,cf:30,src:'modeled'},
-        {d:'20"',tex:'STX-SL',sand:65.0,silt:21.0,clay:14.0,pH:4.8,ec:0.0,c:0.29,caco3:0,wp:8.7,srFC:17.3,sat:41.5,cf:56,src:'modeled'},
-        {d:'40"',tex:'CBX-SL',sand:65.0,silt:25.0,clay:10.0,pH:5.3,ec:0.0,c:0.29,caco3:0,wp:6.3,srFC:15.1,sat:41.7,cf:39,src:'modeled'}]},
+        {d:'2"',tex:'CBV-SIL',sand:20.0,silt:65.0,clay:15.0,pH:5.3,ec:0.0,c:0.58,caco3:0,wp:10.1,srFC:28.8,sat:42.6,cf:32,src:'modeled'},
+        {d:'8"',tex:'CBV-LCOS',sand:80.0,silt:15.0,clay:5.0,pH:5.3,ec:0.0,c:0.44,caco3:0,wp:3.2,srFC:9.5,sat:41.7,cf:30,src:'modeled'},
+        {d:'20"',tex:'STX-SL',sand:65.0,silt:21.0,clay:14.0,pH:4.8,ec:0.0,c:0.29,caco3:0,wp:8.7,srFC:17.3,sat:39.5,cf:56,src:'modeled'},
+        {d:'40"',tex:'CBX-SL',sand:65.0,silt:25.0,clay:10.0,pH:5.3,ec:0.0,c:0.29,caco3:0,wp:6.3,srFC:15.1,sat:39.7,cf:39,src:'modeled'}]},
       '1344': { name:'Alta Lakes', network:'SNOTEL', depths:[
-        {d:'2"',tex:'SIL',sand:25.0,silt:52.0,clay:23.0,pH:6.2,ec:0.0,c:0.15,caco3:0,wp:14.2,srFC:30.0,sat:39.7,cf:11,src:'modeled'},
-        {d:'8"',tex:'CB-SIL',sand:30.0,silt:53.0,clay:17.0,pH:5.4,ec:0.0,c:0.15,caco3:0,wp:10.7,srFC:26.3,sat:38.6,cf:15,src:'modeled'},
-        {d:'20"',tex:'STX-SL',sand:67.0,silt:20.0,clay:13.0,pH:6.0,ec:0.0,c:0.44,caco3:0,wp:8.2,srFC:16.6,sat:42.4,cf:58,src:'modeled'}]},
+        {d:'2"',tex:'SIL',sand:25.0,silt:52.0,clay:23.0,pH:6.2,ec:0.0,c:0.15,caco3:0,wp:14.2,srFC:30.0,sat:41.6,cf:11,src:'modeled'},
+        {d:'8"',tex:'CB-SIL',sand:30.0,silt:53.0,clay:17.0,pH:5.4,ec:0.0,c:0.15,caco3:0,wp:10.7,srFC:26.3,sat:40.0,cf:15,src:'modeled'},
+        {d:'20"',tex:'STX-SL',sand:67.0,silt:20.0,clay:13.0,pH:6.0,ec:0.0,c:0.44,caco3:0,wp:8.2,srFC:16.6,sat:40.2,cf:58,src:'modeled'}]},
     };
 
     // ── ZENTRA sites (live sensor only, no lab soil sample yet) ──────────────
