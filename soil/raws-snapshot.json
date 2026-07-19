@@ -1,29 +1,29 @@
 {
-  "generated": "2026-07-18T07:40:03Z",
+  "generated": "2026-07-19T08:06:50Z",
   "stations": {
     "BLACK MOUNTAIN": {
       "vwc2": 0.04,
       "vwc8": 0.12,
       "vwc20": 0.05,
-      "precip_recent_in": 0.25
+      "precip_recent_in": 0.28
     },
     "BOSQUE": {
       "vwc2": 0.13,
-      "vwc8": 0.21,
+      "vwc8": 0.22,
       "vwc20": 0.23,
-      "precip_recent_in": 0.6
+      "precip_recent_in": 0.4
     },
     "BUCKLES": {
       "vwc2": 0.06,
       "vwc8": 0.1,
       "vwc20": 0.13,
-      "precip_recent_in": 0.71
+      "precip_recent_in": 0.84
     },
     "CHEESEMAN": {
-      "vwc2": 0.01,
-      "vwc8": 0.02,
+      "vwc2": 0.02,
+      "vwc8": 0.03,
       "vwc20": 0.01,
-      "precip_recent_in": 0.29
+      "precip_recent_in": 0.28
     },
     "CORRAL CREEK": {
       "vwc2": 0.02,
@@ -39,15 +39,15 @@
     },
     "FT CARSON": {
       "vwc2": 0.11,
-      "vwc8": 0.27,
+      "vwc8": 0.26,
       "vwc20": 0.21,
-      "precip_recent_in": 0.0
+      "precip_recent_in": 0.02
     },
     "GRAND MESA": {
       "vwc2": 0.06,
       "vwc8": 0.09,
       "vwc20": 0.12,
-      "precip_recent_in": 0.07
+      "precip_recent_in": 0.19
     },
     "HARBISON": {
       "vwc2": 0.06,
@@ -74,7 +74,7 @@
       "precip_recent_in": 0.0
     },
     "RED DEER": {
-      "vwc2": 0.02,
+      "vwc2": 0.04,
       "vwc8": 0.06,
       "vwc20": 0.04,
       "precip_recent_in": 0.16
@@ -86,25 +86,25 @@
       "precip_recent_in": 0.0
     },
     "SANBORN PARK": {
-      "vwc2": 0.08,
+      "vwc2": 0.09,
       "vwc8": 0.09,
       "vwc20": 0.1,
-      "precip_recent_in": 0.35
+      "precip_recent_in": 0.39
     },
     "SILVER JACK": {
-      "vwc2": 0.1,
-      "vwc8": 0.22,
-      "vwc20": 0.11,
+      "vwc2": 0.11,
+      "vwc8": 0.19,
+      "vwc20": 0.12,
       "precip_recent_in": 1.16
     },
     "UTE CANYON": {
-      "vwc2": 0.04,
+      "vwc2": 0.03,
       "vwc8": 0.06,
       "vwc20": 0.07,
       "precip_recent_in": 0.0
     },
     "WILLIS CREEK": {
-      "vwc2": 0.07,
+      "vwc2": 0.06,
       "vwc8": 0.09,
       "vwc20": 0.09,
       "precip_recent_in": 0.0
