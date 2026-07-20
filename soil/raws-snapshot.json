@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-19T08:06:50Z",
+  "generated": "2026-07-20T08:47:38Z",
   "stations": {
     "BLACK MOUNTAIN": {
       "vwc2": 0.04,
@@ -8,52 +8,52 @@
       "precip_recent_in": 0.28
     },
     "BOSQUE": {
-      "vwc2": 0.13,
+      "vwc2": 0.12,
       "vwc8": 0.22,
       "vwc20": 0.23,
       "precip_recent_in": 0.4
     },
     "BUCKLES": {
-      "vwc2": 0.06,
+      "vwc2": 0.07,
       "vwc8": 0.1,
       "vwc20": 0.13,
-      "precip_recent_in": 0.84
+      "precip_recent_in": 0.97
     },
     "CHEESEMAN": {
       "vwc2": 0.02,
       "vwc8": 0.03,
       "vwc20": 0.01,
-      "precip_recent_in": 0.28
+      "precip_recent_in": 0.15
     },
     "CORRAL CREEK": {
-      "vwc2": 0.02,
+      "vwc2": 0.01,
       "vwc8": 0.06,
       "vwc20": 0.03,
       "precip_recent_in": 0.02
     },
     "ESTES PARK": {
       "vwc2": 0.01,
-      "vwc8": 0.06,
+      "vwc8": 0.05,
       "vwc20": 0.05,
-      "precip_recent_in": 0.0
+      "precip_recent_in": 0.07
     },
     "FT CARSON": {
       "vwc2": 0.11,
-      "vwc8": 0.26,
+      "vwc8": 0.27,
       "vwc20": 0.21,
       "precip_recent_in": 0.02
     },
     "GRAND MESA": {
-      "vwc2": 0.06,
+      "vwc2": 0.07,
       "vwc8": 0.09,
       "vwc20": 0.12,
-      "precip_recent_in": 0.19
+      "precip_recent_in": 0.22
     },
     "HARBISON": {
       "vwc2": 0.06,
       "vwc8": 0.11,
       "vwc20": 0.02,
-      "precip_recent_in": 0.12
+      "precip_recent_in": 0.15
     },
     "LODGEPOLE FLATS": {
       "vwc2": 0.03,
@@ -93,9 +93,9 @@
     },
     "SILVER JACK": {
       "vwc2": 0.11,
-      "vwc8": 0.19,
+      "vwc8": 0.18,
       "vwc20": 0.12,
-      "precip_recent_in": 1.16
+      "precip_recent_in": 1.25
     },
     "UTE CANYON": {
       "vwc2": 0.03,
@@ -106,7 +106,7 @@
     "WILLIS CREEK": {
       "vwc2": 0.06,
       "vwc8": 0.09,
-      "vwc20": 0.09,
+      "vwc20": 0.08,
       "precip_recent_in": 0.0
     }
   }
