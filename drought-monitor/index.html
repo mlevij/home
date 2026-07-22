@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>CPER Drought Monitor — NEON Soil Water Content</title>
-<meta name="description" content="Soil water content by depth at NEON's CPER field site, weekly and monthly aggregates.">
+<title>CLBJ Drought Monitor — NEON Soil Water Content</title>
+<meta name="description" content="Soil water content by depth at NEON's CLBJ field site, daily/weekly/monthly aggregates.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&display=swap" rel="stylesheet">
@@ -42,6 +42,16 @@
     color: var(--muted);
     font-size: 0.85rem;
   }
+  .site-meta {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+    font-size: 0.72rem;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+  .site-meta span { white-space: nowrap; }
+  .site-meta b { color: var(--text); font-weight: 600; }
   main {
     max-width: 1100px;
     margin: 0 auto;
@@ -93,6 +103,35 @@
     background: #1f2733;
     color: var(--text);
   }
+  .date-range {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  .date-range input[type="date"] {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.72rem;
+    padding: 5px 7px;
+    border-radius: 6px;
+    color-scheme: dark;
+  }
+  .date-range button {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: inherit;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 5px 9px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .date-range button:hover { color: var(--text); border-color: var(--accent); }
   .depth-btn-row {
     display: flex;
     align-items: center;
@@ -158,15 +197,26 @@
 <body>
 
 <header>
-  <h1>CPER Drought Monitor</h1>
-  <p>NEON Central Plains Experimental Range — soil water content (DP1.00094.001), 2021&ndash;2026</p>
+  <h1>CLBJ Drought Monitor</h1>
+  <p>NEON Lyndon B. Johnson National Grassland — soil water content (DP1.00094.001), 2021&ndash;2026</p>
+  <div class="site-meta">
+    <span><b>Location:</b> Cross Timbers, north-central Texas, ~50 km NW of Denton</span>
+    <span><b>Coordinates:</b> 33.4014&deg;N, 97.5673&deg;W</span>
+    <span><b>Domain:</b> D11 (Southern Plains)</span>
+  </div>
 </header>
 
 <main>
   <div class="panel">
     <div class="controls">
       <h2>Volumetric water content by depth</h2>
+      <div class="date-range">
+        <label>From <input type="date" id="rangeStart"></label>
+        <label>To <input type="date" id="rangeEnd"></label>
+        <button id="rangeReset">Reset</button>
+      </div>
       <div class="seg" id="resSeg">
+        <button data-res="daily">Daily</button>
         <button data-res="weekly" class="active">Weekly</button>
         <button data-res="monthly">Monthly</button>
       </div>
@@ -184,15 +234,15 @@
       <span><span class="zone-swatch" style="background:rgba(247,251,118,0.5);"></span>Saturation</span>
     </div>
     <p class="note">
-      Each line is one sensor depth, averaged across CPER's replicate soil plots. Values are
+      Each line is one sensor depth, averaged across CLBJ's replicate soil plots. Values are
       volumetric water content (VWC, %) aggregated from NEON's 30-minute readings, 2021-07
-      through 2026-06.
+      through 2026-06. Use the date range above to zoom into a shorter window at any resolution.
     </p>
     <p class="note">
       <sup>*</sup> Wilting point (WP), field capacity (FC), and saturation (Sat) reference zones
       are computed per depth using the Saxton-Rawls (2006) pedotransfer function, from SSURGO
-      soil texture (sand/clay/organic matter) at CPER's soil pit location (40.81297,
-      &minus;104.74455 &mdash; dominant component: Ascalon series). Click a depth button above to
+      soil texture (sand/clay/organic matter) at CLBJ's soil pit location (33.4014,
+      &minus;97.5673 &mdash; dominant component: Duffau series). Click a depth button above to
       show its zones; click again to hide.
     </p>
   </div>
@@ -214,6 +264,8 @@ let chart = null;
 let DATA = null;
 let currentRes = "weekly";
 let zoneDepth = "";  // "" = no reference zones shown
+let rangeStart = "";  // "" = no lower bound
+let rangeEnd = "";    // "" = no upper bound
 
 const chartAreaBg = {
   id: "chartAreaBg",
@@ -234,14 +286,22 @@ function depthLabel(ver, depthsM) {
   return `${Math.round(cm)} cm (${inches.toFixed(1)} in)`;
 }
 
+// Period strings are "YYYY-MM-DD" (daily/weekly) or "YYYY-MM" (monthly) -- both
+// sort/compare correctly as plain strings against a "YYYY-MM-DD" range bound.
+function inRange(period) {
+  if (rangeStart && period < rangeStart) return false;
+  if (rangeEnd && period > rangeEnd) return false;
+  return true;
+}
+
 function render(res) {
   currentRes = res;
   const series = DATA[res];
   const verKeys = Object.keys(series).sort();
 
-  // union of all period labels across depths (some depths may have gaps)
+  // union of all period labels across depths (some depths may have gaps), filtered to the active range
   const periodSet = new Set();
-  verKeys.forEach(v => series[v].forEach(pt => periodSet.add(pt.period)));
+  verKeys.forEach(v => series[v].forEach(pt => { if (inRange(pt.period)) periodSet.add(pt.period); }));
   const labels = Array.from(periodSet).sort();
 
   const datasets = verKeys.map(ver => {
@@ -259,7 +319,7 @@ function render(res) {
   });
 
   const dataVals = datasets.flatMap(d => d.data).filter(v => v != null);
-  const yMax = Math.ceil(Math.max(...dataVals) * 1.15);
+  const yMax = dataVals.length ? Math.ceil(Math.max(...dataVals) * 1.15) : 50;
 
   if (chart) { chart.destroy(); chart = null; }
   const ctx = document.getElementById("vwcChart").getContext("2d");
@@ -365,6 +425,15 @@ document.getElementById("resSeg").addEventListener("click", e => {
   document.querySelectorAll("#resSeg button").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
   render(btn.dataset.res);
+});
+
+document.getElementById("rangeStart").addEventListener("change", e => { rangeStart = e.target.value; render(currentRes); });
+document.getElementById("rangeEnd").addEventListener("change", e => { rangeEnd = e.target.value; render(currentRes); });
+document.getElementById("rangeReset").addEventListener("click", () => {
+  rangeStart = ""; rangeEnd = "";
+  document.getElementById("rangeStart").value = "";
+  document.getElementById("rangeEnd").value = "";
+  render(currentRes);
 });
 </script>
 
