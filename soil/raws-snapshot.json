@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-21T08:15:24Z",
+  "generated": "2026-07-22T08:16:54Z",
   "stations": {
     "BLACK MOUNTAIN": {
       "vwc2": 0.05,
@@ -8,16 +8,16 @@
       "precip_recent_in": 0.18
     },
     "BOSQUE": {
-      "vwc2": 0.11,
+      "vwc2": 0.1,
       "vwc8": 0.22,
       "vwc20": 0.23,
       "precip_recent_in": 0.4
     },
     "BUCKLES": {
-      "vwc2": 0.07,
+      "vwc2": 0.06,
       "vwc8": 0.1,
       "vwc20": 0.13,
-      "precip_recent_in": 0.97
+      "precip_recent_in": 0.72
     },
     "CHEESEMAN": {
       "vwc2": 0.02,
@@ -29,7 +29,7 @@
       "vwc2": 0.01,
       "vwc8": 0.06,
       "vwc20": 0.03,
-      "precip_recent_in": 0.0
+      "precip_recent_in": 0.11
     },
     "ESTES PARK": {
       "vwc2": 0.01,
@@ -47,16 +47,16 @@
       "vwc2": 0.07,
       "vwc8": 0.09,
       "vwc20": 0.12,
-      "precip_recent_in": 0.23
+      "precip_recent_in": 0.24
     },
     "HARBISON": {
-      "vwc2": 0.06,
+      "vwc2": 0.07,
       "vwc8": 0.12,
       "vwc20": 0.02,
       "precip_recent_in": 0.42
     },
     "LODGEPOLE FLATS": {
-      "vwc2": 0.03,
+      "vwc2": 0.04,
       "vwc8": 0.01,
       "vwc20": 0.03,
       "precip_recent_in": 0.18
@@ -80,10 +80,10 @@
       "precip_recent_in": 0.21
     },
     "REDSTONE": {
-      "vwc2": 0.02,
+      "vwc2": 0.11,
       "vwc8": 0.08,
       "vwc20": 0.08,
-      "precip_recent_in": 0.0
+      "precip_recent_in": 0.42
     },
     "SANBORN PARK": {
       "vwc2": 0.09,
@@ -93,9 +93,9 @@
     },
     "SILVER JACK": {
       "vwc2": 0.12,
-      "vwc8": 0.17,
+      "vwc8": 0.16,
       "vwc20": 0.12,
-      "precip_recent_in": 1.44
+      "precip_recent_in": 1.53
     },
     "UTE CANYON": {
       "vwc2": 0.03,
@@ -104,7 +104,7 @@
       "precip_recent_in": 0.0
     },
     "WILLIS CREEK": {
-      "vwc2": 0.06,
+      "vwc2": 0.05,
       "vwc8": 0.09,
       "vwc20": 0.08,
       "precip_recent_in": 0.0
