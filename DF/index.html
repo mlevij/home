@@ -7,8 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -24,8 +22,6 @@
       --mono:      'DM Mono', monospace;
     }
 
-    html { scroll-behavior: smooth; }
-
     body {
       background: var(--bg);
       color: var(--ink);
@@ -40,7 +36,6 @@
       padding: 0 2rem;
     }
 
-    /* ── Header ── */
     header {
       padding: 4rem 0 3rem;
       border-bottom: 1px solid var(--rule);
@@ -88,9 +83,45 @@
       line-height: 1.85;
     }
 
-    /* ── Sections ── */
+    .map-embed {
+      width: 100%;
+      height: 480px;
+      border: 1px solid var(--rule);
+      background: var(--card-bg);
+    }
+
+    /* Leaflet-based monitors (drought, Sentinel) need more height so the
+       map's own slider/legend controls don't crowd out the map area and
+       cut off the visible boundaries. */
+    .map-embed-tall {
+      width: 100%;
+      height: 720px;
+      border: 1px solid var(--rule);
+      background: var(--card-bg);
+    }
+
+    .chart-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+
+    .chart-item img {
+      width: 100%;
+      border: 1px solid var(--rule);
+      display: block;
+      background: #fff;
+    }
+
+    .chart-item p {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
     .story-section {
-      padding: 4rem 0;
+      padding: 3rem 0;
       border-bottom: 1px solid var(--rule);
     }
 
@@ -118,67 +149,6 @@
       margin-bottom: 2rem;
     }
 
-    /* ── Map iframes ── */
-    .map-embed {
-      width: 100%;
-      height: 520px;
-      border: 1px solid var(--rule);
-      background: var(--card-bg);
-    }
-
-    .map-caption {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 0.5rem;
-      letter-spacing: 0.03em;
-    }
-
-    /* ── GIF display ── */
-    .gif-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-top: 1rem;
-    }
-
-    @media (max-width: 640px) {
-      .gif-grid { grid-template-columns: 1fr; }
-    }
-
-    .gif-item img {
-      width: 100%;
-      border: 1px solid var(--rule);
-      display: block;
-    }
-
-    .gif-item p {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 0.5rem;
-    }
-
-    /* ── Chart display ── */
-    .chart-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-      margin-top: 1rem;
-    }
-
-    .chart-item img {
-      width: 100%;
-      border: 1px solid var(--rule);
-      display: block;
-      background: #fff;
-    }
-
-    .chart-item p {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 0.5rem;
-    }
-
-    /* ── Methods note ── */
     .methods-box {
       background: var(--card-bg);
       border: 1px solid var(--rule);
@@ -215,7 +185,6 @@
       color: var(--accent);
     }
 
-    /* ── Footer ── */
     footer {
       padding: 2.5rem 0;
       display: flex;
@@ -237,79 +206,6 @@
     }
 
     footer a:hover { color: var(--accent); }
-
-    /* ── Year Slider ── */
-    #drought-map {
-      width: 100%;
-      height: 500px;
-      border: 1px solid var(--rule);
-    }
-
-    .year-slider-row {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-top: 1.25rem;
-    }
-
-    .year-slider-row input[type="range"] {
-      flex: 1;
-      accent-color: var(--accent);
-      cursor: pointer;
-    }
-
-    .year-bound {
-      font-size: 11px;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    .play-btn {
-      font-family: var(--mono);
-      font-size: 11px;
-      letter-spacing: 0.05em;
-      padding: 0.35rem 0.9rem;
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: opacity 0.2s;
-    }
-
-    .play-btn:hover { opacity: 0.85; }
-
-    .year-display-inline {
-      font-family: var(--sans);
-      font-size: 1.4rem;
-      font-weight: 500;
-      color: var(--accent);
-      min-width: 3.5rem;
-      text-align: right;
-    }
-
-    .usdm-legend-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-top: 1.25rem;
-    }
-
-    .usdm-item {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .usdm-swatch {
-      width: 13px;
-      height: 13px;
-      border: 1px solid var(--rule);
-      display: inline-block;
-      flex-shrink: 0;
-    }
   </style>
 </head>
 <body>
@@ -321,77 +217,72 @@
       <h1>Drought Conditions<br><em>& Landscape Change</em></h1>
       <p class="intro">
         An exploration of drought severity, vegetation response, and water availability
-        across SW Colorado's agricultural watersheds — from 1984 to present.
-        Produced in collaboration with Discovery Farms, an agricultural research
-        organization with sites in Grand Valley and SW Colorado.
+        across SW Colorado's agricultural watersheds. Produced in collaboration with
+        Discovery Farms, an agricultural research organization with sites in Grand Valley
+        and SW Colorado. The maps below combine satellite drought classifications,
+        radar-based vegetation and soil signals, and gravity-based water storage estimates
+        to track how conditions have shifted across the region since 2000; longer-term
+        trend charts appear further down the page.
       </p>
     </header>
 
-    <!-- ── Drought Slider ── -->
+    <!-- ── USDM Drought Monitor ── -->
     <section class="story-section">
-      <p class="section-label">Drought Conditions</p>
-      <h2 class="section-title">Year-by-Year Drought Conditions</h2>
+      <p class="section-label">USDM</p>
+      <h2 class="section-title">Drought Monitor</h2>
       <p class="section-body">
-        Step through peak-summer (August) drought conditions across SW Colorado
-        from 2000 to present. Drag the slider or use arrow keys to explore how
-        drought severity has varied year to year.
+        These yearly images come from the U.S. Drought Monitor, a weekly map produced by
+        drought experts who combine many data sources (rainfall, streamflow, soil moisture,
+        and more) into one consensus assessment. Rather than showing every week, this shows
+        each year's peak (worst) drought classification in August, from 2000–2025, so you
+        can compare how bad drought got each year at a glance. The color scale runs from
+        yellow (abnormally dry) through orange and red to dark red — exceptional drought,
+        the most severe category.
       </p>
-
-      <div id="drought-map"></div>
-      <p class="map-caption" id="drought-caption">August 2000 — USDM peak drought classification</p>
-
-      <div class="year-slider-row">
-        <button class="play-btn" id="play-btn">▶ Play</button>
-        <span class="year-bound">2000</span>
-        <input type="range" id="year-slider" min="2000" max="2025" value="2000" step="1">
-        <span class="year-bound">2025</span>
-        <span class="year-display-inline" id="year-display">2000</span>
-      </div>
-
-      <div class="usdm-legend-row">
-        <span class="usdm-item"><span class="usdm-swatch" style="background:#ffff00"></span>D0 Abnormally Dry</span>
-        <span class="usdm-item"><span class="usdm-swatch" style="background:#fcd37f"></span>D1 Moderate</span>
-        <span class="usdm-item"><span class="usdm-swatch" style="background:#ffaa00"></span>D2 Severe</span>
-        <span class="usdm-item"><span class="usdm-swatch" style="background:#e60000"></span>D3 Extreme</span>
-        <span class="usdm-item"><span class="usdm-swatch" style="background:#730000"></span>D4 Exceptional</span>
-      </div>
+      <iframe class="map-embed-tall" src="drought-monitor.html" title="USDM Drought Monitor"></iframe>
     </section>
 
-    <!-- ── Landscape Change GIFs ── -->
+    <!-- ── Sentinel-1 ── -->
     <section class="story-section">
-      <p class="section-label">Landscape Change</p>
-      <h2 class="section-title">Seeing Change from Space</h2>
+      <p class="section-label">Sentinel-1</p>
+      <h2 class="section-title">Vegetation/Soil Signal</h2>
       <p class="section-body">
-        Annual peak-season satellite imagery reveals how the landscape has responded
-        to drought cycles over four decades. False color and natural color composites
-        are shown side by side — false color uses SWIR/NIR/Red to emphasize vegetation
-        health and moisture stress, while natural color provides a familiar reference view.
-        Below, a higher-resolution Sentinel-2 closeup shows Grand Valley in detail.
+        These monthly images come from Sentinel-1, a radar satellite that measures the
+        ground regardless of cloud cover, at about 250 m resolution over SW Colorado from
+        2018–2025. We combine two of its radar signals into a ratio that's mainly sensitive
+        to vegetation cover rather than soil moisture directly — greener areas have denser
+        plant growth (typically wetter conditions), while redder areas are sparser, more
+        bare ground (typically drier).
       </p>
+      <iframe class="map-embed-tall" src="sentinel-ratio-monitor.html" title="Sentinel-1 Vegetation/Soil Signal Monitor"></iframe>
+    </section>
 
-      <div class="gif-grid">
-        <div class="gif-item">
-          <img src="assets/landsat_swco_timeseries.gif"
-               alt="Landsat false color time series — SW Colorado 1984–present">
-          <p>False color (SWIR/NIR/Red) — highlights vegetation health and moisture stress.
-             Green indicates healthy vegetation; brown indicates stress or bare soil.</p>
-        </div>
-        <div class="gif-item">
-          <img src="assets/landsat_swco_naturalcolor.gif"
-               alt="Landsat natural color time series — SW Colorado 1984–present">
-          <p>Natural color (Red/Green/Blue) — true-color view of the same region and time period
-             for comparison.</p>
-        </div>
-      </div>
+    <!-- ── GRACE Colorado River Basin ── -->
+    <section class="story-section">
+      <p class="section-label">GRACE — Basin</p>
+      <h2 class="section-title">Colorado River Basin Monitor</h2>
+      <p class="section-body">
+        These weekly images come from GRACE, a NASA satellite mission that tracks tiny
+        changes in Earth's gravity to estimate underground water storage (soil moisture
+        and groundwater combined). This view is clipped to the Colorado River Basin
+        watershed, showing how water storage compares to its historical average for the
+        same week — red areas are drier than normal, blue areas are wetter than normal.
+      </p>
+      <iframe class="map-embed" src="grace-basin-monitor.html" title="GRACE Colorado River Basin Monitor"></iframe>
+    </section>
 
-      <div class="gif-grid" style="grid-template-columns: 1fr 1fr; margin-top: 1.5rem; justify-items: center;">
-        <div class="gif-item" style="grid-column: 1 / -1; max-width: 50%;">
-          <img src="assets/grandvalley_sentinel2.gif"
-               alt="Sentinel-2 false color time series — Grand Valley 2017–present">
-          <p>Grand Valley closeup — Sentinel-2 at 10m resolution, 2017–present.
-             Shows irrigation patterns and crop-level moisture stress.</p>
-        </div>
-      </div>
+    <!-- ── GRACE CONUS ── -->
+    <section class="story-section">
+      <p class="section-label">GRACE — CONUS</p>
+      <h2 class="section-title">GRACE Drought Indicator</h2>
+      <p class="section-body">
+        Here that same GRACE dataset is zoomed out to the full continental US, so you can
+        see how the Colorado River Basin's drought conditions above fit into the bigger
+        regional and national picture. The resolution is coarse (about 14 km per pixel),
+        so it's best for seeing broad, regional drought patterns rather than fine local
+        detail.
+      </p>
+      <iframe class="map-embed" src="grace-monitor.html" title="GRACE CONUS Monitor"></iframe>
     </section>
 
     <!-- ── Drought Trends ── -->
@@ -399,9 +290,10 @@
       <p class="section-label">Drought Trends</p>
       <h2 class="section-title">How Has Drought Changed Over Time?</h2>
       <p class="section-body">
-        Two complementary views of drought history across the SW Colorado region —
-        a long-term moisture index spanning nearly seven decades, and a modern
-        record of severe drought frequency since 2000.
+        Five complementary views of drought history across the SW Colorado region —
+        a long-term moisture index spanning nearly seven decades, a modern record of
+        severe drought frequency since 2000, and monthly satellite-derived vegetation
+        and water-storage signals since 2018.
       </p>
 
       <div class="chart-stack">
@@ -415,6 +307,44 @@
           <img src="assets/usdm_drought_frequency.png"
                alt="Severe Drought Extent — SW Colorado 2000–present">
           <p>Percentage of SW Colorado in D2 (Severe) or worse drought each August, 2000–present.</p>
+        </div>
+        <div class="chart-item">
+          <img src="assets/sentinel1_vh_vv_anomaly_swco.png"
+               alt="Sentinel-1 VH/VV Ratio Anomaly — SW Colorado 2018–2025">
+          <p>Monthly Sentinel-1 VH/VV ratio, shown as departure from its own 2018–2025 average —
+             a proxy for vegetation density rather than soil moisture directly. The seasonal
+             cycle is strong and consistent, but there's no statistically significant long-term
+             trend in either the average signal or the size of the summer/winter swing over
+             this 8-year record.</p>
+        </div>
+        <div class="chart-item">
+          <img src="assets/grace_fo_tws_anomaly_swco.png"
+               alt="GRACE-FO Water Storage Anomaly — SW Colorado 2018–2025">
+          <p>Monthly GRACE-FO total water storage anomaly (soil moisture + groundwater combined),
+             relative to the 2004–2009 baseline. GRACE doesn't measure water directly — it senses
+             tiny changes in Earth's gravity caused by mass shifting in or out of a region, which
+             scientists convert into "liquid water equivalent" (LWE): the depth, in cm, that
+             missing or extra mass would form if spread evenly across the region as a layer of
+             water. This is the raw satellite-measured signal behind the GRACE maps above —
+             distinct from their modeled drought-percentile product, and shown here at its native
+             ~25 km resolution without further smoothing. The baseline is
+             NASA's fixed 2004–2009 reference window built into the GRACE mascon data product
+             itself (not a rolling 30-year normal); it happens to predate the 2010s–2020s Colorado
+             River Basin megadroughts, so today's deficits are measured against a period that
+             wasn't itself unusually wet or dry.</p>
+        </div>
+        <div class="chart-item">
+          <img src="assets/soil_water_profile_anomaly_swco.png"
+               alt="Water Storage Anomaly by Depth — SW Colorado 2018–2025">
+          <p>The same total water storage anomaly above, split by depth: surface (0–10cm) and
+             root-zone (0–100cm) soil moisture are modeled estimates (GLDAS), while groundwater is
+             calculated by subtracting that model from the GRACE satellite measurement. (As above,
+             "anomaly" means departure from the 2004–2009 baseline, in cm LWE — not the total amount
+             of water present.) Surface barely moves on this scale not because it isn't responding,
+             but because a 10cm-deep layer can only hold so much water either way — there's a hard
+             ceiling on how far it can drift. Groundwater has no such ceiling: it integrates deficits
+             and surpluses across a much deeper, larger reservoir, so it can swing 20+ cm and stay
+             there for years.</p>
         </div>
       </div>
     </section>
@@ -435,6 +365,8 @@
           <li>TerraClimate PDSI — monthly Palmer Drought Severity Index, 1958–present (~4km)</li>
           <li>Landsat 5/7/8/9 — harmonized false color and natural color composites, June–October, 1984–present (30m)</li>
           <li>Sentinel-2 SR — false color composites, July–August, 2017–present (10m)</li>
+          <li>GRACE Data Assimilation — weekly soil moisture / groundwater percentile, 2018–present (~14km)</li>
+          <li>Sentinel-1 SAR — VH/VV ratio, monthly composites, 2018–present (250m)</li>
           <li>Region: Delta, Dolores, Gunnison, La Plata, Mesa, Montezuma, Montrose, Ouray, San Miguel Counties</li>
           <li>Cloud masking via per-pixel QA band; gap fill using 25th percentile fallback</li>
           <li>Trend lines computed via ordinary least squares linear regression</li>
@@ -448,66 +380,5 @@
     </footer>
 
   </div>
-  <script>
-    var swBounds = [[36.9988, -109.0602], [39.3667, -106.2453]];
-
-    // ── Leaflet drought map ──
-    var map = L.map('drought-map', {zoomSnap: 0.5, zoomControl: false}).setView([38.1, -108.0], 7.5);
-
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Esri World Topo Map'
-    }).addTo(map);
-
-    var droughtOverlay = L.imageOverlay('assets/drought_years/usdm_2000.png', swBounds, {
-      opacity: 0.75
-    }).addTo(map);
-
-    // Disable scroll wheel zoom (keep drag pan for interactivity)
-    map.scrollWheelZoom.disable();
-
-    // Scale bar
-    L.control.scale({position: 'bottomleft', imperial: true, metric: false}).addTo(map);
-
-    // North arrow
-    var northArrow = L.control({position: 'topleft'});
-    northArrow.onAdd = function() {
-      var div = L.DomUtil.create('div');
-      div.style.cssText = 'background:white;padding:5px 8px;border:2px solid rgba(0,0,0,0.2);border-radius:4px;font-size:16px;font-weight:bold;text-align:center;line-height:1.2;cursor:default;user-select:none;';
-      div.innerHTML = '&#8593;<br><span style="font-size:10px;font-weight:normal;">N</span>';
-      return div;
-    };
-    northArrow.addTo(map);
-
-    // ── Controls ──
-    var slider  = document.getElementById('year-slider');
-    var display = document.getElementById('year-display');
-    var caption = document.getElementById('drought-caption');
-    var playBtn = document.getElementById('play-btn');
-    var playInterval = null;
-
-    function setYear(yr) {
-      droughtOverlay.setUrl('assets/drought_years/usdm_' + yr + '.png');
-      slider.value         = yr;
-      display.textContent  = yr;
-      caption.textContent  = 'August ' + yr + ' — USDM peak drought classification';
-    }
-
-    slider.addEventListener('input', () => setYear(slider.value));
-
-    playBtn.addEventListener('click', () => {
-      if (playInterval) {
-        clearInterval(playInterval);
-        playInterval = null;
-        playBtn.textContent = '▶ Play';
-      } else {
-        playBtn.textContent = '⏸ Pause';
-        playInterval = setInterval(() => {
-          var next = parseInt(slider.value) + 1;
-          if (next > parseInt(slider.max)) next = parseInt(slider.min);
-          setYear(next);
-        }, 1500);
-      }
-    });
-  </script>
 </body>
 </html>

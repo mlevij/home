@@ -7,6 +7,17 @@
 // --- Study Area (9 SW Colorado counties) ---
 var swColorado = ee.Geometry.Rectangle([-109.0602, 36.9988, -106.2453, 39.3667]);
 
+// Four Corners region (kept for reference)
+var fourCorners = ee.Geometry.Rectangle([-115.0, 31.0, -101.5, 42.5]);
+
+// CONUS extent for GRACE animation
+var conus = ee.Geometry.Rectangle([-125.0, 24.5, -66.5, 49.5]);
+
+// Colorado state boundary for PALSAR-2 exports
+var colorado = ee.FeatureCollection('TIGER/2018/States')
+  .filter(ee.Filter.eq('NAME', 'Colorado'))
+  .geometry();
+
 // --- Date range ---
 // GRACE-FO launched June 2018; use 2018+ for combined analysis.
 // For Sentinel-1 only, push startYear back to 2015.
@@ -14,6 +25,73 @@ var startYear = 2018;
 var endYear   = 2025;
 var startDate = ee.Date.fromYMD(startYear, 1, 1);
 var endDate   = ee.Date.fromYMD(endYear, 12, 31);
+
+
+// ============================================================
+// PALSAR-2 ScanSAR (JAXA ALOS-2) — L-band SAR
+// ============================================================
+// L-band (1.27 GHz) penetrates vegetation canopy far better than
+// Sentinel-1 C-band (5.4 GHz), making it more reliable for soil
+// moisture under forests and dense crops (e.g. Grand Mesa spruce/fir).
+//
+// Collection is heterogeneous — filter to HH+HV dual-pol images only.
+// DN → γ°(dB): 10 * log10(DN²) − 83  (PALSAR-2 calibration constant)
+// HH: primary soil moisture signal (co-polarization)
+// HV: volume scattering (vegetation); HH/HV ratio isolates soil signal
+
+var palsarRaw = ee.ImageCollection('JAXA/ALOS/PALSAR-2/Level2_2/ScanSAR')
+  .filterBounds(colorado)
+  .filterDate(startDate, endDate)
+  .filter(ee.Filter.listContains('Polarizations', 'HH'))
+  .filter(ee.Filter.listContains('Polarizations', 'HV'))
+  .select(['HH', 'HV']);
+
+print('✓ PALSAR-2 scenes over Colorado:', palsarRaw.size());
+
+var palsarToDb = function(img) {
+  return img.pow(2).log10().multiply(10).subtract(83)
+    .copyProperties(img, ['system:time_start']);
+};
+
+var palsarTagged = palsarRaw.map(palsarToDb).map(function(img) {
+  var d = ee.Date(img.get('system:time_start'));
+  return img.set('year_month', d.format('YYYY-MM'));
+});
+
+var palsarYmList = palsarTagged.aggregate_array('year_month').distinct().sort();
+print('✓ Distinct year-months with PALSAR-2 data:', palsarYmList.size());
+
+// Monthly composites in linear space → back to dB
+var palsarToLinear = function(img) {
+  return ee.Image(10).pow(img.divide(10))
+    .copyProperties(img, ['system:time_start', 'year_month']);
+};
+
+var monthlyPalsar = ee.ImageCollection(palsarYmList.map(function(ym) {
+  var subset = palsarTagged.filter(ee.Filter.eq('year_month', ym));
+  var d = ee.Date(subset.first().get('system:time_start')).update(null, null, 1);
+  var linearMean = subset.map(palsarToLinear).mean();
+  var dbMean = linearMean.log10().multiply(10);
+  var ratioDb = linearMean.select('HH').divide(linearMean.select('HV'))
+    .log10().multiply(10).rename('HH_HV');
+  return dbMean.addBands(ratioDb)
+    .clip(colorado)
+    .set('year_month', ym)
+    .set('system:time_start', d.millis());
+}));
+
+print('✓ Monthly PALSAR-2 composites:', monthlyPalsar.size());
+
+// HH: red (dry) → green (wet), same convention as S1 VV
+var palsarHHVizParams = {
+  bands: ['HH'], min: -25, max: -5,
+  palette: ['#d73027','#fc8d59','#fee090','#d9f0a3','#78c679','#1a9641']
+};
+// HH/HV ratio: lower = more soil-dominated signal
+var palsarRatioVizParams = {
+  bands: ['HH_HV'], min: -10, max: 5,
+  palette: ['#f7f7f7','#d9f0d3','#7fbf7b','#1b7837']
+};
 
 
 // ============================================================
@@ -101,16 +179,19 @@ print('✓ Monthly S1 composites built (one per month above)');
 // VV/VH: red = dry (low backscatter) → blue = wet (high backscatter)
 var vvVizParams = {
   bands: ['VV'], min: -25, max: -5,
-  palette: ['#d73027','#fc8d59','#fee090','#e0f3f8','#74add1','#4575b4']
+  palette: ['#d73027','#fc8d59','#fee090','#e0f3f8','#74add1','#4575b4']  // was red->green; fixed to match comment (red=dry, blue=wet)
 };
 var vhVizParams = {
   bands: ['VH'], min: -30, max: -10,
   palette: ['#d73027','#fc8d59','#fee090','#e0f3f8','#74add1','#4575b4']
 };
-// VH/VV ratio: lower ratio = more soil-dominated signal
+// VH/VV ratio is fundamentally a vegetation-density proxy (cross-pol scattering
+// increases with canopy volume), not a direct soil-moisture measurement — so this
+// uses a vegetation-style ramp instead of the GRACE wet/dry convention.
+// Red (low ratio, sparse/bare-soil-dominated) -> yellow -> green (high ratio, denser vegetation).
 var ratioVizParams = {
   bands: ['VH_VV'], min: -15, max: -5,
-  palette: ['#f7f7f7','#d9f0d3','#7fbf7b','#1b7837']
+  palette: ['#d73027','#fc8d59','#fee090','#d9f0a3','#78c679','#1a9641']
 };
 
 Map.centerObject(swColorado, 8);
@@ -135,18 +216,96 @@ var graceBaseline = graceFull
 
 var grace = graceFull
   .filterDate(startDate, endDate)
-  .filterBounds(swColorado);
+  .filterBounds(conus);
 
 var graceAnomalies = grace.map(function(img) {
   return img.subtract(graceBaseline)
-    .clip(swColorado)
-    .copyProperties(img, ['system:time_start']);
+    .clip(conus)
+    .copyProperties(img, ['system:time_start'])
+    .set('year_month', ee.Date(img.get('system:time_start')).format('YYYY-MM'));
 });
 print('✓ GRACE-FO anomaly images:', graceAnomalies.size());
 
 // Brown = deficit → teal = surplus
 var graceVizParams = {
   min: -25, max: 25,
+  palette: ['#8c510a','#d8b365','#f6e8c3','#f5f5f5','#c7eae5','#5ab4ac','#01665e']
+};
+
+
+// ============================================================
+// GLDAS NOAH — Groundwater Storage Isolation
+// ============================================================
+// Subtract GLDAS-modeled SM + SWE + canopy from GRACE TWS anomaly to
+// isolate groundwater storage (GWS) — Rodell/Famiglietti method.
+// GLDAS bands in kg/m²; divide by 10 to convert to cm LWE (GRACE units).
+
+// Also break out surface (0-10cm) and root zone (0-100cm) soil moisture as
+// their own raw anomaly bands — same baseline/units as the TWS anomaly so
+// all three (surface, root zone, groundwater) sit on one shared cm-LWE axis.
+var gldasTWS = ee.ImageCollection('NASA/GLDAS/V021/NOAH/G025/T3H')
+  .filterBounds(conus)
+  .select(['SoilMoi0_10cm_inst','SoilMoi10_40cm_inst',
+           'SoilMoi40_100cm_inst','SoilMoi100_200cm_inst',
+           'SWE_inst','CanopInt_inst'])
+  .map(function(img) {
+    var surface = img.select('SoilMoi0_10cm_inst').divide(10).rename('gldas_surface');
+    var rootZone = img.select('SoilMoi0_10cm_inst')
+      .add(img.select('SoilMoi10_40cm_inst'))
+      .add(img.select('SoilMoi40_100cm_inst'))
+      .divide(10).rename('gldas_rootzone');
+    var total = img.select('SoilMoi0_10cm_inst')
+      .add(img.select('SoilMoi10_40cm_inst'))
+      .add(img.select('SoilMoi40_100cm_inst'))
+      .add(img.select('SoilMoi100_200cm_inst'))
+      .add(img.select('SWE_inst'))
+      .add(img.select('CanopInt_inst'))
+      .divide(10).rename('gldas_tws');
+    return surface.addBands(rootZone).addBands(total)
+      .copyProperties(img, ['system:time_start'])
+      .set('year_month', ee.Date(img.get('system:time_start')).format('YYYY-MM'));
+  });
+
+// 2004–2009 baseline (matches GRACE baseline)
+var gldasForBaseline = gldasTWS.filterDate('2004-01-01', '2009-12-31');
+var gldasBaseline = gldasForBaseline.mean();
+
+// Monthly means for analysis period, anomaly relative to baseline
+var gldasForAnalysis = gldasTWS.filterDate(startDate, endDate);
+var gldasYmList = gldasForAnalysis.aggregate_array('year_month').distinct().sort();
+
+// filterDate (not a year_month string-equality filter) so EE can use its
+// built-in time index instead of scanning the whole 3-hourly collection
+// for every one of the ~96 months.
+var monthlyGldas = ee.ImageCollection(gldasYmList.map(function(ym) {
+  var monthStart = ee.Date.parse('YYYY-MM', ym);
+  var monthEnd = monthStart.advance(1, 'month');
+  var subset = gldasForAnalysis.filterDate(monthStart, monthEnd);
+  return subset.mean()
+    .subtract(gldasBaseline)
+    .set('year_month', ym)
+    .set('system:time_start', monthStart.millis());
+}));
+
+// GWS anomaly = GRACE TWS anomaly − GLDAS modeled water anomaly
+// Use a proper join (year_month match) instead of filtering monthlyGldas
+// from scratch inside .map() for every GRACE image — the per-image filter
+// approach forces EE to re-evaluate the entire monthlyGldas chain on every
+// call, which is what was making this export so slow.
+var gwsJoinFilter = ee.Filter.equals({leftField: 'year_month', rightField: 'year_month'});
+var gwsJoined = ee.Join.saveFirst('gldas_match').apply(graceAnomalies, monthlyGldas, gwsJoinFilter);
+
+var graceGWS = ee.ImageCollection(gwsJoined).map(function(img) {
+  var gldas = ee.Image(img.get('gldas_match')).select('gldas_tws');
+  return ee.Image(img).subtract(gldas)
+    .clip(conus)
+    .copyProperties(img, ['system:time_start', 'year_month']);
+});
+print('✓ GRACE groundwater storage anomaly images:', graceGWS.size());
+
+// GWS typically has smaller amplitude than raw TWS — tighter min/max
+var graceGWSVizParams = {
+  min: -15, max: 15,
   palette: ['#8c510a','#d8b365','#f6e8c3','#f5f5f5','#c7eae5','#5ab4ac','#01665e']
 };
 
@@ -202,15 +361,113 @@ Export.table.toDrive({
   fileFormat:     'CSV'
 });
 
-print('✓ CSV export tasks queued (Sentinel-1 + GRACE-FO time series)');
+// GLDAS-derived surface (0-10cm) and root zone (0-100cm) soil moisture
+// anomalies (cm LWE, same 2004-2009 baseline as GRACE) — raw, not percentile.
+var surfaceTimeSeries = ee.FeatureCollection(
+  monthlyGldas.map(function(img) {
+    var stats = img.select('gldas_surface').reduceRegion({
+      reducer:  ee.Reducer.mean(),
+      geometry: swColorado,
+      scale:    25000,
+      maxPixels: 1e9
+    });
+    return ee.Feature(null, stats)
+      .set('date', ee.Date(img.get('system:time_start')).format('YYYY-MM-dd'));
+  })
+);
+
+Export.table.toDrive({
+  collection:     surfaceTimeSeries,
+  description:    'gldas_surface_timeseries_swco',
+  folder:         'DiscoveryFarms_GEE',
+  fileNamePrefix: 'gldas_surface_swco_timeseries',
+  fileFormat:     'CSV'
+});
+
+var rootZoneTimeSeries = ee.FeatureCollection(
+  monthlyGldas.map(function(img) {
+    var stats = img.select('gldas_rootzone').reduceRegion({
+      reducer:  ee.Reducer.mean(),
+      geometry: swColorado,
+      scale:    25000,
+      maxPixels: 1e9
+    });
+    return ee.Feature(null, stats)
+      .set('date', ee.Date(img.get('system:time_start')).format('YYYY-MM-dd'));
+  })
+);
+
+Export.table.toDrive({
+  collection:     rootZoneTimeSeries,
+  description:    'gldas_rootzone_timeseries_swco',
+  folder:         'DiscoveryFarms_GEE',
+  fileNamePrefix: 'gldas_rootzone_swco_timeseries',
+  fileFormat:     'CSV'
+});
+
+// GRACE TWS minus GLDAS-modeled water = groundwater storage anomaly (raw,
+// not percentile) — distinct from the GRACE-DA gws_inst percentile product
+// used on the live grace-monitor.html / grace-basin-monitor.html maps.
+var gwsTimeSeries = ee.FeatureCollection(
+  graceGWS.map(function(img) {
+    var stats = img.reduceRegion({
+      reducer:  ee.Reducer.mean(),
+      geometry: swColorado,
+      scale:    25000,
+      maxPixels: 1e9
+    });
+    return ee.Feature(null, stats)
+      .set('date', ee.Date(img.get('system:time_start')).format('YYYY-MM-dd'));
+  })
+);
+
+Export.table.toDrive({
+  collection:     gwsTimeSeries,
+  description:    'grace_gws_timeseries_swco',
+  folder:         'DiscoveryFarms_GEE',
+  fileNamePrefix: 'grace_gws_swco_timeseries',
+  fileFormat:     'CSV'
+});
+
+print('✓ CSV export tasks queued (Sentinel-1 + GRACE-FO TWS + GLDAS surface/root-zone + GRACE GWS time series)');
 
 
 // ============================================================
 // EXPORT — Monthly Animations to Google Drive
 // ============================================================
 
+// Colorado county and state boundaries for spatial context
+var coCounties = ee.FeatureCollection('TIGER/2018/Counties')
+  .filter(ee.Filter.eq('STATEFP', '08'));
+var countyMask = ee.Image().byte()
+  .paint({featureCollection: coCounties, color: 1, width: 1});
+var coStateMask = ee.Image().byte()
+  .paint({featureCollection: ee.FeatureCollection('TIGER/2018/States')
+    .filter(ee.Filter.eq('NAME', 'Colorado')), color: 1, width: 2});
+
 var s1VVFrames = monthlyS1Smooth.sort('system:time_start').map(function(img) {
-  return img.visualize(vvVizParams);
+  var viz = img.visualize(vvVizParams);
+  return viz.where(countyMask, ee.Image.constant([255, 255, 255]).byte());
+});
+
+// PALSAR-2 individual images — one export per monthly composite, year_month in filename
+palsarYmList.evaluate(function(ymList) {
+  ymList.forEach(function(ym) {
+    var img = monthlyPalsar.filter(ee.Filter.eq('year_month', ym)).first();
+    var viz = img.visualize(palsarHHVizParams)
+      .where(countyMask, ee.Image.constant([255, 255, 255]).byte())
+      .where(coStateMask, ee.Image.constant([255, 255, 255]).byte());
+    Export.image.toDrive({
+      image:           viz,
+      description:     'palsar2_hh_' + ym,
+      folder:          'DiscoveryFarms_GEE',
+      fileNamePrefix:  'palsar2_co_hh_' + ym,
+      region:          colorado,
+      scale:           25,
+      crs:             'EPSG:4326',
+      maxPixels:       1e9
+    });
+  });
 });
 
 print('✓ Export tasks queued — check the Tasks tab to run them');
@@ -227,7 +484,8 @@ Export.video.toDrive({
 });
 
 var s1RatioFrames = monthlyS1Smooth.sort('system:time_start').map(function(img) {
-  return img.visualize(ratioVizParams);
+  var viz = img.visualize(ratioVizParams);
+  return viz.where(countyMask, ee.Image.constant([255, 255, 255]).byte());
 });
 
 Export.video.toDrive({
@@ -241,21 +499,74 @@ Export.video.toDrive({
   maxFrames:      300
 });
 
-var graceFrames = graceAnomalies.sort('system:time_start').map(function(img) {
-  return img.visualize(graceVizParams);
+// ============================================================
+// VH/VV ratio — discrete MONTHLY images (one per year_month, not a video)
+// Mirrors the USDM drought-monitor's yearly PNGs but at monthly granularity:
+// each month gets its own exported image (reusing the already speckle-reduced
+// monthlyS1Smooth composites), so the slider shows a guaranteed, exact month
+// rather than a frame pulled from a continuous video or a noisier per-scene image.
+// ============================================================
+ymList.evaluate(function(months) {
+  months.forEach(function(ym) {
+    var img = monthlyS1Smooth.filter(ee.Filter.eq('year_month', ym)).first();
+    // No baked-in county/state lines here — boundaries are added later as a
+    // separate vector overlay in the slider page, so these exports stay raw.
+    var viz = ee.Image(img).visualize(ratioVizParams);
+    Export.image.toDrive({
+      image:          viz,
+      description:    'sentinel1_ratio_monthly_' + ym,
+      folder:         'DiscoveryFarms_GEE',
+      fileNamePrefix: 'sentinel1_ratio_swco_' + ym,
+      region:         swColorado,
+      scale:          250,
+      crs:            'EPSG:4326',
+      maxPixels:      1e9
+    });
+  });
 });
 
-// GRACE native res is ~55km — use dimensions rather than scale
-// to force a viewable frame size. Output will be interpolated
-// (appropriate for coarse gravity-based data).
+// State lines (width 2) + CO county lines (width 1) baked into each GRACE frame
+var stateBoundaries = ee.FeatureCollection('TIGER/2018/States');
+var stateMask = ee.Image().byte()
+  .paint({featureCollection: stateBoundaries, color: 1, width: 2});
+var graceCountyMask = ee.Image().byte()
+  .paint({featureCollection: coCounties, color: 1, width: 1});
+
+var graceFrames = graceAnomalies.sort('system:time_start').map(function(img) {
+  var graceViz = img
+    .resample('bicubic')
+    .reproject({crs: 'EPSG:4326', scale: 5000})
+    .visualize(graceVizParams);
+  return graceViz.where(stateMask, ee.Image.constant([255, 255, 255]).byte());
+});
+
 Export.video.toDrive({
   collection:      graceFrames,
-  description:     'grace_fo_tws_swco_animation',
+  description:     'grace_fo_tws_conus_animation',
   folder:          'DiscoveryFarms_GEE',
-  fileNamePrefix:  'grace_fo_swco_tws_monthly',
+  fileNamePrefix:  'grace_fo_conus_tws_monthly',
   framesPerSecond: 2,
-  region:          swColorado,
-  dimensions:      800,
+  region:          conus,
+  crs:             'EPSG:4326',
+  scale:           5000,
+  maxFrames:       300
+});
+
+// GWS (groundwater storage) animation — GRACE TWS minus GLDAS modeled components
+var graceGWSFrames = graceGWS.sort('system:time_start').map(function(img) {
+  var viz = img.resample('bicubic').reproject({crs: 'EPSG:4326', scale: 5000}).visualize(graceGWSVizParams);
+  return viz.where(stateMask, ee.Image.constant([255, 255, 255]).byte());
+});
+
+Export.video.toDrive({
+  collection:      graceGWSFrames,
+  description:     'grace_fo_gws_conus_animation',
+  folder:          'DiscoveryFarms_GEE',
+  fileNamePrefix:  'grace_fo_conus_gws_monthly',
+  framesPerSecond: 2,
+  region:          conus,
+  crs:             'EPSG:4326',
+  scale:           5000,
   maxFrames:       300
 });
 

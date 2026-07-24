@@ -140,6 +140,14 @@
       opacity: 0.75
     }).addTo(map);
 
+    fetch('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json')
+      .then(function(r) { return r.json(); })
+      .then(function(geojson) {
+        L.geoJSON(geojson, {
+          style: { color: '#222', weight: 2, opacity: 0.85, fillOpacity: 0 }
+        }).addTo(map);
+      });
+
     L.control.scale({ position: 'bottomleft', imperial: true, metric: false }).addTo(map);
 
     var northArrow = L.control({ position: 'topleft' });

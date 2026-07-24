@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRACE Drought Indicator — CONUS</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: system-ui, sans-serif;
+      background: #f5f2ec;
+    }
+
+    #wrap {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    #stage {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+    }
+
+    #frame-img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    #controls {
+      padding: 10px 14px 8px;
+      background: #f5f2ec;
+      border-top: 1px solid #d4cfc5;
+    }
+
+    .toggle-row, .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .toggle-btn {
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      padding: 4px 12px;
+      background: #e8e3d8;
+      color: #3a3630;
+      border: 1px solid #d4cfc5;
+      cursor: pointer;
+      white-space: nowrap;
+      border-radius: 2px;
+    }
+
+    .toggle-btn.active {
+      background: #c85a2a;
+      color: #fff;
+      border-color: #c85a2a;
+    }
+
+    .toggle-btn:hover { opacity: 0.9; }
+
+    .play-btn {
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      padding: 4px 12px;
+      background: #c85a2a;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      border-radius: 2px;
+    }
+
+    .play-btn:hover { opacity: 0.85; }
+
+    .bound {
+      font-size: 11px;
+      color: #7a7468;
+      white-space: nowrap;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      accent-color: #c85a2a;
+      cursor: pointer;
+    }
+
+    .date-display {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #c85a2a;
+      min-width: 6rem;
+      text-align: right;
+    }
+
+    .caption {
+      font-size: 11px;
+      color: #7a7468;
+    }
+  </style>
+</head>
+<body>
+  <div id="wrap">
+    <div id="stage">
+      <img id="frame-img" src="" alt="GRACE drought indicator frame">
+    </div>
+    <div id="controls">
+      <div class="toggle-row">
+        <button class="toggle-btn active" data-product="sfsm_inst">Surface Soil Moisture</button>
+        <button class="toggle-btn" data-product="rtzsm_inst">Root Zone Soil Moisture</button>
+        <button class="toggle-btn" data-product="gws_inst">Groundwater Storage</button>
+      </div>
+      <div class="slider-row">
+        <button class="play-btn" id="play-btn">▶ Play</button>
+        <span class="bound" id="bound-start"></span>
+        <input type="range" id="slider" min="0" max="0" value="0" step="1">
+        <span class="bound" id="bound-end"></span>
+        <span class="date-display" id="date-display"></span>
+      </div>
+      <p class="caption">NASA GRACE Data Assimilation drought percentile — weekly, CONUS, 2018–2025</p>
+    </div>
+  </div>
+
+  <script>
+    var DATES = ["20180101","20180108","20180115","20180122","20180129","20180205","20180212","20180219","20180226","20180305","20180312","20180319","20180326","20180402","20180409","20180416","20180423","20180430","20180507","20180514","20180521","20180528","20180604","20180611","20180618","20180625","20180702","20180709","20180716","20180723","20180730","20180806","20180813","20180820","20180827","20180903","20180910","20180917","20180924","20181001","20181008","20181015","20181022","20181029","20181105","20181112","20181119","20181126","20181203","20181210","20181217","20181224","20181231","20190107","20190114","20190121","20190128","20190204","20190211","20190218","20190225","20190304","20190311","20190318","20190325","20190401","20190408","20190415","20190422","20190429","20190506","20190513","20190520","20190527","20190603","20190610","20190617","20190624","20190701","20190708","20190715","20190722","20190729","20190805","20190812","20190819","20190826","20190902","20190909","20190916","20190923","20190930","20191007","20191014","20191021","20191028","20191104","20191111","20191118","20191125","20191202","20191216","20191223","20191230","20200106","20200113","20200120","20200203","20200210","20200217","20200224","20200302","20200309","20200316","20200323","20200330","20200406","20200413","20200420","20200427","20200504","20200511","20200518","20200525","20200601","20200608","20200615","20200622","20200629","20200706","20200713","20200720","20200727","20200803","20200810","20200817","20200824","20200831","20200907","20200914","20200921","20200928","20201005","20201012","20201019","20201026","20201102","20201109","20201116","20201123","20201130","20201207","20201214","20201221","20201228","20210104","20210111","20210118","20210125","20210201","20210208","20210215","20210222","20210301","20210308","20210315","20210322","20210329","20210405","20210412","20210419","20210426","20210503","20210510","20210517","20210524","20210531","20210607","20210614","20210621","20210628","20210705","20210712","20210719","20210726","20210802","20210809","20210816","20210823","20210830","20210906","20210913","20210920","20210927","20211004","20211011","20211018","20211025","20211101","20211108","20211115","20211122","20211129","20211206","20211213","20211220","20211227","20220103","20220110","20220117","20220124","20220131","20220207","20220214","20220221","20220228","20220307","20220314","20220321","20220328","20220404","20220411","20220418","20220425","20220502","20220509","20220516","20220523","20220530","20220606","20220613","20220620","20220627","20220704","20220711","20220718","20220725","20220801","20220808","20220815","20220822","20220829","20220905","20220912","20220919","20220926","20221003","20221010","20221017","20221024","20221031","20221107","20221114","20221121","20221128","20221205","20221212","20221219","20221226","20230102","20230109","20230116","20230123","20230130","20230206","20230213","20230220","20230227","20230306","20230313","20230320","20230327","20230403","20230410","20230417","20230424","20230501","20230508","20230515","20230522","20230529","20230605","20230612","20230619","20230626","20230703","20230710","20230717","20230724","20230731","20230807","20230814","20230821","20230828","20230904","20230911","20230918","20230925","20231002","20231009","20231016","20231023","20231030","20231106","20231113","20231120","20231127","20231204","20231211","20231218","20231225","20240101","20240108","20240115","20240122","20240129","20240205","20240212","20240219","20240226","20240304","20240311","20240318","20240325","20240401","20240408","20240415","20240422","20240429","20240506","20240513","20240520","20240527","20240603","20240610","20240617","20240624","20240701","20240708","20240715","20240722","20240729","20240805","20240812","20240819","20240826","20240902","20240909","20240916","20240923","20240930","20241007","20241014","20241028","20241104","20241111","20241118","20241125","20241202","20241209","20241216","20241223","20241230","20250106","20250113","20250120","20250127","20250203","20250210","20250217","20250224","20250303","20250310","20250317","20250324","20250331","20250407","20250414","20250421","20250428","20250505","20250512","20250519","20250526","20250602","20250609","20250616","20250623","20250630","20250707","20250714","20250721","20250728","20250804","20250811","20250818","20250825","20250901","20250908","20250915","20250922","20250929","20251117","20251124","20251201","20251208","20251215","20251222","20251229"];
+
+    var img        = document.getElementById('frame-img');
+    var slider     = document.getElementById('slider');
+    var dateLabel  = document.getElementById('date-display');
+    var boundStart = document.getElementById('bound-start');
+    var boundEnd   = document.getElementById('bound-end');
+    var playBtn    = document.getElementById('play-btn');
+    var toggleBtns = document.querySelectorAll('.toggle-btn');
+    var playInterval = null;
+    var currentProduct = 'sfsm_inst';
+
+    slider.max = DATES.length - 1;
+    boundStart.textContent = formatDate(DATES[0]);
+    boundEnd.textContent = formatDate(DATES[DATES.length - 1]);
+
+    function formatDate(ymd) {
+      return ymd.slice(0, 4) + '-' + ymd.slice(4, 6) + '-' + ymd.slice(6, 8);
+    }
+
+    function setIndex(i) {
+      var ymd = DATES[i];
+      img.src = 'assets/grace/' + currentProduct + '_' + ymd + '.png';
+      slider.value = i;
+      dateLabel.textContent = formatDate(ymd);
+    }
+
+    slider.addEventListener('input', function() { setIndex(parseInt(slider.value)); });
+
+    toggleBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        toggleBtns.forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        currentProduct = btn.dataset.product;
+        setIndex(parseInt(slider.value));
+      });
+    });
+
+    playBtn.addEventListener('click', function() {
+      if (playInterval) {
+        clearInterval(playInterval);
+        playInterval = null;
+        playBtn.textContent = '▶ Play';
+      } else {
+        playBtn.textContent = '⏸ Pause';
+        playInterval = setInterval(function() {
+          var next = parseInt(slider.value) + 1;
+          if (next > parseInt(slider.max)) next = 0;
+          setIndex(next);
+        }, 300);
+      }
+    });
+
+    setIndex(0);
+  </script>
+</body>
+</html>

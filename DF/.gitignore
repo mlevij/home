@@ -1,0 +1,19 @@
+# Raw/cached data — large, regenerable from scripts, not meant for GitHub
+GRACE_NC4/
+gee/*.tif
+gee/*.mp4
+gee/palsar_co/
+gee/palsar_sw_co/
+grace_animation/
+*.tif
+*.zip
+
+# Generated frame assets — add explicitly once a given product is ready to publish
+assets/grace_colorado/
+
+# IDE / notebook artifacts
+.idea/
+.ipynb_checkpoints/
+
+# Session notes — keep local only, not published
+session-notes/
