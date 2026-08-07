@@ -619,7 +619,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "1992-05-08",
-    "lastObs": "2026-08-06",
+    "lastObs": "2026-08-07",
     "timestep": 300,
     "network": "Coag"
   },
@@ -667,7 +667,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2005-03-17",
-    "lastObs": "2026-08-04",
+    "lastObs": "2026-08-06",
     "timestep": 300,
     "network": "Coag"
   },
@@ -971,7 +971,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2018-04-20",
-    "lastObs": "2026-08-06",
+    "lastObs": "2026-08-07",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1003,7 +1003,7 @@
     "active": "active",
     "irrigation": "dry",
     "firstObs": "2007-12-01",
-    "lastObs": "2026-08-06",
+    "lastObs": "2026-08-07",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1387,7 +1387,7 @@
     "active": "active",
     "irrigation": "part",
     "firstObs": "2018-06-14",
-    "lastObs": "2026-08-06",
+    "lastObs": "2026-08-07",
     "timestep": 300,
     "network": "Coag"
   },
@@ -1659,7 +1659,7 @@
     "active": "active",
     "irrigation": "full",
     "firstObs": "2026-05-12",
-    "lastObs": "2026-08-06",
+    "lastObs": "2026-08-07",
     "timestep": 300,
     "network": "Coag"
   },
