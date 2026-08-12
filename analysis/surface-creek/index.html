@@ -236,8 +236,8 @@
       <h2>Monthly SWE &amp; precipitation (Park Reservoir) &mdash; inches</h2>
       <div style="position:relative;height:220px;"><canvas id="monthlySwePrecipChart"></canvas></div>
       <p class="chart-note">
-        End-of-month snow water equivalent and monthly precipitation. Defaults to the most recent
-        5 years; scroll or pinch to zoom out to the full 2016&ndash;2025 record, drag to pan.
+        End-of-month snow water equivalent and monthly precipitation, 2016&ndash;2025. Scroll or
+        pinch to zoom into a shorter window, drag to pan.
       </p>
     </div>
 
@@ -245,9 +245,9 @@
       <h2>Monthly soil moisture (Park Reservoir) &mdash; % VWC</h2>
       <div style="position:relative;height:220px;"><canvas id="monthlySoilMoistureChart"></canvas></div>
       <p class="chart-note">
-        Monthly mean volumetric water content at 2, 8, and 20 inch depths. The 20-inch sensor
-        stopped reporting after October 2024. Defaults to the most recent 5 years; zoom out for
-        the full 2016&ndash;2025 record.
+        Monthly mean volumetric water content at 2, 8, and 20 inch depths, 2016&ndash;2025. The
+        20-inch sensor stopped reporting after October 2024. Scroll or pinch to zoom into a
+        shorter window, drag to pan.
       </p>
     </div>
 
@@ -255,9 +255,9 @@
       <h2>Monthly streamflow &mdash; cfs</h2>
       <div style="position:relative;height:220px;"><canvas id="monthlyStreamflowChart"></canvas></div>
       <p class="chart-note">
-        Monthly mean discharge at both gages. SURCEDCO reports seasonally rather than
-        year-round, so its line has winter gaps. Defaults to the most recent 5 years; zoom out
-        for the full 2016&ndash;2025 record.
+        Monthly mean discharge at both gages, 2016&ndash;2025. SURCEDCO reports seasonally rather
+        than year-round, so its line has winter gaps. Scroll or pinch to zoom into a shorter
+        window, drag to pan.
       </p>
     </div>
 
@@ -591,17 +591,15 @@ fetch('data/surface_creek_priority_ranking_correlations_extended.json').then(r =
   document.getElementById('rankingTableWrap').appendChild(table);
 });
 
-// Monthly detail (2016-2025): defaults to the most recent 5 years (2021-01 through 2025-12),
-// full 10-year record reachable by zooming/scrolling out - the range is bounded by
-// limits.x: 'original' below rather than clamped in the dataset itself.
+// Monthly detail (2016-2025): defaults to the full 10-year record, zoomable in via wheel/pinch
+// and pannable via drag once zoomed - the zoomable range is bounded by limits.x: 'original' below.
 fetch('data/surface_creek_monthly_2016-2025.json').then(r => r.json()).then(rows => {
   const months = rows.map(r => r.month);
   const gridColor = 'rgba(128,128,128,0.12)';
   const legendOpt = { labels: { font: { size: 12 }, boxWidth: 12, padding: 8 } };
   const tooltipOpt = { titleFont: { size: 15, weight: '600' }, bodyFont: { size: 14 }, padding: 10, boxPadding: 5 };
-  const defaultRange = { min: '2021-01', max: '2025-12' };
   const baseScales = {
-    x: { ticks: { font: { size: 12 } }, grid: { color: gridColor }, min: defaultRange.min, max: defaultRange.max },
+    x: { ticks: { font: { size: 12 } }, grid: { color: gridColor } },
   };
 
   monthlySwePrecipChart = new Chart(document.getElementById('monthlySwePrecipChart').getContext('2d'), {
