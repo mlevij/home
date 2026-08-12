@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Surface Creek Transect — Findings</title>
+<meta name="description" content="SNOTEL, streamflow, and diversion-structure analysis for the Surface Creek Transect, Delta County, Colorado.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=Poppins:wght@300..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+
+<style>
+  :root {
+    --font: "Poppins", ui-sans-serif, system-ui, -apple-system;
+    --bg: #f7f7f5;
+    --panel: #ffffff;
+    --border: #e5e7eb;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --accent: #1E4D2B;
+    --accent-contrast: #ffffff;
+    --shadow: 0 10px 20px rgba(0,0,0,.06);
+    --main-huc: #004DA8;
+    --aux-huc: #C8560C;
+    --flowline: #2986B8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --font: "Inter", ui-sans-serif, system-ui, -apple-system;
+      --bg: #0d1117; --panel: #161b22; --border: #262c36; --text: #e6edf3;
+      --muted: #8b949e; --accent: #58a6ff; --accent-contrast: #0d1117; --shadow: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --font: "Inter", ui-sans-serif, system-ui, -apple-system;
+    --bg: #0d1117; --panel: #161b22; --border: #262c36; --text: #e6edf3;
+    --muted: #8b949e; --accent: #58a6ff; --accent-contrast: #0d1117; --shadow: none;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: var(--font); }
+  a { color: var(--accent); }
+
+  header {
+    padding: 18px 28px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+  header p.subtitle { margin: 0 0 6px; color: var(--muted); font-size: 0.88rem; }
+  .summary { margin: 0 0 8px; max-width: 900px; }
+  .summary p { color: var(--text); font-size: 0.83rem; line-height: 1.6; margin: 0 0 10px; }
+  .summary p:last-child { margin-bottom: 0; }
+  .downloads { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin-top: 2px; }
+  .downloads-label { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
+  .download-link { font-size: 0.78rem; font-weight: 600; color: var(--accent); text-decoration: none; }
+  .download-link:hover { text-decoration: underline; }
+
+  #themeToggle {
+    background: var(--panel); border: 1px solid var(--border); color: var(--text);
+    font-family: inherit; font-size: 0.78rem; font-weight: 600; padding: 7px 12px;
+    border-radius: 8px; cursor: pointer; box-shadow: var(--shadow); flex-shrink: 0;
+  }
+  #themeToggle:hover { border-color: var(--accent); }
+
+  /* Project picker (title-as-dropdown, shared across analysis/ pages) */
+  .project-picker { position: relative; display: inline-block; }
+  .project-picker-trigger {
+    display: flex; align-items: center; gap: 6px; background: none; border: none;
+    padding: 0; margin: 0 0 4px; cursor: pointer; font: inherit; color: inherit; text-align: left;
+  }
+  .project-picker-trigger h1 { margin: 0; font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; }
+  .project-picker-trigger .picker-chevron { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.5; transition: transform 0.15s; }
+  .project-picker-trigger[aria-expanded="true"] .picker-chevron { transform: rotate(180deg); }
+  .project-picker-menu {
+    position: absolute; top: 100%; left: 0; margin-top: 6px; background: var(--panel);
+    border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow);
+    list-style: none; padding: 6px; margin-left: 0; min-width: 240px; z-index: 50;
+  }
+  .project-picker-menu a { display: block; padding: 8px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; text-decoration: none; color: var(--text); }
+  .project-picker-menu a:hover { background: var(--bg); }
+  .project-picker-menu a.current { color: var(--accent); pointer-events: none; }
+  .project-picker-menu .picker-tag { display: block; font-size: 0.72rem; font-weight: 500; color: var(--muted); margin-top: 1px; }
+
+  main { max-width: 1280px; margin: 0 auto; padding: 22px 28px 60px; display: flex; gap: 20px; align-items: flex-start; }
+  .sidebar { width: 280px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
+  .content { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; box-shadow: var(--shadow); }
+  .card h2 { margin: 0 0 10px; font-size: 0.9rem; font-weight: 700; color: var(--text); }
+  .card .chart-note { margin: 8px 0 0; font-size: 0.76rem; color: var(--muted); line-height: 1.5; }
+
+  .legend-row { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; margin-bottom: 6px; }
+  .legend-swatch { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+  .legend-line { width: 16px; height: 2px; flex-shrink: 0; }
+  .legend-poly { width: 14px; height: 10px; border-radius: 2px; flex-shrink: 0; border: 2px solid; background: transparent; }
+
+  #map { height: 560px; width: 100%; border-radius: 10px; z-index: 1; }
+  .basemap-toggle {
+    background: var(--panel); border: 1px solid var(--border); color: var(--text);
+    font-family: inherit; font-size: 0.72rem; font-weight: 600; padding: 5px 9px;
+    border-radius: 6px; cursor: pointer; box-shadow: var(--shadow);
+  }
+
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 0.76rem; margin-top: 8px; }
+  table.data-table th, table.data-table td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--border); }
+  table.data-table th { color: var(--muted); font-weight: 600; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.02em; }
+  table.data-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  @media (max-width: 860px) {
+    main { flex-direction: column; }
+    .sidebar { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="project-picker">
+      <button class="project-picker-trigger" id="projectPickerBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
+        <h1>Surface Creek Transect</h1>
+        <svg class="picker-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+      </button>
+      <ul class="project-picker-menu" id="projectPickerMenu" role="listbox" hidden>
+        <li><a href="/analysis/moffat/">Moffat County Station Siting<span class="picker-tag">GIS Siting · BLM Rangeland</span></a></li>
+        <li><a href="/analysis/surface-creek/" class="current">Surface Creek Transect<span class="picker-tag">SNOTEL · Streamflow · Diversions</span></a></li>
+      </ul>
+    </div>
+    <p class="subtitle">SNOTEL, streamflow, and diversion-structure analysis · Delta County, CO</p>
+    <div class="summary">
+      <p>
+        Compares Park Reservoir SNOTEL (snow water equivalent, precipitation) against the two real
+        USGS/DWR stream gages on Surface Creek and the network of 88 DWR-administered diversion
+        structures (reservoirs, ditches, pumps) across the Surface Creek and Fruit Growers
+        Reservoir HUC12s, to see how well upstream diversion activity and streamflow track that
+        year's snowpack.
+      </p>
+    </div>
+    <div class="downloads">
+      <span class="downloads-label">Downloads:</span>
+      <a class="download-link" href="data/surface_creek_gage_relative_water_balance_1979-2025.csv" download>SNOTEL + streamflow + diversion data (CSV)</a>
+      <a class="download-link" href="data/surface_creek_priority_ranking_correlations_extended.csv" download>Priority ranking correlations (CSV)</a>
+      <a class="download-link" href="data/surface_creek_structures.csv" download>Diversion structure list (CSV)</a>
+      <a class="download-link" href="#" id="downloadSnotelChart">SNOTEL chart (PNG)</a>
+      <a class="download-link" href="#" id="downloadVolumeChart">Streamflow &amp; diversion chart (PNG)</a>
+      <a class="download-link" href="#" id="downloadRatioChart">Runoff ratio chart (PNG)</a>
+      <a class="download-link" href="#" id="downloadRankingChart">Priority ranking chart (PNG)</a>
+    </div>
+  </div>
+  <button id="themeToggle" type="button">Dark mode</button>
+</header>
+
+<main>
+  <aside class="sidebar">
+    <div class="card">
+      <h2>Map legend</h2>
+      <div class="legend-row"><span class="legend-poly" style="border-color:var(--main-huc);"></span><span>Surface Creek HUC12 (main)</span></div>
+      <div class="legend-row"><span class="legend-poly" style="border-color:var(--aux-huc);"></span><span>Fruit Growers Reservoir&ndash;Gunnison River HUC12 (auxiliary)</span></div>
+      <div class="legend-row"><span class="legend-line" style="background:var(--flowline);"></span><span>Flowlines (3DHP, clipped)</span></div>
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);"></div>
+      <div class="legend-row"><span class="legend-swatch" style="background:#C44E52;"></span><span>Stream gage</span></div>
+      <div class="legend-row"><span class="legend-swatch" style="background:#4C72B0;"></span><span>Reservoir</span></div>
+      <div class="legend-row"><span class="legend-swatch" style="background:#55A868;"></span><span>Ditch</span></div>
+      <div class="legend-row"><span class="legend-swatch" style="background:#8172B2;"></span><span>Pump</span></div>
+      <div class="legend-row"><span class="legend-swatch" style="background:#CCB974;"></span><span>Measuring point</span></div>
+      <div class="legend-row"><span class="legend-swatch" style="background:#64B5CD;"></span><span>Pipeline / diversion point</span></div>
+      <div class="legend-row"><span class="legend-swatch" style="background:#937860;"></span><span>Reservoir system (group)</span></div>
+    </div>
+    <div class="card">
+      <h2>Key results</h2>
+      <p class="chart-note">
+        Total diverted volume correlates with peak SWE at r&nbsp;=&nbsp;0.81 (2016&ndash;2025, all
+        88 structures) &mdash; SURACECO's own gaged flow correlates more tightly, at
+        r&nbsp;=&nbsp;0.98. Over the longer 1979&ndash;2025 window, large/senior structures track
+        SWE more weakly than small/junior ones &mdash; see the ranking chart below.
+      </p>
+    </div>
+  </aside>
+
+  <div class="content">
+    <div class="card">
+      <h2>Study area &amp; diversion structures</h2>
+      <div id="map"></div>
+    </div>
+
+    <div class="card">
+      <h2>SNOTEL (Park Reservoir) &mdash; inches</h2>
+      <div style="position:relative;height:220px;"><canvas id="snotelChart"></canvas></div>
+      <p class="chart-note">Peak SWE and total water-year precipitation, both in inches &mdash; matched units, one chart.</p>
+    </div>
+
+    <div class="card">
+      <h2>Streamflow &amp; diverted volume &mdash; acre-feet</h2>
+      <div style="position:relative;height:240px;"><canvas id="volumeChart"></canvas></div>
+      <p class="chart-note">
+        Gaged annual volume at both USGS gages, plus diverted volume from structures actually
+        upstream of each gage (not the full 88-structure sum). Diverted volume runs higher than
+        gaged flow because DWR counts a reservoir's fill and a downstream ditch's later
+        re-diversion of that same released water as two separate diversions &mdash; expected, not
+        an error.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Runoff ratio &mdash; dimensionless</h2>
+      <div style="position:relative;height:220px;"><canvas id="ratioChart"></canvas></div>
+      <p class="chart-note">
+        (Volume &divide; drainage area, converted to inches) &divide; total precipitation. Gaged-only
+        sits in a physically plausible 0.1&ndash;0.4 range for a semi-arid mountain watershed;
+        gaged+diverted runs above 1 in wetter years from the same reuse effect noted above, not a
+        real water-balance violation.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Water-rights priority &amp; size effects (Spearman &rho;, 1979&ndash;2025)</h2>
+      <div style="position:relative;height:240px;"><canvas id="rankingChart"></canvas></div>
+      <p class="chart-note">
+        45-structure balanced panel (each one has a diverted-volume record in every one of the 47
+        years, so every tier sums the same set of structures each year). In two of the three
+        rankings, large/senior structures correlate with SWE more weakly than small/junior ones.
+        Full numbers (Pearson, log-Pearson, Spearman, p-values) below.
+      </p>
+      <div id="rankingTableWrap"></div>
+    </div>
+
+    <div class="card">
+      <h2>Methodology</h2>
+      <div class="summary">
+        <p>
+          Diversion structures are tagged as upstream of SURCEDCO, between the two gages, or
+          downstream of SURACECO by their position along Surface Creek and its tributaries, traced
+          through the USGS 3D Hydrography Program flowline network clipped to the Surface Creek
+          and Fruit Growers Reservoir HUC12s. DWR's own recorded water source for a structure
+          doesn't always match the creek it physically sits on, so that field isn't used for this
+          routing &mdash; two structures administratively tied to Surface Creek turned out to sit
+          on Milk Creek, confirmed by locating Milk Creek's actual confluence along the flowline
+          network.
+        </p>
+        <p>
+          Annual comparisons use a hydrologic year running November 1&ndash;October 31, matching
+          when diversion activity in this basin is actually dormant (roughly November&ndash;March)
+          versus active. Diverted volume is DWR's own recorded annual figure per structure; a
+          reservoir's fill and a downstream ditch's later re-diversion of that same released water
+          are both counted, so diverted volume naturally runs higher than gaged streamflow &mdash;
+          an accounting characteristic of the data, not an error in this comparison.
+        </p>
+        <p>
+          The priority/size ranking chart uses a longer 1979&ndash;2025 window (bounded by the
+          Park Reservoir SNOTEL station's own period of record) and a 45-structure subset with a
+          complete diversion record across every one of those years, so each ranking tier sums a
+          consistent set of structures rather than a shifting one. Diverted volume across
+          structures is right-skewed, so results are reported as raw Pearson r, log-transformed
+          Pearson r, and Spearman rank correlation together rather than relying on one measure.
+        </p>
+        <p>
+          Full write-up, including every data-quality note and the reasoning behind each
+          methodology choice: <a href="README.md" target="_blank" rel="noopener">README.md</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+// Project picker (title-as-dropdown) toggle - shared behavior across analysis/ pages.
+(function () {
+  const btn = document.getElementById('projectPickerBtn');
+  const menu = document.getElementById('projectPickerMenu');
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    const opening = menu.hidden;
+    menu.hidden = !opening;
+    btn.setAttribute('aria-expanded', String(opening));
+  });
+  document.addEventListener('click', function () {
+    menu.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      menu.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+
+// Theme toggle (light/dark), independent of OS preference, same pattern as moffat/.
+(function () {
+  const btn = document.getElementById('themeToggle');
+  const stored = localStorage.getItem('findings-theme');
+  if (stored) document.documentElement.setAttribute('data-theme', stored);
+  function label() {
+    const t = document.documentElement.getAttribute('data-theme');
+    btn.textContent = t === 'dark' ? 'Light mode' : 'Dark mode';
+  }
+  label();
+  btn.addEventListener('click', function () {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('findings-theme', next);
+    label();
+  });
+})();
+
+// Chart PNG downloads - each chart instance is assigned to its named variable
+// once loaded; grab the current one at click time rather than at page load.
+function wireChartDownload(linkId, getChart, filename) {
+  document.getElementById(linkId).addEventListener('click', function (e) {
+    e.preventDefault();
+    const chart = getChart();
+    if (!chart) return;
+    const a = document.createElement('a');
+    a.href = chart.toBase64Image();
+    a.download = filename;
+    a.click();
+  });
+}
+wireChartDownload('downloadSnotelChart', () => snotelChart, 'surface-creek-snotel.png');
+wireChartDownload('downloadVolumeChart', () => volumeChart, 'surface-creek-streamflow-diversions.png');
+wireChartDownload('downloadRatioChart', () => ratioChart, 'surface-creek-runoff-ratio.png');
+wireChartDownload('downloadRankingChart', () => rankingChart, 'surface-creek-priority-ranking.png');
+
+const STRUCT_COLORS = {
+  'Stream Gage': '#C44E52',
+  'Reservoir': '#4C72B0',
+  'Ditch': '#55A868',
+  'Pump': '#8172B2',
+  'Measuring Point': '#CCB974',
+  'Pipeline/Diversion Point': '#64B5CD',
+  'Pipeline': '#64B5CD',
+  'Reservoir System': '#937860',
+};
+
+// ---------- Map ----------
+const map = L.map('map', { zoomSnap: 0.25, scrollWheelZoom: true });
+let tileLayer = null;
+let basemapDark = localStorage.getItem('surface-creek-basemap') === 'dark';
+
+function updateTileLayer(isDark) {
+  if (tileLayer) map.removeLayer(tileLayer);
+  tileLayer = isDark
+    ? L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO', maxZoom: 19,
+      })
+    : L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: 'Esri World Topo Map', maxZoom: 19,
+      });
+  tileLayer.addTo(map);
+}
+updateTileLayer(basemapDark);
+
+const BasemapControl = L.Control.extend({
+  options: { position: 'topright' },
+  onAdd: function () {
+    const btn = L.DomUtil.create('button', 'basemap-toggle');
+    btn.type = 'button';
+    btn.textContent = basemapDark ? 'Light basemap' : 'Dark basemap';
+    L.DomEvent.disableClickPropagation(btn);
+    L.DomEvent.on(btn, 'click', () => {
+      basemapDark = !basemapDark;
+      localStorage.setItem('surface-creek-basemap', basemapDark ? 'dark' : 'light');
+      updateTileLayer(basemapDark);
+      btn.textContent = basemapDark ? 'Light basemap' : 'Dark basemap';
+    });
+    return btn;
+  },
+});
+map.addControl(new BasemapControl());
+
+const boundsLayer = L.featureGroup().addTo(map);
+
+// Boundaries, flowlines, and points each load via independent async fetches, so whichever
+// finishes last would otherwise end up drawn on top regardless of code order (flowlines.geojson
+// is much larger than points.geojson, so it can easily finish after and cover the points).
+// A dedicated higher-z-index pane keeps points on top no matter which fetch resolves last.
+map.createPane('pointsPane');
+map.getPane('pointsPane').style.zIndex = 450;
+
+fetch('data/huc12_boundaries.geojson').then(r => r.json()).then(gj => {
+  L.geoJSON(gj, {
+    style: f => ({
+      color: f.properties.role === 'main' ? '#004DA8' : '#C8560C',
+      weight: 2, fillOpacity: 0.03,
+    }),
+    onEachFeature: (f, layer) => layer.bindPopup(`<b>${f.properties.name}</b><br>HUC12 ${f.properties.huc12}<br>${f.properties.areasqkm.toFixed(1)} sq km`),
+  }).addTo(boundsLayer);
+});
+
+fetch('data/flowlines.geojson').then(r => r.json()).then(gj => {
+  L.geoJSON(gj, {
+    style: { color: '#2986B8', weight: 1.2, opacity: 0.7 },
+    onEachFeature: (f, layer) => {
+      if (f.properties.gnisidlabel) layer.bindPopup(f.properties.gnisidlabel);
+    },
+  }).addTo(boundsLayer);
+});
+
+fetch('data/points.geojson').then(r => r.json()).then(gj => {
+  const layer = L.geoJSON(gj, {
+    pointToLayer: (f, latlng) => L.circleMarker(latlng, {
+      pane: 'pointsPane',
+      radius: f.properties.structType === 'Stream Gage' ? 7 : 5,
+      color: '#fff', weight: 1, fillColor: STRUCT_COLORS[f.properties.structType] || '#999',
+      fillOpacity: 0.9,
+    }),
+    onEachFeature: (f, lyr) => lyr.bindPopup(
+      `<b>${f.properties.name}</b><br>${f.properties.structType} &middot; ${f.properties.WDID}<br>` +
+      `<span style="color:#666;">${f.properties.subBasin}</span>`
+    ),
+  }).addTo(boundsLayer);
+  map.fitBounds(boundsLayer.getBounds(), { padding: [20, 20] });
+});
+
+// ---------- Charts ----------
+function numCol(rows, col) { return rows.map(r => parseFloat(r[col])); }
+
+let snotelChart, volumeChart, ratioChart, rankingChart;
+
+fetch('data/surface_creek_gage_relative_water_balance_1979-2025.json').then(r => r.json()).then(rows => {
+  rows.sort((a, b) => parseInt(a.year) - parseInt(b.year));
+  const years = rows.map(r => r.year);
+  const gridColor = 'rgba(128,128,128,0.12)';
+  const baseScales = {
+    x: { ticks: { font: { size: 9 } }, grid: { color: gridColor } },
+  };
+  const legendOpt = { labels: { font: { size: 9 }, boxWidth: 10, padding: 8 } };
+  const tooltipOpt = { titleFont: { size: 13, weight: '600' }, bodyFont: { size: 12 }, padding: 10, boxPadding: 5 };
+
+  snotelChart = new Chart(document.getElementById('snotelChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: years,
+      datasets: [
+        { label: 'Peak SWE (in)', data: numCol(rows, 'peak_swe_in'), borderColor: '#C44E52', backgroundColor: '#C44E52', tension: 0.15 },
+        { label: 'Total precip (in)', data: numCol(rows, 'total_precip_in'), borderColor: '#4C72B0', backgroundColor: '#4C72B0', tension: 0.15 },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      scales: { ...baseScales, y: { title: { display: true, text: 'inches', font: { size: 9 } }, ticks: { font: { size: 9 } }, grid: { color: gridColor } } },
+      plugins: { legend: legendOpt, tooltip: tooltipOpt },
+    },
+  });
+
+  volumeChart = new Chart(document.getElementById('volumeChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: years,
+      datasets: [
+        { label: 'SURCEDCO gaged', data: numCol(rows, 'SURCEDCO_hydroyear_volume_acft'), backgroundColor: '#4C72B0' },
+        { label: 'SURACECO gaged', data: numCol(rows, 'SURACECO_hydroyear_volume_acft'), backgroundColor: '#55A868' },
+        { label: 'Diverted, upstream of SURCEDCO', data: numCol(rows, 'diverted_upstream_of_SURCEDCO_acft'), backgroundColor: '#8172B2' },
+        { label: 'Diverted, upstream of SURACECO', data: numCol(rows, 'diverted_upstream_of_SURACECO_acft'), backgroundColor: '#CCB974' },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      scales: { ...baseScales, y: { title: { display: true, text: 'acre-feet', font: { size: 9 } }, ticks: { font: { size: 9 } }, grid: { color: gridColor } } },
+      plugins: { legend: legendOpt, tooltip: tooltipOpt },
+    },
+  });
+
+  ratioChart = new Chart(document.getElementById('ratioChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: years,
+      datasets: [
+        { label: 'Gaged only (SURACECO)', data: numCol(rows, 'runoff_ratio_gaged_only__SURACECO'), borderColor: '#55A868', backgroundColor: '#55A868', tension: 0.15 },
+        { label: 'Gaged + upstream diverted (SURCEDCO)', data: numCol(rows, 'runoff_ratio_gaged_plus_upstream_diverted__SURCEDCO'), borderColor: '#4C72B0', backgroundColor: '#4C72B0', tension: 0.15 },
+        { label: 'Gaged + upstream diverted (SURACECO)', data: numCol(rows, 'runoff_ratio_gaged_plus_upstream_diverted__SURACECO'), borderColor: '#C44E52', backgroundColor: '#C44E52', tension: 0.15 },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      scales: { ...baseScales, y: { title: { display: true, text: 'ratio', font: { size: 9 } }, ticks: { font: { size: 9 } }, grid: { color: gridColor } } },
+      plugins: {
+        legend: legendOpt, tooltip: tooltipOpt,
+        annotation: { annotations: { ratioOne: { type: 'line', yMin: 1, yMax: 1, borderColor: 'rgba(128,128,128,0.5)', borderWidth: 1, borderDash: [4, 4] } } },
+      },
+    },
+  });
+});
+
+fetch('data/surface_creek_priority_ranking_correlations_extended.json').then(r => r.json()).then(rows => {
+  const labels = rows.map(r => `${r.ranking.split(' (')[0]}: ${r.tier}`);
+  const gridColor = 'rgba(128,128,128,0.12)';
+
+  rankingChart = new Chart(document.getElementById('rankingChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: "Spearman ρ vs. peak SWE", data: rows.map(r => parseFloat(r.spearman_rho)), backgroundColor: rows.map(r => parseFloat(r.spearman_p) < 0.05 ? '#4C72B0' : '#CCB974') }],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      indexAxis: 'y',
+      scales: {
+        x: { min: -1, max: 1, title: { display: true, text: "Spearman ρ", font: { size: 9 } }, ticks: { font: { size: 9 } }, grid: { color: gridColor } },
+        y: { ticks: { font: { size: 9 } }, grid: { display: false } },
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          titleFont: { size: 12, weight: '600' }, bodyFont: { size: 11 }, padding: 8,
+          callbacks: {
+            afterLabel: ctx => {
+              const r = rows[ctx.dataIndex];
+              return `n=${r.n_structures} structures, ${r.n_years} years\np = ${parseFloat(r.spearman_p).toFixed(4)}${parseFloat(r.spearman_p) >= 0.05 ? ' (not significant)' : ''}`;
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const table = document.createElement('table');
+  table.className = 'data-table';
+  table.innerHTML = `
+    <thead><tr><th>Ranking</th><th>Tier</th><th class="num">n</th><th class="num">Pearson r</th><th class="num">log-Pearson r</th><th class="num">Spearman &rho;</th><th class="num">p (Spearman)</th></tr></thead>
+    <tbody>${rows.map(r => `
+      <tr>
+        <td>${r.ranking}</td><td>${r.tier}</td>
+        <td class="num">${r.n_structures}</td>
+        <td class="num">${parseFloat(r.pearson_r).toFixed(2)}</td>
+        <td class="num">${parseFloat(r.log_pearson_r).toFixed(2)}</td>
+        <td class="num">${parseFloat(r.spearman_rho).toFixed(2)}</td>
+        <td class="num">${parseFloat(r.spearman_p) < 0.001 ? '<0.001' : parseFloat(r.spearman_p).toFixed(3)}</td>
+      </tr>`).join('')}</tbody>`;
+  document.getElementById('rankingTableWrap').appendChild(table);
+});
+</script>
+</body>
+</html>

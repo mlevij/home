@@ -1,0 +1,91 @@
+WDID,StructName,StructType,sub_basin,WaterSrc,LatDecDeg,LongDecDeg,source_file
+SURCEDCO,SURFACE CREEK NEAR CEDAREDGE (USGS 09143000),Stream Gage,Gage,SURFACE CREEK,38.984722,-107.853889,USGS site service
+SURACECO,SURFACE CREEK AT CEDAREDGE (USGS 09143500),Stream Gage,Gage,SURFACE CREEK,38.9016487,-107.921176,USGS site service
+4003125,BLANCHE PARK RES,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),WEST FORK BONITA SURFACE CREEK [00175308],39.054543,-107.871697,Grand-Mesa_portion.xlsx
+4003138,LEON TUNNEL OUTLET,Pipeline,Within Grand Mesa NF (Surface Creek HUC12 headwaters),MARCOTT CREEK [00175356],39.064696,-107.807741,Grand-Mesa_portion.xlsx
+4003341,BONITA RES,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),SURFACE CREEK [00175359],39.053109,-107.845307,Grand-Mesa_portion.xlsx
+4003342,CABIN LAKE RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),WEST FORK BONITA SURFACE CREEK [00175308],39.03961,-107.88321,Grand-Mesa_portion.xlsx
+4003343,CEDAR MESA RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),SURFACE CREEK [00175359],39.049309,-107.846714,Grand-Mesa_portion.xlsx
+4003344,COLE RESERVOIR NO. 4,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),SURFACE CREEK [00175359],39.019009,-107.845717,Grand-Mesa_portion.xlsx
+4003345,COLE RESERVOIR NO. 5,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),SURFACE CREEK [00175359],39.003947,-107.846037,Grand-Mesa_portion.xlsx
+4003346,DESERTED PARK RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),SURFACE CREEK [00175359],39.04641,-107.863916,Grand-Mesa_portion.xlsx
+4003347,DREYFUS RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),SURFACE CREEK [00175359],39.020011,-107.86181,Grand-Mesa_portion.xlsx
+4003348,ELK PARK RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),WEST FORK BONITA SURFACE CREEK [00175308],39.045205,-107.886811,Grand-Mesa_portion.xlsx
+4003350,FISH LAKE RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),WEST FORK BONITA SURFACE CREEK [00175308],39.040203,-107.886907,Grand-Mesa_portion.xlsx
+4003351,GREENWOOD RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),WEST FORK BONITA SURFACE CREEK [00175308],39.053605,-107.89211,Grand-Mesa_portion.xlsx
+4003352,KEHMEIER RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),BONITA CREEK [00175342],39.058208,-107.833113,Grand-Mesa_portion.xlsx
+4003353,KNOX RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),SURFACE CREEK [00175359],39.042006,-107.878109,Grand-Mesa_portion.xlsx
+4003354,MILITARY PARK RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),WEST FORK BONITA SURFACE CREEK [00175308],39.058703,-107.887811,Grand-Mesa_portion.xlsx
+4003355,PARK RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),SURFACE CREEK [00175359],39.046134,-107.875099,Grand-Mesa_portion.xlsx
+4003356,ROUND LAKE RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),BONITA CREEK [00175342],39.068207,-107.832415,Grand-Mesa_portion.xlsx
+4003357,SACKETT RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),BONITA CREEK [00175342],39.065205,-107.83211,Grand-Mesa_portion.xlsx
+4003359,TRIO RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),SURFACE CREEK [00175359],39.047608,-107.833313,Grand-Mesa_portion.xlsx
+4003360,TWIN LAKE RESERVOIR NO. 1,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),BONITA CREEK [00175342],39.064702,-107.840214,Grand-Mesa_portion.xlsx
+4003361,TWIN LAKE RESERVOIR NO. 2,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),BONITA CREEK [00175342],39.068106,-107.842107,Grand-Mesa_portion.xlsx
+4003362,VELA RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),WEST FORK BONITA SURFACE CREEK [00175308],39.06301,-107.871717,Grand-Mesa_portion.xlsx
+4003363,WEIR & JOHNSON RESERVOIR NO. 2,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),BONITA CREEK [00175342],39.066803,-107.831215,Grand-Mesa_portion.xlsx
+4003364,WEIR PARK RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),WEST FORK BONITA SURFACE CREEK [00175308],39.035609,-107.88471,Grand-Mesa_portion.xlsx
+4003366,CARBONATE CAMP RESERVOIR NO. 3,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),SURFACE CREEK [00175359],39.003505,-107.878717,Grand-Mesa_portion.xlsx
+4003378,CALUMET RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),MARCOTT CREEK [00175356],39.046204,-107.815408,Grand-Mesa_portion.xlsx
+4003379,COLE RESERVOIR NO. 1,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),MARCOTT CREEK [00175356],39.055808,-107.82211,Grand-Mesa_portion.xlsx
+4003380,COLE RESERVOIR NO. 2,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),MARCOTT CREEK [00175356],39.052208,-107.814514,Grand-Mesa_portion.xlsx
+4003381,COLE RESERVOIR NO. 3,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),SURFACE CREEK [00175359],39.046109,-107.821215,Grand-Mesa_portion.xlsx
+4003382,DOUGHTY RESERVOIR NO. 1,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),MARCOTT CREEK [00175356],39.047201,-107.813703,Grand-Mesa_portion.xlsx
+4003383,DOUGHTY RESERVOIR NO. 2,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),MARCOTT CREEK [00175356],39.043505,-107.81641,Grand-Mesa_portion.xlsx
+4003384,HALE RES,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),BEAVER CREEK [00175357],39.03971,-107.789516,Grand-Mesa_portion.xlsx
+4003385,LEON PARK RES,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),MARCOTT CREEK [00175356],39.066488,-107.813729,Grand-Mesa_portion.xlsx
+4003386,LITTLE GIANT NO 1 RES,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),BEAVER CREEK [00175357],39.040405,-107.788307,Grand-Mesa_portion.xlsx
+4003387,LITTLE GIANT NO 2 RES,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),BEAVER CREEK [00175357],39.045885,-107.784826,Grand-Mesa_portion.xlsx
+4003388,MARCOTT PARK RES,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),SURFACE CREEK [00175359],39.034606,-107.809218,Grand-Mesa_portion.xlsx
+4003389,TRICKLE RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),BEAVER CREEK [00175357],39.033209,-107.797611,Grand-Mesa_portion.xlsx
+4003390,Y & S RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),MARCOTT CREEK [00175356],39.053806,-107.808015,Grand-Mesa_portion.xlsx
+4003461,ZIGZAG RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),SURFACE CREEK [00175359],39.046927,-107.792264,Grand-Mesa_portion.xlsx
+4003468,LAST CHANCE RES,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),BEAVER CREEK [00175357],39.0469,-107.787618,Grand-Mesa_portion.xlsx
+4003523,PEAK RESERVOIR,Reservoir,Within Grand Mesa NF (Surface Creek HUC12 headwaters),WEST FORK BONITA SURFACE CREEK [00175308],39.050302,-107.893812,Grand-Mesa_portion.xlsx
+4004004,SURFACE CREEK RESERVOIR GROUP,Reservoir System,Within Grand Mesa NF (Surface Creek HUC12 headwaters),SURFACE CREEK [00175359],39.042949,-107.877487,Grand-Mesa_portion.xlsx
+4004032,BONITA CREEK RESERVOIR GROUP,Reservoir System,Within Grand Mesa NF (Surface Creek HUC12 headwaters),BONITA CREEK [00175342],39.049309,-107.846714,Grand-Mesa_portion.xlsx
+4004033,MARCOTT CREEK RESERVOIR GROUP,Reservoir System,Within Grand Mesa NF (Surface Creek HUC12 headwaters),MARCOTT CREEK [00175356],39.034606,-107.809218,Grand-Mesa_portion.xlsx
+4004040,BEAVER CREEK RESERVOIR GROUP,Reservoir System,Within Grand Mesa NF (Surface Creek HUC12 headwaters),BEAVER CREEK [00175357],39.033209,-107.797611,Grand-Mesa_portion.xlsx
+4000692,SOONER DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.979906,-107.863887,Surface Creek Transect Project-stream and ditch gages.docx
+4000675,CEDAR MESA DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.979591,-107.86534,Surface Creek Transect Project-stream and ditch gages.docx
+4018230,BEAN P/A POD,Measuring Point,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),Measuring Point,38.975812,-107.871755,Surface Creek Transect Project-stream and ditch gages.docx
+4000685,KLONDYKE DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.969663,-107.879239,Surface Creek Transect Project-stream and ditch gages.docx
+4006216,USCDWUA DIV.PT,Pipeline/Diversion Point,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),Pipeline; not sure about water source,38.975812,-107.871755,Surface Creek Transect Project-stream and ditch gages.docx
+4003197,HEYN PUMP,Pump,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),Mill Creek,38.966023,-107.882553,Surface Creek Transect Project-stream and ditch gages.docx
+4000686,LONE PINE DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.965212,-107.876,Surface Creek Transect Project-stream and ditch gages.docx
+4004158,EASTMENT PUMP,Pump,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),Mill Creek,38.964473,-107.883644,Surface Creek Transect Project-stream and ditch gages.docx
+4000689,REED DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.959218,-107.886673,Surface Creek Transect Project-stream and ditch gages.docx
+4000688,PARADISE DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.949626,-107.901444,Surface Creek Transect Project-stream and ditch gages.docx
+4000682,HARRIS DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.94728,-107.901244,Surface Creek Transect Project-stream and ditch gages.docx
+4018271,HIDDEN MESA P/A POD,Measuring Point,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),Measuring point,38.944611,-107.905323,Surface Creek Transect Project-stream and ditch gages.docx
+4002963,DANZEISEN PUMP,Pump,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.942086,-107.907227,Surface Creek Transect Project-stream and ditch gages.docx
+4000671,BEESON DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.940707,-107.908682,Surface Creek Transect Project-stream and ditch gages.docx
+4000687,METZGER DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.937447,-107.911905,Surface Creek Transect Project-stream and ditch gages.docx
+4000694,WILD CHERRY DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.932223,-107.912937,Surface Creek Transect Project-stream and ditch gages.docx
+4000679,GREGG DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.931174,-107.912352,Surface Creek Transect Project-stream and ditch gages.docx
+4000680,GURNEY DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.930349,-107.913299,Surface Creek Transect Project-stream and ditch gages.docx
+4000676,CEDAREDGE PIPELINE,Pipeline/Diversion Point,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.929204,-107.914071,Surface Creek Transect Project-stream and ditch gages.docx
+4000672,C AND D DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.925638,-107.915793,Surface Creek Transect Project-stream and ditch gages.docx
+4000684,JACKSON DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.922808,-107.916934,Surface Creek Transect Project-stream and ditch gages.docx
+4000690,ROSE DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.9205,-107.917001,Surface Creek Transect Project-stream and ditch gages.docx
+4000683,HORSESHOE DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.92056,-107.916404,Surface Creek Transect Project-stream and ditch gages.docx
+4018154,ROSIES WELL P/A POD,Measuring Point,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),Measuring point,38.919972,-107.898758,Surface Creek Transect Project-stream and ditch gages.docx
+4006014,MELSON PUMP,Pump,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.912019,-107.919283,Surface Creek Transect Project-stream and ditch gages.docx
+4000681,HARD LABOR DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.911272,-107.918883,Surface Creek Transect Project-stream and ditch gages.docx
+4000693,TRICKLE DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.911378,-107.918991,Surface Creek Transect Project-stream and ditch gages.docx
+4002598,LOWRANCE PUMP,Pump,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.911246,-107.918859,Surface Creek Transect Project-stream and ditch gages.docx
+4000755,COOK DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.907428,-107.920225,Surface Creek Transect Project-stream and ditch gages.docx
+4000760,FRANK DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.906846,-107.9208,Surface Creek Transect Project-stream and ditch gages.docx
+4000778,SETTLE DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.906846,-107.920824,Surface Creek Transect Project-stream and ditch gages.docx
+4006214,LINDSEY PUMP,Pump,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.899238,-107.922437,Surface Creek Transect Project-stream and ditch gages.docx
+4002154,ALFALFA DITCH DIV PT NO3,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.895192,-107.92317,Surface Creek Transect Project-stream and ditch gages.docx
+4002738,SEAVER PUMP,Pump,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.89345,-107.923317,Surface Creek Transect Project-stream and ditch gages.docx
+4000779,SHEPHERD DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.892322,-107.923755,Surface Creek Transect Project-stream and ditch gages.docx
+4000751,ALFALFA DITCH,Ditch,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.891272,-107.923585,Surface Creek Transect Project-stream and ditch gages.docx
+4006397,OTIS WILLOUGHBY PUMP,Pump,Below Grand Mesa NF to Alfalfa Ditch (Surface Creek HUC12),,38.888931,-107.924965,Surface Creek Transect Project-stream and ditch gages.docx
+4018278,HALIKOYTAKIS P/A POD,Measuring Point,Fruit Growers Reservoir-Gunnison River HUC12,Measuring point,38.884035,-107.922251,Surface Creek Transect Project-stream and ditch gages.docx
+4000769,LAMAR DITCH,Ditch,Fruit Growers Reservoir-Gunnison River HUC12,water source: CEDAR RUN,38.85679,-107.950954,Surface Creek Transect Project-stream and ditch gages.docx
+4000826,WHITING DITCH,Ditch,Fruit Growers Reservoir-Gunnison River HUC12,Poison Gulch,38.854949,-107.905494,Surface Creek Transect Project-stream and ditch gages.docx
+4000750,ALBERT WEIR DITCH,Ditch,Fruit Growers Reservoir-Gunnison River HUC12,Cedar Run,38.847333,-107.956911,Surface Creek Transect Project-stream and ditch gages.docx
+4000791,CIRCLE DITCH,Ditch,Fruit Growers Reservoir-Gunnison River HUC12,Alfalfa run – at the reservoir outlet,38.826706,-107.955354,Surface Creek Transect Project-stream and ditch gages.docx
+4003365,FRUIT GROWERS RESERVOIR,Reservoir,Fruit Growers Reservoir-Gunnison River HUC12,Alfalfa Run – reservoir outlet,38.826604,-107.954728,Surface Creek Transect Project-stream and ditch gages.docx
