@@ -131,11 +131,10 @@
     <p class="subtitle">SNOTEL, streamflow, and diversion-structure analysis · Delta County, CO</p>
     <div class="summary">
       <p>
-        Compares Park Reservoir SNOTEL (snow water equivalent, precipitation) against the two real
-        USGS/DWR stream gages on Surface Creek and the network of 88 DWR-administered diversion
-        structures (reservoirs, ditches, pumps) across the Surface Creek and Fruit Growers
-        Reservoir HUC12s, to see how well upstream diversion activity and streamflow track that
-        year's snowpack.
+        Snow water equivalent and precipitation from the Park Reservoir SNOTEL station, compared
+        against streamflow at the two USGS/DWR gages on Surface Creek and diversion volume from
+        the 88 DWR-administered structures across the Surface Creek and Fruit Growers Reservoir
+        HUC12s, Delta County, Colorado.
       </p>
     </div>
     <div class="downloads">
@@ -172,10 +171,10 @@
     <div class="card">
       <h2>Key results</h2>
       <p class="chart-note">
-        Total diverted volume correlates with peak SWE at r&nbsp;=&nbsp;0.81 (2016&ndash;2025, all
-        88 structures) &mdash; SURACECO's own gaged flow correlates more tightly, at
-        r&nbsp;=&nbsp;0.98. Over the longer 1979&ndash;2025 window, large/senior structures track
-        SWE more weakly than small/junior ones &mdash; see the ranking chart below.
+        Gaged streamflow correlates with peak SWE at r&nbsp;=&nbsp;0.98 (SURACECO, 2016&ndash;2025);
+        total diverted volume correlates at r&nbsp;=&nbsp;0.81 (all 88 structures). Large/senior
+        structures track SWE more weakly than small/junior ones (1979&ndash;2025) &mdash; see
+        ranking chart.
       </p>
     </div>
   </aside>
@@ -189,18 +188,17 @@
     <div class="card">
       <h2>SNOTEL (Park Reservoir) &mdash; inches</h2>
       <div style="position:relative;height:220px;"><canvas id="snotelChart"></canvas></div>
-      <p class="chart-note">Peak SWE and total water-year precipitation, both in inches &mdash; matched units, one chart.</p>
+      <p class="chart-note">Peak SWE and total water-year precipitation.</p>
     </div>
 
     <div class="card">
       <h2>Streamflow &amp; diverted volume &mdash; acre-feet</h2>
       <div style="position:relative;height:240px;"><canvas id="volumeChart"></canvas></div>
       <p class="chart-note">
-        Gaged annual volume at both USGS gages, plus diverted volume from structures actually
-        upstream of each gage (not the full 88-structure sum). Diverted volume runs higher than
-        gaged flow because DWR counts a reservoir's fill and a downstream ditch's later
-        re-diversion of that same released water as two separate diversions &mdash; expected, not
-        an error.
+        Gaged annual volume at both USGS gages, plus diverted volume from the structures upstream
+        of each gage. Diverted volume exceeds gaged flow because a reservoir's fill and a
+        downstream structure's later re-diversion of the same released water are each recorded
+        as separate diversions.
       </p>
     </div>
 
@@ -208,10 +206,10 @@
       <h2>Runoff ratio &mdash; dimensionless</h2>
       <div style="position:relative;height:220px;"><canvas id="ratioChart"></canvas></div>
       <p class="chart-note">
-        (Volume &divide; drainage area, converted to inches) &divide; total precipitation. Gaged-only
-        sits in a physically plausible 0.1&ndash;0.4 range for a semi-arid mountain watershed;
-        gaged+diverted runs above 1 in wetter years from the same reuse effect noted above, not a
-        real water-balance violation.
+        Gaged and diverted volume, converted to an equivalent depth over each drainage area,
+        divided by total precipitation. The gaged-only ratio (0.1&ndash;0.4) is consistent with a
+        semi-arid mountain watershed; the gaged-plus-diverted ratio exceeds 1 in wetter years from
+        the re-diversion effect noted above.
       </p>
     </div>
 
@@ -219,10 +217,9 @@
       <h2>Water-rights priority &amp; size effects (Spearman &rho;, 1979&ndash;2025)</h2>
       <div style="position:relative;height:240px;"><canvas id="rankingChart"></canvas></div>
       <p class="chart-note">
-        45-structure balanced panel (each one has a diverted-volume record in every one of the 47
-        years, so every tier sums the same set of structures each year). In two of the three
-        rankings, large/senior structures correlate with SWE more weakly than small/junior ones.
-        Full numbers (Pearson, log-Pearson, Spearman, p-values) below.
+        45-structure subset with a complete record across all 47 years. Large/senior structures
+        correlate with SWE more weakly than small/junior ones in two of the three rankings. Full
+        numbers below.
       </p>
       <div id="rankingTableWrap"></div>
     </div>
@@ -231,34 +228,25 @@
       <h2>Methodology</h2>
       <div class="summary">
         <p>
-          Diversion structures are tagged as upstream of SURCEDCO, between the two gages, or
-          downstream of SURACECO by their position along Surface Creek and its tributaries, traced
-          through the USGS 3D Hydrography Program flowline network clipped to the Surface Creek
-          and Fruit Growers Reservoir HUC12s. DWR's own recorded water source for a structure
-          doesn't always match the creek it physically sits on, so that field isn't used for this
-          routing &mdash; two structures administratively tied to Surface Creek turned out to sit
-          on Milk Creek, confirmed by locating Milk Creek's actual confluence along the flowline
-          network.
+          Each diversion structure was assigned a position relative to the two gages (upstream of
+          both, between them, or downstream of both) using flowline routing through the USGS 3D
+          Hydrography Program network, rather than each structure's recorded water source, which
+          reflects legal water-right designation rather than physical location.
         </p>
         <p>
-          Annual comparisons use a hydrologic year running November 1&ndash;October 31, matching
-          when diversion activity in this basin is actually dormant (roughly November&ndash;March)
-          versus active. Diverted volume is DWR's own recorded annual figure per structure; a
-          reservoir's fill and a downstream ditch's later re-diversion of that same released water
-          are both counted, so diverted volume naturally runs higher than gaged streamflow &mdash;
-          an accounting characteristic of the data, not an error in this comparison.
+          Annual values are aggregated by hydrologic year (November 1&ndash;October 31) rather
+          than calendar year, aligning each winter's snow accumulation with the runoff season it
+          produces. Diverted volume reflects DWR's recorded annual figure per structure; a
+          reservoir's fill and a downstream structure's later re-diversion of the same released
+          water are each recorded independently, so total diverted volume exceeds gaged
+          streamflow. Runoff ratios convert gaged and diverted volume to an equivalent depth using
+          each gage's USGS drainage area, for direct comparison against SNOTEL precipitation.
         </p>
         <p>
-          The priority/size ranking chart uses a longer 1979&ndash;2025 window (bounded by the
-          Park Reservoir SNOTEL station's own period of record) and a 45-structure subset with a
-          complete diversion record across every one of those years, so each ranking tier sums a
-          consistent set of structures rather than a shifting one. Diverted volume across
-          structures is right-skewed, so results are reported as raw Pearson r, log-transformed
-          Pearson r, and Spearman rank correlation together rather than relying on one measure.
-        </p>
-        <p>
-          Full write-up, including every data-quality note and the reasoning behind each
-          methodology choice: <a href="README.md" target="_blank" rel="noopener">README.md</a>.
+          Water-rights priority and size effects were evaluated over 1979&ndash;2025 (bounded by
+          the SNOTEL station's period of record), using a 45-structure subset with a complete
+          diversion record across all 47 years, and are reported using Pearson, log-transformed
+          Pearson, and Spearman correlation.
         </p>
       </div>
     </div>
@@ -307,15 +295,25 @@
   });
 })();
 
-// Chart PNG downloads - each chart instance is assigned to its named variable
-// once loaded; grab the current one at click time rather than at page load.
+// Chart PNG downloads - each chart instance is assigned to its named variable once loaded;
+// grab the current one at click time rather than at page load. Exports always composite onto
+// a white background regardless of the page's current theme, since that's the more usable
+// default for pasting into documents/slides.
 function wireChartDownload(linkId, getChart, filename) {
   document.getElementById(linkId).addEventListener('click', function (e) {
     e.preventDefault();
     const chart = getChart();
     if (!chart) return;
+    const src = chart.canvas;
+    const out = document.createElement('canvas');
+    out.width = src.width;
+    out.height = src.height;
+    const ctx = out.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, out.width, out.height);
+    ctx.drawImage(src, 0, 0);
     const a = document.createElement('a');
-    a.href = chart.toBase64Image();
+    a.href = out.toDataURL('image/png');
     a.download = filename;
     a.click();
   });
