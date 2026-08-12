@@ -161,6 +161,7 @@
       <div class="legend-row"><span class="legend-line" style="background:var(--flowline);"></span><span>Flowlines (3DHP, clipped)</span></div>
       <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);"></div>
       <div class="legend-row"><span class="legend-swatch" style="background:#C44E52;"></span><span>Stream gage</span></div>
+      <div class="legend-row"><span class="legend-swatch" style="background:#212121;"></span><span>SNOTEL site</span></div>
       <div class="legend-row"><span class="legend-swatch" style="background:#4C72B0;"></span><span>Reservoir</span></div>
       <div class="legend-row"><span class="legend-swatch" style="background:#55A868;"></span><span>Ditch</span></div>
       <div class="legend-row"><span class="legend-swatch" style="background:#8172B2;"></span><span>Pump</span></div>
@@ -333,6 +334,7 @@ const STRUCT_COLORS = {
   'Pipeline/Diversion Point': '#64B5CD',
   'Pipeline': '#64B5CD',
   'Reservoir System': '#937860',
+  'SNOTEL': '#212121',
 };
 
 // ---------- Map ----------
@@ -403,7 +405,7 @@ fetch('data/points.geojson').then(r => r.json()).then(gj => {
   const layer = L.geoJSON(gj, {
     pointToLayer: (f, latlng) => L.circleMarker(latlng, {
       pane: 'pointsPane',
-      radius: f.properties.structType === 'Stream Gage' ? 7 : 5,
+      radius: f.properties.structType === 'Stream Gage' || f.properties.structType === 'SNOTEL' ? 7 : 5,
       color: '#fff', weight: 1, fillColor: STRUCT_COLORS[f.properties.structType] || '#999',
       fillOpacity: 0.9,
     }),
