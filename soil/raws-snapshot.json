@@ -1,20 +1,20 @@
 {
-  "generated": "2026-08-11T06:56:28Z",
+  "generated": "2026-08-12T07:15:58Z",
   "stations": {
     "BLACK MOUNTAIN": {
       "vwc2": 0.09,
       "vwc8": 0.13,
       "vwc20": 0.05,
-      "precip_recent_in": 0.0
+      "precip_recent_in": 0.29
     },
     "BOSQUE": {
       "vwc2": 0.16,
       "vwc8": 0.26,
       "vwc20": 0.23,
-      "precip_recent_in": 0.56
+      "precip_recent_in": 0.44
     },
     "BUCKLES": {
-      "vwc2": 0.05,
+      "vwc2": 0.04,
       "vwc8": 0.09,
       "vwc20": 0.13,
       "precip_recent_in": 0.0
@@ -29,7 +29,7 @@
       "vwc2": 0.06,
       "vwc8": 0.08,
       "vwc20": 0.04,
-      "precip_recent_in": 0.02
+      "precip_recent_in": 0.06
     },
     "ESTES PARK": {
       "vwc2": 0.02,
@@ -50,10 +50,10 @@
       "precip_recent_in": 0.0
     },
     "HARBISON": {
-      "vwc2": 0.11,
-      "vwc8": 0.17,
+      "vwc2": 0.1,
+      "vwc8": 0.16,
       "vwc20": 0.03,
-      "precip_recent_in": 0.0
+      "precip_recent_in": 0.03
     },
     "LODGEPOLE FLATS": {
       "vwc2": 0.05,
@@ -65,7 +65,7 @@
       "vwc2": null,
       "vwc8": null,
       "vwc20": null,
-      "precip_recent_in": 0.0
+      "precip_recent_in": 0.01
     },
     "RED CREEK": {
       "vwc2": 0.1,
@@ -75,21 +75,21 @@
     },
     "RED DEER": {
       "vwc2": 0.06,
-      "vwc8": 0.1,
+      "vwc8": 0.09,
       "vwc20": 0.05,
-      "precip_recent_in": 0.03
+      "precip_recent_in": 0.05
     },
     "REDSTONE": {
-      "vwc2": 0.07,
-      "vwc8": 0.1,
-      "vwc20": 0.1,
+      "vwc2": 0.06,
+      "vwc8": 0.09,
+      "vwc20": 0.09,
       "precip_recent_in": 0.02
     },
     "SANBORN PARK": {
-      "vwc2": 0.1,
+      "vwc2": 0.09,
       "vwc8": 0.1,
       "vwc20": 0.1,
-      "precip_recent_in": 0.0
+      "precip_recent_in": 0.01
     },
     "SILVER JACK": {
       "vwc2": 0.11,
@@ -105,9 +105,9 @@
     },
     "WILLIS CREEK": {
       "vwc2": 0.11,
-      "vwc8": 0.15,
+      "vwc8": 0.14,
       "vwc20": 0.09,
-      "precip_recent_in": 0.12
+      "precip_recent_in": 0.27
     }
   }
 }
