@@ -207,9 +207,11 @@
       <div style="position:relative;height:220px;"><canvas id="ratioChart"></canvas></div>
       <p class="chart-note">
         Gaged and diverted volume, converted to an equivalent depth over each drainage area,
-        divided by total precipitation. The gaged-only ratio (0.1&ndash;0.4) is consistent with a
-        semi-arid mountain watershed; the gaged-plus-diverted ratio exceeds 1 in wetter years from
-        the re-diversion effect noted above.
+        divided by total precipitation. Gaged-only ratios (0.1&ndash;0.8) are consistent with a
+        semi-arid mountain watershed; SURCEDCO's higher, smaller upstream drainage area shows
+        greater runoff efficiency than the larger area added between the two gages. The
+        gaged-plus-diverted ratio exceeds 1 in wetter years from the re-diversion effect noted
+        above.
       </p>
     </div>
 
@@ -473,6 +475,7 @@ fetch('data/surface_creek_gage_relative_water_balance_1979-2025.json').then(r =>
     data: {
       labels: years,
       datasets: [
+        { label: 'Gaged only (SURCEDCO)', data: numCol(rows, 'runoff_ratio_gaged_only__SURCEDCO'), borderColor: '#8172B2', backgroundColor: '#8172B2', tension: 0.15 },
         { label: 'Gaged only (SURACECO)', data: numCol(rows, 'runoff_ratio_gaged_only__SURACECO'), borderColor: '#55A868', backgroundColor: '#55A868', tension: 0.15 },
         { label: 'Gaged + upstream diverted (SURCEDCO)', data: numCol(rows, 'runoff_ratio_gaged_plus_upstream_diverted__SURCEDCO'), borderColor: '#4C72B0', backgroundColor: '#4C72B0', tension: 0.15 },
         { label: 'Gaged + upstream diverted (SURACECO)', data: numCol(rows, 'runoff_ratio_gaged_plus_upstream_diverted__SURACECO'), borderColor: '#C44E52', backgroundColor: '#C44E52', tension: 0.15 },
