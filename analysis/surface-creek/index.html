@@ -427,10 +427,10 @@ fetch('data/surface_creek_gage_relative_water_balance_1979-2025.json').then(r =>
   const years = rows.map(r => r.year);
   const gridColor = 'rgba(128,128,128,0.12)';
   const baseScales = {
-    x: { ticks: { font: { size: 9 } }, grid: { color: gridColor } },
+    x: { ticks: { font: { size: 12 } }, grid: { color: gridColor } },
   };
-  const legendOpt = { labels: { font: { size: 9 }, boxWidth: 10, padding: 8 } };
-  const tooltipOpt = { titleFont: { size: 13, weight: '600' }, bodyFont: { size: 12 }, padding: 10, boxPadding: 5 };
+  const legendOpt = { labels: { font: { size: 12 }, boxWidth: 12, padding: 8 } };
+  const tooltipOpt = { titleFont: { size: 15, weight: '600' }, bodyFont: { size: 14 }, padding: 10, boxPadding: 5 };
 
   snotelChart = new Chart(document.getElementById('snotelChart').getContext('2d'), {
     type: 'line',
@@ -444,7 +444,7 @@ fetch('data/surface_creek_gage_relative_water_balance_1979-2025.json').then(r =>
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
-      scales: { ...baseScales, y: { title: { display: true, text: 'inches', font: { size: 9 } }, ticks: { font: { size: 9 } }, grid: { color: gridColor } } },
+      scales: { ...baseScales, y: { title: { display: true, text: 'inches', font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } } },
       plugins: { legend: legendOpt, tooltip: tooltipOpt },
     },
   });
@@ -463,7 +463,7 @@ fetch('data/surface_creek_gage_relative_water_balance_1979-2025.json').then(r =>
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
-      scales: { ...baseScales, y: { title: { display: true, text: 'acre-feet', font: { size: 9 } }, ticks: { font: { size: 9 } }, grid: { color: gridColor } } },
+      scales: { ...baseScales, y: { title: { display: true, text: 'acre-feet', font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } } },
       plugins: { legend: legendOpt, tooltip: tooltipOpt },
     },
   });
@@ -481,7 +481,7 @@ fetch('data/surface_creek_gage_relative_water_balance_1979-2025.json').then(r =>
     options: {
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
-      scales: { ...baseScales, y: { title: { display: true, text: 'ratio', font: { size: 9 } }, ticks: { font: { size: 9 } }, grid: { color: gridColor } } },
+      scales: { ...baseScales, y: { title: { display: true, text: 'ratio', font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } } },
       plugins: {
         legend: legendOpt, tooltip: tooltipOpt,
         annotation: { annotations: { ratioOne: { type: 'line', yMin: 1, yMax: 1, borderColor: 'rgba(128,128,128,0.5)', borderWidth: 1, borderDash: [4, 4] } } },
@@ -504,13 +504,13 @@ fetch('data/surface_creek_priority_ranking_correlations_extended.json').then(r =
       responsive: true, maintainAspectRatio: false,
       indexAxis: 'y',
       scales: {
-        x: { min: -1, max: 1, title: { display: true, text: "Spearman ρ", font: { size: 9 } }, ticks: { font: { size: 9 } }, grid: { color: gridColor } },
-        y: { ticks: { font: { size: 9 } }, grid: { display: false } },
+        x: { min: -1, max: 1, title: { display: true, text: "Spearman ρ", font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } },
+        y: { ticks: { font: { size: 12 } }, grid: { display: false } },
       },
       plugins: {
         legend: { display: false },
         tooltip: {
-          titleFont: { size: 12, weight: '600' }, bodyFont: { size: 11 }, padding: 8,
+          titleFont: { size: 14, weight: '600' }, bodyFont: { size: 13 }, padding: 8,
           callbacks: {
             afterLabel: ctx => {
               const r = rows[ctx.dataIndex];
