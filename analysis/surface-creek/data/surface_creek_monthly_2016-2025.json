@@ -1,0 +1,1202 @@
+[
+  {
+    "month": "2016-01",
+    "swe_in_eom": 17.3,
+    "precip_in": 17.8,
+    "vwc_pct_2in": 40.22,
+    "vwc_pct_8in": 38.5,
+    "vwc_pct_20in": 40.29,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 4.15
+  },
+  {
+    "month": "2016-02",
+    "swe_in_eom": 20.4,
+    "precip_in": 2.7,
+    "vwc_pct_2in": 40.2,
+    "vwc_pct_8in": 38.5,
+    "vwc_pct_20in": 40.26,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 6.38
+  },
+  {
+    "month": "2016-03",
+    "swe_in_eom": 25.7,
+    "precip_in": 4.3,
+    "vwc_pct_2in": 40.21,
+    "vwc_pct_8in": 38.52,
+    "vwc_pct_20in": 40.23,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 13.74
+  },
+  {
+    "month": "2016-04",
+    "swe_in_eom": 27.6,
+    "precip_in": 4.3,
+    "vwc_pct_2in": 40.26,
+    "vwc_pct_8in": 38.6,
+    "vwc_pct_20in": 40.46,
+    "SURCEDCO_cfs_mean": 47.04,
+    "SURACECO_cfs_mean": 55.95
+  },
+  {
+    "month": "2016-05",
+    "swe_in_eom": 18.5,
+    "precip_in": 3.5,
+    "vwc_pct_2in": 40.63,
+    "vwc_pct_8in": 40.47,
+    "vwc_pct_20in": 40.71,
+    "SURCEDCO_cfs_mean": 107.12,
+    "SURACECO_cfs_mean": 82.07
+  },
+  {
+    "month": "2016-06",
+    "swe_in_eom": 0.0,
+    "precip_in": 1.0,
+    "vwc_pct_2in": 40.84,
+    "vwc_pct_8in": 41.24,
+    "vwc_pct_20in": 40.88,
+    "SURCEDCO_cfs_mean": 126.75,
+    "SURACECO_cfs_mean": 70.04
+  },
+  {
+    "month": "2016-07",
+    "swe_in_eom": 0.0,
+    "precip_in": 2.2,
+    "vwc_pct_2in": 37.8,
+    "vwc_pct_8in": 36.68,
+    "vwc_pct_20in": 40.64,
+    "SURCEDCO_cfs_mean": 52.81,
+    "SURACECO_cfs_mean": 31.09
+  },
+  {
+    "month": "2016-08",
+    "swe_in_eom": 0.0,
+    "precip_in": 3.1,
+    "vwc_pct_2in": 38.86,
+    "vwc_pct_8in": 37.86,
+    "vwc_pct_20in": 40.63,
+    "SURCEDCO_cfs_mean": 42.88,
+    "SURACECO_cfs_mean": 23.71
+  },
+  {
+    "month": "2016-09",
+    "swe_in_eom": 0.0,
+    "precip_in": 3.4,
+    "vwc_pct_2in": 40.27,
+    "vwc_pct_8in": 39.4,
+    "vwc_pct_20in": 40.62,
+    "SURCEDCO_cfs_mean": 25.88,
+    "SURACECO_cfs_mean": 16.05
+  },
+  {
+    "month": "2016-10",
+    "swe_in_eom": 0.0,
+    "precip_in": 1.4,
+    "vwc_pct_2in": 40.23,
+    "vwc_pct_8in": 39.17,
+    "vwc_pct_20in": 40.56,
+    "SURCEDCO_cfs_mean": 22.05,
+    "SURACECO_cfs_mean": 18.51
+  },
+  {
+    "month": "2016-11",
+    "swe_in_eom": 4.0,
+    "precip_in": 4.9,
+    "vwc_pct_2in": 30.65,
+    "vwc_pct_8in": 33.54,
+    "vwc_pct_20in": 40.36,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 6.35
+  },
+  {
+    "month": "2016-12",
+    "swe_in_eom": 12.5,
+    "precip_in": 8.1,
+    "vwc_pct_2in": 27.78,
+    "vwc_pct_8in": 34.34,
+    "vwc_pct_20in": 40.17,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 5.65
+  },
+  {
+    "month": "2017-01",
+    "swe_in_eom": 23.5,
+    "precip_in": 9.7,
+    "vwc_pct_2in": 35.2,
+    "vwc_pct_8in": 37.09,
+    "vwc_pct_20in": 40.07,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 6.94
+  },
+  {
+    "month": "2017-02",
+    "swe_in_eom": 27.7,
+    "precip_in": 3.3,
+    "vwc_pct_2in": 38.46,
+    "vwc_pct_8in": 37.3,
+    "vwc_pct_20in": 40.07,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 7.66
+  },
+  {
+    "month": "2017-03",
+    "swe_in_eom": 29.5,
+    "precip_in": 1.8,
+    "vwc_pct_2in": 38.76,
+    "vwc_pct_8in": 37.38,
+    "vwc_pct_20in": 40.03,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 21.46
+  },
+  {
+    "month": "2017-04",
+    "swe_in_eom": 29.1,
+    "precip_in": 1.7,
+    "vwc_pct_2in": 39.78,
+    "vwc_pct_8in": 38.98,
+    "vwc_pct_20in": 40.34,
+    "SURCEDCO_cfs_mean": 58.43,
+    "SURACECO_cfs_mean": 61.31
+  },
+  {
+    "month": "2017-05",
+    "swe_in_eom": 16.8,
+    "precip_in": 2.0,
+    "vwc_pct_2in": 40.7,
+    "vwc_pct_8in": 40.64,
+    "vwc_pct_20in": 40.7,
+    "SURCEDCO_cfs_mean": 122.87,
+    "SURACECO_cfs_mean": 84.68
+  },
+  {
+    "month": "2017-06",
+    "swe_in_eom": 0.0,
+    "precip_in": 0.2,
+    "vwc_pct_2in": 40.78,
+    "vwc_pct_8in": 41.07,
+    "vwc_pct_20in": 40.83,
+    "SURCEDCO_cfs_mean": 111.9,
+    "SURACECO_cfs_mean": 63.08
+  },
+  {
+    "month": "2017-07",
+    "swe_in_eom": 0.0,
+    "precip_in": 3.4,
+    "vwc_pct_2in": 35.34,
+    "vwc_pct_8in": 35.95,
+    "vwc_pct_20in": 40.55,
+    "SURCEDCO_cfs_mean": 59.33,
+    "SURACECO_cfs_mean": 35.85
+  },
+  {
+    "month": "2017-08",
+    "swe_in_eom": 0.0,
+    "precip_in": 2.0,
+    "vwc_pct_2in": 40.31,
+    "vwc_pct_8in": 39.45,
+    "vwc_pct_20in": 40.65,
+    "SURCEDCO_cfs_mean": 45.53,
+    "SURACECO_cfs_mean": 22.18
+  },
+  {
+    "month": "2017-09",
+    "swe_in_eom": 0.0,
+    "precip_in": 3.3,
+    "vwc_pct_2in": 39.85,
+    "vwc_pct_8in": 38.72,
+    "vwc_pct_20in": 40.55,
+    "SURCEDCO_cfs_mean": 28.39,
+    "SURACECO_cfs_mean": 13.08
+  },
+  {
+    "month": "2017-10",
+    "swe_in_eom": 0.0,
+    "precip_in": 1.0,
+    "vwc_pct_2in": 38.67,
+    "vwc_pct_8in": 38.67,
+    "vwc_pct_20in": 40.51,
+    "SURCEDCO_cfs_mean": 17.46,
+    "SURACECO_cfs_mean": 12.55
+  },
+  {
+    "month": "2017-11",
+    "swe_in_eom": 1.3,
+    "precip_in": 1.0,
+    "vwc_pct_2in": 22.9,
+    "vwc_pct_8in": 27.0,
+    "vwc_pct_20in": 40.17,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 4.81
+  },
+  {
+    "month": "2017-12",
+    "swe_in_eom": 1.5,
+    "precip_in": 0.5,
+    "vwc_pct_2in": 19.04,
+    "vwc_pct_8in": 20.06,
+    "vwc_pct_20in": 36.45,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 2.78
+  },
+  {
+    "month": "2018-01",
+    "swe_in_eom": 4.5,
+    "precip_in": 2.9,
+    "vwc_pct_2in": 19.61,
+    "vwc_pct_8in": 20.03,
+    "vwc_pct_20in": 31.95,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 3.17
+  },
+  {
+    "month": "2018-02",
+    "swe_in_eom": 9.0,
+    "precip_in": 4.7,
+    "vwc_pct_2in": 20.45,
+    "vwc_pct_8in": 20.51,
+    "vwc_pct_20in": 31.63,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 3.48
+  },
+  {
+    "month": "2018-03",
+    "swe_in_eom": 12.0,
+    "precip_in": 3.0,
+    "vwc_pct_2in": 21.34,
+    "vwc_pct_8in": 21.33,
+    "vwc_pct_20in": 31.66,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 4.24
+  },
+  {
+    "month": "2018-04",
+    "swe_in_eom": 11.5,
+    "precip_in": 2.5,
+    "vwc_pct_2in": 24.63,
+    "vwc_pct_8in": 24.04,
+    "vwc_pct_20in": 32.71,
+    "SURCEDCO_cfs_mean": 14.33,
+    "SURACECO_cfs_mean": 17.01
+  },
+  {
+    "month": "2018-05",
+    "swe_in_eom": 0.0,
+    "precip_in": 1.0,
+    "vwc_pct_2in": 33.25,
+    "vwc_pct_8in": 33.31,
+    "vwc_pct_20in": 36.98,
+    "SURCEDCO_cfs_mean": 45.92,
+    "SURACECO_cfs_mean": 36.09
+  },
+  {
+    "month": "2018-06",
+    "swe_in_eom": 0.0,
+    "precip_in": 0.2,
+    "vwc_pct_2in": 27.84,
+    "vwc_pct_8in": 31.98,
+    "vwc_pct_20in": 39.97,
+    "SURCEDCO_cfs_mean": 35.59,
+    "SURACECO_cfs_mean": 22.73
+  },
+  {
+    "month": "2018-07",
+    "swe_in_eom": 0.0,
+    "precip_in": 0.7,
+    "vwc_pct_2in": 15.95,
+    "vwc_pct_8in": 21.87,
+    "vwc_pct_20in": 34.38,
+    "SURCEDCO_cfs_mean": 22.32,
+    "SURACECO_cfs_mean": 12.17
+  },
+  {
+    "month": "2018-08",
+    "swe_in_eom": 0.0,
+    "precip_in": 2.4,
+    "vwc_pct_2in": 20.85,
+    "vwc_pct_8in": 21.04,
+    "vwc_pct_20in": 31.9,
+    "SURCEDCO_cfs_mean": 17.08,
+    "SURACECO_cfs_mean": 9.61
+  },
+  {
+    "month": "2018-09",
+    "swe_in_eom": 0.0,
+    "precip_in": 1.5,
+    "vwc_pct_2in": 33.95,
+    "vwc_pct_8in": 29.75,
+    "vwc_pct_20in": 37.9,
+    "SURCEDCO_cfs_mean": 8.34,
+    "SURACECO_cfs_mean": 3.91
+  },
+  {
+    "month": "2018-10",
+    "swe_in_eom": 3.5,
+    "precip_in": 8.5,
+    "vwc_pct_2in": 39.28,
+    "vwc_pct_8in": 37.64,
+    "vwc_pct_20in": 40.25,
+    "SURCEDCO_cfs_mean": 11.43,
+    "SURACECO_cfs_mean": 12.6
+  },
+  {
+    "month": "2018-11",
+    "swe_in_eom": 5.9,
+    "precip_in": 3.0,
+    "vwc_pct_2in": 38.75,
+    "vwc_pct_8in": 37.22,
+    "vwc_pct_20in": 40.15,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 4.56
+  },
+  {
+    "month": "2018-12",
+    "swe_in_eom": 9.9,
+    "precip_in": 3.9,
+    "vwc_pct_2in": 38.48,
+    "vwc_pct_8in": 36.76,
+    "vwc_pct_20in": 39.6,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 3.39
+  },
+  {
+    "month": "2019-01",
+    "swe_in_eom": 16.6,
+    "precip_in": 6.4,
+    "vwc_pct_2in": 38.36,
+    "vwc_pct_8in": 36.68,
+    "vwc_pct_20in": 39.43,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 3.54
+  },
+  {
+    "month": "2019-02",
+    "swe_in_eom": 24.8,
+    "precip_in": 8.0,
+    "vwc_pct_2in": 38.68,
+    "vwc_pct_8in": 36.85,
+    "vwc_pct_20in": 39.34,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 3.62
+  },
+  {
+    "month": "2019-03",
+    "swe_in_eom": 35.7,
+    "precip_in": 9.4,
+    "vwc_pct_2in": 38.81,
+    "vwc_pct_8in": 36.99,
+    "vwc_pct_20in": 39.33,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 5.93
+  },
+  {
+    "month": "2019-04",
+    "swe_in_eom": 35.2,
+    "precip_in": 3.3,
+    "vwc_pct_2in": 39.4,
+    "vwc_pct_8in": 37.92,
+    "vwc_pct_20in": 39.78,
+    "SURCEDCO_cfs_mean": 46.98,
+    "SURACECO_cfs_mean": 64.88
+  },
+  {
+    "month": "2019-05",
+    "swe_in_eom": 39.1,
+    "precip_in": 6.6,
+    "vwc_pct_2in": 40.78,
+    "vwc_pct_8in": 41.18,
+    "vwc_pct_20in": 40.66,
+    "SURCEDCO_cfs_mean": 101.84,
+    "SURACECO_cfs_mean": 93.67
+  },
+  {
+    "month": "2019-06",
+    "swe_in_eom": 11.8,
+    "precip_in": 0.9,
+    "vwc_pct_2in": 40.87,
+    "vwc_pct_8in": 41.29,
+    "vwc_pct_20in": 40.71,
+    "SURCEDCO_cfs_mean": 260.83,
+    "SURACECO_cfs_mean": 180.14
+  },
+  {
+    "month": "2019-07",
+    "swe_in_eom": 0.0,
+    "precip_in": 3.2,
+    "vwc_pct_2in": 40.9,
+    "vwc_pct_8in": 41.22,
+    "vwc_pct_20in": 40.84,
+    "SURCEDCO_cfs_mean": 125.29,
+    "SURACECO_cfs_mean": 71.5
+  },
+  {
+    "month": "2019-08",
+    "swe_in_eom": 0.0,
+    "precip_in": 0.3,
+    "vwc_pct_2in": 35.64,
+    "vwc_pct_8in": 37.09,
+    "vwc_pct_20in": 40.44,
+    "SURCEDCO_cfs_mean": 68.29,
+    "SURACECO_cfs_mean": 38.19
+  },
+  {
+    "month": "2019-09",
+    "swe_in_eom": 0.0,
+    "precip_in": 1.2,
+    "vwc_pct_2in": 25.77,
+    "vwc_pct_8in": 25.08,
+    "vwc_pct_20in": 38.63,
+    "SURCEDCO_cfs_mean": 52.83,
+    "SURACECO_cfs_mean": 25.01
+  },
+  {
+    "month": "2019-10",
+    "swe_in_eom": 0.8,
+    "precip_in": 1.1,
+    "vwc_pct_2in": 22.09,
+    "vwc_pct_8in": 22.78,
+    "vwc_pct_20in": 35.78,
+    "SURCEDCO_cfs_mean": 24.75,
+    "SURACECO_cfs_mean": 14.74
+  },
+  {
+    "month": "2019-11",
+    "swe_in_eom": 5.2,
+    "precip_in": 4.1,
+    "vwc_pct_2in": 19.32,
+    "vwc_pct_8in": 21.48,
+    "vwc_pct_20in": 35.28,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 5.28
+  },
+  {
+    "month": "2019-12",
+    "swe_in_eom": 9.5,
+    "precip_in": 4.2,
+    "vwc_pct_2in": 21.44,
+    "vwc_pct_8in": 22.06,
+    "vwc_pct_20in": 35.38,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 5.82
+  },
+  {
+    "month": "2020-01",
+    "swe_in_eom": 13.2,
+    "precip_in": 3.4,
+    "vwc_pct_2in": 22.26,
+    "vwc_pct_8in": 22.15,
+    "vwc_pct_20in": 35.49,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 5.8
+  },
+  {
+    "month": "2020-02",
+    "swe_in_eom": 14.8,
+    "precip_in": 1.4,
+    "vwc_pct_2in": 23.11,
+    "vwc_pct_8in": 22.6,
+    "vwc_pct_20in": 35.56,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 5.74
+  },
+  {
+    "month": "2020-03",
+    "swe_in_eom": 20.4,
+    "precip_in": 5.5,
+    "vwc_pct_2in": 23.32,
+    "vwc_pct_8in": 22.73,
+    "vwc_pct_20in": 35.56,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 6.06
+  },
+  {
+    "month": "2020-04",
+    "swe_in_eom": 19.5,
+    "precip_in": 1.4,
+    "vwc_pct_2in": 26.22,
+    "vwc_pct_8in": 23.14,
+    "vwc_pct_20in": 35.63,
+    "SURCEDCO_cfs_mean": 16.44,
+    "SURACECO_cfs_mean": 20.98
+  },
+  {
+    "month": "2020-05",
+    "swe_in_eom": 0.6,
+    "precip_in": 1.1,
+    "vwc_pct_2in": 38.48,
+    "vwc_pct_8in": 38.39,
+    "vwc_pct_20in": 40.66,
+    "SURCEDCO_cfs_mean": 66.5,
+    "SURACECO_cfs_mean": 54.94
+  },
+  {
+    "month": "2020-06",
+    "swe_in_eom": 0.0,
+    "precip_in": 0.9,
+    "vwc_pct_2in": 38.01,
+    "vwc_pct_8in": 38.78,
+    "vwc_pct_20in": 40.63,
+    "SURCEDCO_cfs_mean": 46.76,
+    "SURACECO_cfs_mean": 25.02
+  },
+  {
+    "month": "2020-07",
+    "swe_in_eom": 0.0,
+    "precip_in": 1.6,
+    "vwc_pct_2in": 21.83,
+    "vwc_pct_8in": 24.3,
+    "vwc_pct_20in": 38.96,
+    "SURCEDCO_cfs_mean": 35.89,
+    "SURACECO_cfs_mean": 17.02
+  },
+  {
+    "month": "2020-08",
+    "swe_in_eom": 0.0,
+    "precip_in": 0.7,
+    "vwc_pct_2in": 20.55,
+    "vwc_pct_8in": 22.0,
+    "vwc_pct_20in": 33.64,
+    "SURCEDCO_cfs_mean": 35.15,
+    "SURACECO_cfs_mean": 16.46
+  },
+  {
+    "month": "2020-09",
+    "swe_in_eom": 0.0,
+    "precip_in": 1.6,
+    "vwc_pct_2in": 35.82,
+    "vwc_pct_8in": 30.14,
+    "vwc_pct_20in": 35.88,
+    "SURCEDCO_cfs_mean": 16.09,
+    "SURACECO_cfs_mean": 6.67
+  },
+  {
+    "month": "2020-10",
+    "swe_in_eom": 0.2,
+    "precip_in": 0.6,
+    "vwc_pct_2in": 30.82,
+    "vwc_pct_8in": 25.5,
+    "vwc_pct_20in": 32.91,
+    "SURCEDCO_cfs_mean": 12.41,
+    "SURACECO_cfs_mean": 8.85
+  },
+  {
+    "month": "2020-11",
+    "swe_in_eom": 3.1,
+    "precip_in": 3.0,
+    "vwc_pct_2in": 27.28,
+    "vwc_pct_8in": 22.67,
+    "vwc_pct_20in": 31.92,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 2.35
+  },
+  {
+    "month": "2020-12",
+    "swe_in_eom": 6.7,
+    "precip_in": 3.3,
+    "vwc_pct_2in": 24.5,
+    "vwc_pct_8in": 22.06,
+    "vwc_pct_20in": 31.73,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 2.25
+  },
+  {
+    "month": "2021-01",
+    "swe_in_eom": 10.2,
+    "precip_in": 3.4,
+    "vwc_pct_2in": 24.06,
+    "vwc_pct_8in": 21.9,
+    "vwc_pct_20in": 31.66,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 2.46
+  },
+  {
+    "month": "2021-02",
+    "swe_in_eom": 15.1,
+    "precip_in": 4.6,
+    "vwc_pct_2in": 26.12,
+    "vwc_pct_8in": 22.11,
+    "vwc_pct_20in": 31.73,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 2.93
+  },
+  {
+    "month": "2021-03",
+    "swe_in_eom": 20.3,
+    "precip_in": 5.1,
+    "vwc_pct_2in": 27.43,
+    "vwc_pct_8in": 22.25,
+    "vwc_pct_20in": 31.79,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 4.11
+  },
+  {
+    "month": "2021-04",
+    "swe_in_eom": 17.3,
+    "precip_in": 1.3,
+    "vwc_pct_2in": 32.91,
+    "vwc_pct_8in": 26.01,
+    "vwc_pct_20in": 33.23,
+    "SURCEDCO_cfs_mean": 15.08,
+    "SURACECO_cfs_mean": 19.57
+  },
+  {
+    "month": "2021-05",
+    "swe_in_eom": 0.8,
+    "precip_in": 1.9,
+    "vwc_pct_2in": 40.64,
+    "vwc_pct_8in": 40.58,
+    "vwc_pct_20in": 40.73,
+    "SURCEDCO_cfs_mean": 34.57,
+    "SURACECO_cfs_mean": 35.84
+  },
+  {
+    "month": "2021-06",
+    "swe_in_eom": 0.0,
+    "precip_in": 1.1,
+    "vwc_pct_2in": 40.42,
+    "vwc_pct_8in": 40.19,
+    "vwc_pct_20in": 40.7,
+    "SURCEDCO_cfs_mean": 33.97,
+    "SURACECO_cfs_mean": 15.97
+  },
+  {
+    "month": "2021-07",
+    "swe_in_eom": 0.0,
+    "precip_in": 4.5,
+    "vwc_pct_2in": null,
+    "vwc_pct_8in": null,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": 34.5,
+    "SURACECO_cfs_mean": 20.31
+  },
+  {
+    "month": "2021-08",
+    "swe_in_eom": 0.0,
+    "precip_in": 2.1,
+    "vwc_pct_2in": null,
+    "vwc_pct_8in": null,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": 24.62,
+    "SURACECO_cfs_mean": 15.89
+  },
+  {
+    "month": "2021-09",
+    "swe_in_eom": 0.3,
+    "precip_in": 2.4,
+    "vwc_pct_2in": null,
+    "vwc_pct_8in": null,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": 19.21,
+    "SURACECO_cfs_mean": 10.17
+  },
+  {
+    "month": "2021-10",
+    "swe_in_eom": 3.5,
+    "precip_in": 4.7,
+    "vwc_pct_2in": null,
+    "vwc_pct_8in": null,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": 11.54,
+    "SURACECO_cfs_mean": 10.31
+  },
+  {
+    "month": "2021-11",
+    "swe_in_eom": 4.6,
+    "precip_in": 1.6,
+    "vwc_pct_2in": null,
+    "vwc_pct_8in": null,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 4.44
+  },
+  {
+    "month": "2021-12",
+    "swe_in_eom": 18.5,
+    "precip_in": 12.4,
+    "vwc_pct_2in": null,
+    "vwc_pct_8in": null,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 3.44
+  },
+  {
+    "month": "2022-01",
+    "swe_in_eom": 21.1,
+    "precip_in": 3.5,
+    "vwc_pct_2in": null,
+    "vwc_pct_8in": null,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 3.68
+  },
+  {
+    "month": "2022-02",
+    "swe_in_eom": 23.5,
+    "precip_in": 2.0,
+    "vwc_pct_2in": null,
+    "vwc_pct_8in": null,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 4.25
+  },
+  {
+    "month": "2022-03",
+    "swe_in_eom": 28.5,
+    "precip_in": 5.6,
+    "vwc_pct_2in": null,
+    "vwc_pct_8in": null,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 7.1
+  },
+  {
+    "month": "2022-04",
+    "swe_in_eom": 29.1,
+    "precip_in": 1.4,
+    "vwc_pct_2in": null,
+    "vwc_pct_8in": null,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": 40.28,
+    "SURACECO_cfs_mean": 51.72
+  },
+  {
+    "month": "2022-05",
+    "swe_in_eom": 10.2,
+    "precip_in": 1.0,
+    "vwc_pct_2in": null,
+    "vwc_pct_8in": null,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": 106.91,
+    "SURACECO_cfs_mean": 80.65
+  },
+  {
+    "month": "2022-06",
+    "swe_in_eom": 0.0,
+    "precip_in": 1.4,
+    "vwc_pct_2in": null,
+    "vwc_pct_8in": null,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": 95.51,
+    "SURACECO_cfs_mean": 51.29
+  },
+  {
+    "month": "2022-07",
+    "swe_in_eom": 0.0,
+    "precip_in": 3.2,
+    "vwc_pct_2in": 38.95,
+    "vwc_pct_8in": 38.68,
+    "vwc_pct_20in": 40.32,
+    "SURCEDCO_cfs_mean": 44.43,
+    "SURACECO_cfs_mean": 25.67
+  },
+  {
+    "month": "2022-08",
+    "swe_in_eom": 0.0,
+    "precip_in": 3.5,
+    "vwc_pct_2in": 39.74,
+    "vwc_pct_8in": 39.21,
+    "vwc_pct_20in": 40.0,
+    "SURCEDCO_cfs_mean": 36.75,
+    "SURACECO_cfs_mean": 20.6
+  },
+  {
+    "month": "2022-09",
+    "swe_in_eom": 0.0,
+    "precip_in": 2.3,
+    "vwc_pct_2in": 38.84,
+    "vwc_pct_8in": 38.69,
+    "vwc_pct_20in": 40.15,
+    "SURCEDCO_cfs_mean": 28.99,
+    "SURACECO_cfs_mean": 15.73
+  },
+  {
+    "month": "2022-10",
+    "swe_in_eom": 3.0,
+    "precip_in": 4.6,
+    "vwc_pct_2in": 40.3,
+    "vwc_pct_8in": 39.66,
+    "vwc_pct_20in": 40.48,
+    "SURCEDCO_cfs_mean": 23.29,
+    "SURACECO_cfs_mean": 14.51
+  },
+  {
+    "month": "2022-11",
+    "swe_in_eom": 5.8,
+    "precip_in": 3.2,
+    "vwc_pct_2in": 39.93,
+    "vwc_pct_8in": 38.28,
+    "vwc_pct_20in": 39.88,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 6.55
+  },
+  {
+    "month": "2022-12",
+    "swe_in_eom": 12.3,
+    "precip_in": 6.6,
+    "vwc_pct_2in": 39.98,
+    "vwc_pct_8in": 38.12,
+    "vwc_pct_20in": 39.8,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 5.56
+  },
+  {
+    "month": "2023-01",
+    "swe_in_eom": 25.6,
+    "precip_in": 75.7,
+    "vwc_pct_2in": 40.09,
+    "vwc_pct_8in": 38.39,
+    "vwc_pct_20in": 39.83,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 6.44
+  },
+  {
+    "month": "2023-02",
+    "swe_in_eom": 31.7,
+    "precip_in": 34.4,
+    "vwc_pct_2in": 40.1,
+    "vwc_pct_8in": 38.46,
+    "vwc_pct_20in": 39.85,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 6.16
+  },
+  {
+    "month": "2023-03",
+    "swe_in_eom": 46.0,
+    "precip_in": 13.2,
+    "vwc_pct_2in": 40.1,
+    "vwc_pct_8in": 38.39,
+    "vwc_pct_20in": 39.8,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 6.92
+  },
+  {
+    "month": "2023-04",
+    "swe_in_eom": 49.4,
+    "precip_in": 3.5,
+    "vwc_pct_2in": 40.15,
+    "vwc_pct_8in": 38.43,
+    "vwc_pct_20in": 39.91,
+    "SURCEDCO_cfs_mean": 27.44,
+    "SURACECO_cfs_mean": 41.26
+  },
+  {
+    "month": "2023-05",
+    "swe_in_eom": 33.9,
+    "precip_in": 1.5,
+    "vwc_pct_2in": 40.78,
+    "vwc_pct_8in": 40.89,
+    "vwc_pct_20in": 40.71,
+    "SURCEDCO_cfs_mean": 297.35,
+    "SURACECO_cfs_mean": 316.26
+  },
+  {
+    "month": "2023-06",
+    "swe_in_eom": 2.7,
+    "precip_in": 1.6,
+    "vwc_pct_2in": 40.96,
+    "vwc_pct_8in": 41.38,
+    "vwc_pct_20in": 40.8,
+    "SURCEDCO_cfs_mean": 312.7,
+    "SURACECO_cfs_mean": 206.43
+  },
+  {
+    "month": "2023-07",
+    "swe_in_eom": 0.0,
+    "precip_in": 0.0,
+    "vwc_pct_2in": 40.62,
+    "vwc_pct_8in": 40.87,
+    "vwc_pct_20in": 40.8,
+    "SURCEDCO_cfs_mean": 106.2,
+    "SURACECO_cfs_mean": 55.35
+  },
+  {
+    "month": "2023-08",
+    "swe_in_eom": 0.0,
+    "precip_in": 1.7,
+    "vwc_pct_2in": 31.54,
+    "vwc_pct_8in": 34.19,
+    "vwc_pct_20in": 37.95,
+    "SURCEDCO_cfs_mean": 59.97,
+    "SURACECO_cfs_mean": 28.96
+  },
+  {
+    "month": "2023-09",
+    "swe_in_eom": 0.0,
+    "precip_in": 0.9,
+    "vwc_pct_2in": 29.22,
+    "vwc_pct_8in": 30.21,
+    "vwc_pct_20in": 34.35,
+    "SURCEDCO_cfs_mean": 44.58,
+    "SURACECO_cfs_mean": 19.54
+  },
+  {
+    "month": "2023-10",
+    "swe_in_eom": 1.2,
+    "precip_in": 3.7,
+    "vwc_pct_2in": 37.54,
+    "vwc_pct_8in": 35.38,
+    "vwc_pct_20in": 33.88,
+    "SURCEDCO_cfs_mean": 17.68,
+    "SURACECO_cfs_mean": 8.91
+  },
+  {
+    "month": "2023-11",
+    "swe_in_eom": 4.5,
+    "precip_in": 3.5,
+    "vwc_pct_2in": 38.4,
+    "vwc_pct_8in": 36.28,
+    "vwc_pct_20in": 36.02,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 6.19
+  },
+  {
+    "month": "2023-12",
+    "swe_in_eom": 6.8,
+    "precip_in": 2.1,
+    "vwc_pct_2in": 37.97,
+    "vwc_pct_8in": 35.44,
+    "vwc_pct_20in": 36.61,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 6.06
+  },
+  {
+    "month": "2024-01",
+    "swe_in_eom": 10.8,
+    "precip_in": 3.7,
+    "vwc_pct_2in": 37.46,
+    "vwc_pct_8in": 34.83,
+    "vwc_pct_20in": 36.82,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 6.07
+  },
+  {
+    "month": "2024-02",
+    "swe_in_eom": 15.7,
+    "precip_in": 4.6,
+    "vwc_pct_2in": 37.41,
+    "vwc_pct_8in": 34.61,
+    "vwc_pct_20in": 36.92,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 6.2
+  },
+  {
+    "month": "2024-03",
+    "swe_in_eom": 20.7,
+    "precip_in": 4.4,
+    "vwc_pct_2in": 37.65,
+    "vwc_pct_8in": 34.76,
+    "vwc_pct_20in": 37.0,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 6.87
+  },
+  {
+    "month": "2024-04",
+    "swe_in_eom": 17.0,
+    "precip_in": 2.5,
+    "vwc_pct_2in": 39.06,
+    "vwc_pct_8in": 36.7,
+    "vwc_pct_20in": 38.39,
+    "SURCEDCO_cfs_mean": 33.69,
+    "SURACECO_cfs_mean": 38.03
+  },
+  {
+    "month": "2024-05",
+    "swe_in_eom": 9.1,
+    "precip_in": 3.0,
+    "vwc_pct_2in": 40.51,
+    "vwc_pct_8in": 40.26,
+    "vwc_pct_20in": 40.74,
+    "SURCEDCO_cfs_mean": 54.31,
+    "SURACECO_cfs_mean": 45.36
+  },
+  {
+    "month": "2024-06",
+    "swe_in_eom": 0.0,
+    "precip_in": 3.4,
+    "vwc_pct_2in": 40.84,
+    "vwc_pct_8in": 41.0,
+    "vwc_pct_20in": 40.96,
+    "SURCEDCO_cfs_mean": 71.57,
+    "SURACECO_cfs_mean": 42.85
+  },
+  {
+    "month": "2024-07",
+    "swe_in_eom": 0.0,
+    "precip_in": 2.0,
+    "vwc_pct_2in": 39.87,
+    "vwc_pct_8in": 38.44,
+    "vwc_pct_20in": 40.53,
+    "SURCEDCO_cfs_mean": 41.82,
+    "SURACECO_cfs_mean": 17.53
+  },
+  {
+    "month": "2024-08",
+    "swe_in_eom": 0.0,
+    "precip_in": 6.9,
+    "vwc_pct_2in": 40.07,
+    "vwc_pct_8in": 39.27,
+    "vwc_pct_20in": 40.18,
+    "SURCEDCO_cfs_mean": 35.01,
+    "SURACECO_cfs_mean": 15.43
+  },
+  {
+    "month": "2024-09",
+    "swe_in_eom": 0.0,
+    "precip_in": 2.7,
+    "vwc_pct_2in": 40.46,
+    "vwc_pct_8in": 39.98,
+    "vwc_pct_20in": 42.0,
+    "SURCEDCO_cfs_mean": 29.52,
+    "SURACECO_cfs_mean": 12.89
+  },
+  {
+    "month": "2024-10",
+    "swe_in_eom": 2.6,
+    "precip_in": 3.2,
+    "vwc_pct_2in": 39.96,
+    "vwc_pct_8in": 38.94,
+    "vwc_pct_20in": 41.6,
+    "SURCEDCO_cfs_mean": 18.17,
+    "SURACECO_cfs_mean": 9.66
+  },
+  {
+    "month": "2024-11",
+    "swe_in_eom": 5.6,
+    "precip_in": 3.2,
+    "vwc_pct_2in": 40.05,
+    "vwc_pct_8in": 38.8,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 4.07
+  },
+  {
+    "month": "2024-12",
+    "swe_in_eom": 7.3,
+    "precip_in": 1.7,
+    "vwc_pct_2in": 40.05,
+    "vwc_pct_8in": 38.97,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 4.43
+  },
+  {
+    "month": "2025-01",
+    "swe_in_eom": 8.8,
+    "precip_in": 1.3,
+    "vwc_pct_2in": 40.09,
+    "vwc_pct_8in": 38.96,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 4.17
+  },
+  {
+    "month": "2025-02",
+    "swe_in_eom": 11.8,
+    "precip_in": 2.7,
+    "vwc_pct_2in": 39.95,
+    "vwc_pct_8in": 38.8,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 4.16
+  },
+  {
+    "month": "2025-03",
+    "swe_in_eom": 15.9,
+    "precip_in": 4.4,
+    "vwc_pct_2in": 40.07,
+    "vwc_pct_8in": 38.8,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 6.83
+  },
+  {
+    "month": "2025-04",
+    "swe_in_eom": 12.4,
+    "precip_in": 1.2,
+    "vwc_pct_2in": 40.42,
+    "vwc_pct_8in": 39.57,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": 26.18,
+    "SURACECO_cfs_mean": 26.68
+  },
+  {
+    "month": "2025-05",
+    "swe_in_eom": 0.0,
+    "precip_in": 1.4,
+    "vwc_pct_2in": 40.83,
+    "vwc_pct_8in": 40.92,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": 36.24,
+    "SURACECO_cfs_mean": 28.07
+  },
+  {
+    "month": "2025-06",
+    "swe_in_eom": 0.0,
+    "precip_in": 1.0,
+    "vwc_pct_2in": 38.04,
+    "vwc_pct_8in": 38.21,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": 36.8,
+    "SURACECO_cfs_mean": 19.02
+  },
+  {
+    "month": "2025-07",
+    "swe_in_eom": 0.0,
+    "precip_in": 0.2,
+    "vwc_pct_2in": 24.24,
+    "vwc_pct_8in": 25.54,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": 36.38,
+    "SURACECO_cfs_mean": 19.1
+  },
+  {
+    "month": "2025-08",
+    "swe_in_eom": 0.0,
+    "precip_in": 1.6,
+    "vwc_pct_2in": 22.35,
+    "vwc_pct_8in": 23.05,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": 28.22,
+    "SURACECO_cfs_mean": 11.13
+  },
+  {
+    "month": "2025-09",
+    "swe_in_eom": 0.0,
+    "precip_in": 2.3,
+    "vwc_pct_2in": 34.61,
+    "vwc_pct_8in": 32.01,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": 16.98,
+    "SURACECO_cfs_mean": 8.29
+  },
+  {
+    "month": "2025-10",
+    "swe_in_eom": 0.4,
+    "precip_in": 6.5,
+    "vwc_pct_2in": 39.63,
+    "vwc_pct_8in": 38.75,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": 12.12,
+    "SURACECO_cfs_mean": 10.18
+  },
+  {
+    "month": "2025-11",
+    "swe_in_eom": 2.5,
+    "precip_in": 2.2,
+    "vwc_pct_2in": 24.85,
+    "vwc_pct_8in": 29.2,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 3.77
+  },
+  {
+    "month": "2025-12",
+    "swe_in_eom": 4.8,
+    "precip_in": 2.4,
+    "vwc_pct_2in": 23.72,
+    "vwc_pct_8in": 26.35,
+    "vwc_pct_20in": null,
+    "SURCEDCO_cfs_mean": null,
+    "SURACECO_cfs_mean": 4.14
+  }
+]

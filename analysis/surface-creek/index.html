@@ -12,6 +12,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2"></script>
 
 <style>
   :root {
@@ -142,10 +143,14 @@
       <a class="download-link" href="data/surface_creek_gage_relative_water_balance_1979-2025.csv" download>SNOTEL + streamflow + diversion data (CSV)</a>
       <a class="download-link" href="data/surface_creek_priority_ranking_correlations_extended.csv" download>Priority ranking correlations (CSV)</a>
       <a class="download-link" href="data/surface_creek_structures.csv" download>Diversion structure list (CSV)</a>
+      <a class="download-link" href="data/surface_creek_monthly_2016-2025.csv" download>Monthly SNOTEL + streamflow data, 2016&ndash;2025 (CSV)</a>
       <a class="download-link" href="#" id="downloadSnotelChart">SNOTEL chart (PNG)</a>
       <a class="download-link" href="#" id="downloadVolumeChart">Streamflow &amp; diversion chart (PNG)</a>
       <a class="download-link" href="#" id="downloadRatioChart">Runoff ratio chart (PNG)</a>
       <a class="download-link" href="#" id="downloadRankingChart">Priority ranking chart (PNG)</a>
+      <a class="download-link" href="#" id="downloadMonthlySwePrecipChart">Monthly SWE &amp; precip chart (PNG)</a>
+      <a class="download-link" href="#" id="downloadMonthlySoilMoistureChart">Monthly soil moisture chart (PNG)</a>
+      <a class="download-link" href="#" id="downloadMonthlyStreamflowChart">Monthly streamflow chart (PNG)</a>
     </div>
   </div>
   <button id="themeToggle" type="button">Dark mode</button>
@@ -224,6 +229,35 @@
         numbers below.
       </p>
       <div id="rankingTableWrap"></div>
+    </div>
+
+    <div class="card">
+      <h2>Monthly SWE &amp; precipitation (Park Reservoir) &mdash; inches</h2>
+      <div style="position:relative;height:220px;"><canvas id="monthlySwePrecipChart"></canvas></div>
+      <p class="chart-note">
+        End-of-month snow water equivalent and monthly precipitation. Defaults to the most recent
+        5 years; scroll or pinch to zoom out to the full 2016&ndash;2025 record, drag to pan.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Monthly soil moisture (Park Reservoir) &mdash; % VWC</h2>
+      <div style="position:relative;height:220px;"><canvas id="monthlySoilMoistureChart"></canvas></div>
+      <p class="chart-note">
+        Monthly mean volumetric water content at 2, 8, and 20 inch depths. The 20-inch sensor
+        stopped reporting after October 2024. Defaults to the most recent 5 years; zoom out for
+        the full 2016&ndash;2025 record.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Monthly streamflow &mdash; cfs</h2>
+      <div style="position:relative;height:220px;"><canvas id="monthlyStreamflowChart"></canvas></div>
+      <p class="chart-note">
+        Monthly mean discharge at both gages. SURCEDCO reports seasonally rather than
+        year-round, so its line has winter gaps. Defaults to the most recent 5 years; zoom out
+        for the full 2016&ndash;2025 record.
+      </p>
     </div>
 
     <div class="card">
@@ -326,6 +360,9 @@ wireChartDownload('downloadSnotelChart', () => snotelChart, 'surface-creek-snote
 wireChartDownload('downloadVolumeChart', () => volumeChart, 'surface-creek-streamflow-diversions.png');
 wireChartDownload('downloadRatioChart', () => ratioChart, 'surface-creek-runoff-ratio.png');
 wireChartDownload('downloadRankingChart', () => rankingChart, 'surface-creek-priority-ranking.png');
+wireChartDownload('downloadMonthlySwePrecipChart', () => monthlySwePrecipChart, 'surface-creek-monthly-swe-precip.png');
+wireChartDownload('downloadMonthlySoilMoistureChart', () => monthlySoilMoistureChart, 'surface-creek-monthly-soil-moisture.png');
+wireChartDownload('downloadMonthlyStreamflowChart', () => monthlyStreamflowChart, 'surface-creek-monthly-streamflow.png');
 
 const STRUCT_COLORS = {
   'Stream Gage': '#C44E52',
@@ -422,7 +459,18 @@ fetch('data/points.geojson').then(r => r.json()).then(gj => {
 // ---------- Charts ----------
 function numCol(rows, col) { return rows.map(r => parseFloat(r[col])); }
 
+// Shared pan/zoom config (chartjs-plugin-zoom) for every chart on the page: mouse-wheel or
+// pinch to zoom along the x-axis, drag to pan, bounded to each chart's own full data range.
+function zoomOpt() {
+  return {
+    pan: { enabled: true, mode: 'x' },
+    zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' },
+    limits: { x: { min: 'original', max: 'original' } },
+  };
+}
+
 let snotelChart, volumeChart, ratioChart, rankingChart;
+let monthlySwePrecipChart, monthlySoilMoistureChart, monthlyStreamflowChart;
 
 fetch('data/surface_creek_gage_relative_water_balance_1979-2025.json').then(r => r.json()).then(rows => {
   rows.sort((a, b) => parseInt(a.year) - parseInt(b.year));
@@ -447,7 +495,7 @@ fetch('data/surface_creek_gage_relative_water_balance_1979-2025.json').then(r =>
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       scales: { ...baseScales, y: { title: { display: true, text: 'inches', font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } } },
-      plugins: { legend: legendOpt, tooltip: tooltipOpt },
+      plugins: { legend: legendOpt, tooltip: tooltipOpt, zoom: zoomOpt() },
     },
   });
 
@@ -466,7 +514,7 @@ fetch('data/surface_creek_gage_relative_water_balance_1979-2025.json').then(r =>
       responsive: true, maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       scales: { ...baseScales, y: { title: { display: true, text: 'acre-feet', font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } } },
-      plugins: { legend: legendOpt, tooltip: tooltipOpt },
+      plugins: { legend: legendOpt, tooltip: tooltipOpt, zoom: zoomOpt() },
     },
   });
 
@@ -486,7 +534,7 @@ fetch('data/surface_creek_gage_relative_water_balance_1979-2025.json').then(r =>
       interaction: { mode: 'index', intersect: false },
       scales: { ...baseScales, y: { title: { display: true, text: 'ratio', font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } } },
       plugins: {
-        legend: legendOpt, tooltip: tooltipOpt,
+        legend: legendOpt, tooltip: tooltipOpt, zoom: zoomOpt(),
         annotation: { annotations: { ratioOne: { type: 'line', yMin: 1, yMax: 1, borderColor: 'rgba(128,128,128,0.5)', borderWidth: 1, borderDash: [4, 4] } } },
       },
     },
@@ -512,6 +560,7 @@ fetch('data/surface_creek_priority_ranking_correlations_extended.json').then(r =
       },
       plugins: {
         legend: { display: false },
+        zoom: zoomOpt(),
         tooltip: {
           titleFont: { size: 14, weight: '600' }, bodyFont: { size: 13 }, padding: 8,
           callbacks: {
@@ -539,6 +588,75 @@ fetch('data/surface_creek_priority_ranking_correlations_extended.json').then(r =
         <td class="num">${parseFloat(r.spearman_p) < 0.001 ? '<0.001' : parseFloat(r.spearman_p).toFixed(3)}</td>
       </tr>`).join('')}</tbody>`;
   document.getElementById('rankingTableWrap').appendChild(table);
+});
+
+// Monthly detail (2016-2025): defaults to the most recent 5 years (2021-01 through 2025-12),
+// full 10-year record reachable by zooming/scrolling out - the range is bounded by
+// limits.x: 'original' below rather than clamped in the dataset itself.
+fetch('data/surface_creek_monthly_2016-2025.json').then(r => r.json()).then(rows => {
+  const months = rows.map(r => r.month);
+  const gridColor = 'rgba(128,128,128,0.12)';
+  const legendOpt = { labels: { font: { size: 12 }, boxWidth: 12, padding: 8 } };
+  const tooltipOpt = { titleFont: { size: 15, weight: '600' }, bodyFont: { size: 14 }, padding: 10, boxPadding: 5 };
+  const defaultRange = { min: '2021-01', max: '2025-12' };
+  const baseScales = {
+    x: { ticks: { font: { size: 12 } }, grid: { color: gridColor }, min: defaultRange.min, max: defaultRange.max },
+  };
+
+  monthlySwePrecipChart = new Chart(document.getElementById('monthlySwePrecipChart').getContext('2d'), {
+    data: {
+      labels: months,
+      datasets: [
+        { type: 'bar', label: 'Monthly precip (in)', data: numCol(rows, 'precip_in'), backgroundColor: 'rgba(76,114,176,0.55)', yAxisID: 'y1' },
+        { type: 'line', label: 'SWE, end of month (in)', data: numCol(rows, 'swe_in_eom'), borderColor: '#C44E52', backgroundColor: '#C44E52', tension: 0.15, yAxisID: 'y' },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        ...baseScales,
+        y: { position: 'left', title: { display: true, text: 'SWE (in)', font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } },
+        y1: { position: 'right', title: { display: true, text: 'precip (in)', font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { display: false } },
+      },
+      plugins: { legend: legendOpt, tooltip: tooltipOpt, zoom: zoomOpt() },
+    },
+  });
+
+  monthlySoilMoistureChart = new Chart(document.getElementById('monthlySoilMoistureChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [
+        { label: '2 in depth', data: numCol(rows, 'vwc_pct_2in'), borderColor: '#C44E52', backgroundColor: '#C44E52', tension: 0.15 },
+        { label: '8 in depth', data: numCol(rows, 'vwc_pct_8in'), borderColor: '#4C72B0', backgroundColor: '#4C72B0', tension: 0.15 },
+        { label: '20 in depth', data: numCol(rows, 'vwc_pct_20in'), borderColor: '#55A868', backgroundColor: '#55A868', tension: 0.15 },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      scales: { ...baseScales, y: { title: { display: true, text: '% VWC', font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } } },
+      plugins: { legend: legendOpt, tooltip: tooltipOpt, zoom: zoomOpt() },
+    },
+  });
+
+  monthlyStreamflowChart = new Chart(document.getElementById('monthlyStreamflowChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [
+        { label: 'SURCEDCO (mean cfs)', data: numCol(rows, 'SURCEDCO_cfs_mean'), borderColor: '#4C72B0', backgroundColor: '#4C72B0', tension: 0.15, spanGaps: false },
+        { label: 'SURACECO (mean cfs)', data: numCol(rows, 'SURACECO_cfs_mean'), borderColor: '#55A868', backgroundColor: '#55A868', tension: 0.15, spanGaps: false },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      scales: { ...baseScales, y: { title: { display: true, text: 'cfs', font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } } },
+      plugins: { legend: legendOpt, tooltip: tooltipOpt, zoom: zoomOpt() },
+    },
+  });
 });
 </script>
 </body>
