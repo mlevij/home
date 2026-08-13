@@ -469,3 +469,89 @@ this may need to be its own tab/view eventually rather than folded into an exist
 enough is settled yet (enclosure choice undecided among the three, no repo link yet, no VSN) to
 model anything concretely — revisit once Sage's own test-parts repo exists and/or one
 configuration is chosen as the production standard.
+
+### Noted: CPER Sage node connectivity issue — NEON network engineer actively investigating
+
+David Clark (NEON's network engineer assigned to these deployments) is actively troubleshooting
+the known CPER Sage node connectivity issue (unresolved as of the 2026-07-28 workshop notes).
+He shared router-level diagnostics (ARP table on the node's VLAN) showing the node's address(es)
+unresolved — the router sent ARP requests and got no reply, while the router's own interface on
+that VLAN resolved normally. That pattern points toward a link-layer/power/config problem on the
+node's own side (not connected, not powered, or misconfigured) rather than a routing or firewall
+issue on the network side. Still open — revisit once David has more findings. (Specific IPs/
+hostnames intentionally omitted here — this is a general-context note only.)
+
+### Same session, continued: full tab rebuild — Chicago removed, Field Node and Wild Sage Node
+
+This was the biggest content rework this diagram has had, driven by a genuine "wires crossed"
+realization: when Remote Site was originally built (2026-08-04), the user was actually picturing
+the Wild Sage Node / Waggle-fleet concept, not the Starlink+LoRaWAN-no-network scenario that got
+built under that name. Untangling this took several rounds of real data-gathering from Sage's
+own node portal before any file got touched — worth reading in full if this needs revisiting,
+since a lot of intermediate hypotheses turned out wrong (e.g. "WSN uses Thor-class compute like
+the tower" — false, confirmed WSN nodes run **Jetson Xavier NX**, not Thor; Pete Beckman's
+outdoor-Thor test rigs are the *next-generation* WSN, not what's currently deployed).
+
+**What actually settled it**: the user pulled real attached-hardware listings from Sage's portal
+for multiple nodes (LHIA/H0??, W070, NU/W099, VLPK/W095, AMK/W06C — general WSN fleet examples —
+plus CPER1/H019 = confirmed CPER-ARS, UIC, and LCUF — actual SGT-program nodes). Cross-comparing
+these gave a real, evidence-based baseline instead of another guess.
+
+**Chicago tab removed entirely** — it was only ever the user's own scratch reference for
+figuring out how to reach the practice/workshop nodes, not a real deployment archetype. Default
+tab changed from `stage1` (deleted) to `stage2` (NEON Tower).
+
+**Field Node rebuilt to represent CPER-ARS** — a real, distinct SGT installation at CPER,
+separate from the NEON tower on the same property (confirmed: `H019` = CPER-ARS in Sage's
+portal). Old content ("Stripped-Down Edge Node," generic reduced compute + normal WAN/LAN) was
+simply wrong for this site — replaced with what's actually confirmed: **AGX Thor** compute
+(same Thor family as the NEON tower, per the portal's `agx-thor` listing), a LoRaWAN Gateway
+attached to the node, and **Starlink** for WAN (per the user directly, even though the portal
+currently only shows the LoRaWAN gateway installed — this models the target architecture, not
+just today's partial rollout, per explicit instruction: "build the network architecture around
+the highest possibility"). This is essentially the old Remote Site content, correctly
+re-attributed to where it actually belongs.
+
+**Remote Site renamed Wild Sage Node, rebuilt from real portal data.** Confirmed baseline
+(present across nearly every WSN example checked, several listed at 90/90-ish nodes fleet-wide
+in Sage's own hardware catalog): two cameras (Hanwha bottom XNV-8081Z + top XNF-8010RV), rain
+gauge (Hydreon RG-15), microphone (ETS ML1-WS IP54), GPS (Geekstory VK-162), BME280 + BME680
+(temp/pressure/humidity/gas), all housed in a Stevenson Shield, on **Jetson Xavier NX + Raspberry
+Pi 4B** compute. Modeled as a `Sensor Suite` node (consolidated rather than one node per sensor,
+to keep the canvas readable) feeding the compute node.
+
+Confirmed as genuinely **site-specific, not universal** (present on some real examples, absent
+on others — kept as a separate, clearly-optional node rather than folded into the baseline):
+LoRaWAN Gateway + Antenna (~18/90 nodes fleet-wide, always paired with its own dedicated third
+compute unit for LoRaWAN duties specifically). Left out of this pass as *not yet confirmed
+universal enough to model*: extra cameras (Mobotix M16, Hanwha PTZ), Vaisala WXT weather
+transmitter, and the AQT530-vs-ES-642 particulate sensor choice — these clearly exist on richer
+nodes but aren't part of the confirmed baseline the way the core sensor set is.
+
+**WAN modeled as a single "Cellular or Starlink" node**, not picked one way — per the user,
+neither option is confirmed as the default (asked Sage's own team, got "not sure" back), and
+edge cases (no cell signal) plausibly need Starlink even where cellular is typical. Kept
+deliberately generic rather than guessing.
+
+**`WAGGLE_DRILL` repurposed** (title, desc, and internal node/edge structure) to reflect the
+real Xavier NX + Raspberry Pi architecture instead of a vague "reduced compute module" — now
+titled "Wild Sage Node — Internal." Field Node's compute node points at the existing
+`THOR_BLADE_DRILL` instead, since AGX Thor is the same platform family as the tower's Thor-Blade.
+
+**Eight `GLOSSARY` examples fixed** that referenced either the removed Chicago tab (SGT, PDU,
+SSH, VPN entries) or the old Remote Site framing (CPER, ISP, RF, LoRaWAN entries) — all reworded
+to reference real, still-current content (NEON tower, CPER-ARS, Wild Sage Node) instead of
+dangling references to removed/renamed things.
+
+**One real open thread, not modeled**: whether "urban" WSN deployments (e.g. wired into a
+city's own network) differ from rural ones beyond just the WAN choice — raised by the user,
+not yet resolved on their end either ("again, i dont know"). UIC's node (sap flow meter, gas
+flux analyzer, generic SDI-12 loggers) looks like a genuinely different ecological-research
+instrument mix, not a WSN variant at all — worth clarifying whether it's in scope for this
+diagram before assuming it fits anywhere.
+
+Same guardrails re-verified as every prior round (brace/bracket balance in both files matches,
+`json.loads` round-trip, no raw `</script>`, all new content confirmed present and all removed
+content confirmed absent via independent post-write re-read). **Not yet confirmed live in a
+browser.** Not yet committed/pushed as of this note — this was a large enough change that it's
+being held for explicit review before shipping, same as every other round in this file.

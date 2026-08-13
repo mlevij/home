@@ -207,27 +207,14 @@ function dist(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
 
 class Component extends DCLogic {
   static STAGE_META = [
-    {key:'stage1', label:'Chicago', subtitle:'A test node in Chicago, reached by SSH/RDP directly over the internet — no VPN in between.'},
     {key:'stage2', label:'NEON Tower', subtitle:'A Thor-Blade (SGT node) mounted at a NEON tower (CPER site) that already has its own internet, talking to Sage cloud.'},
-    {key:'stage3', label:'Field Node', subtitle:'A stripped-down edge node with sensors, camera and mic, deployed on its own without a NEON tower nearby.'},
-    {key:'stage4', label:'Remote Site', subtitle:'A remote site with no existing connectivity at all (e.g. an ARS field station) — Starlink provides the outbound path, while a separate LoRaWAN-connected instrument node feeds its data in locally. Contrast with the NEON Tower view, where CPER already has its own internet.'},
+    {key:'stage3', label:'Field Node', subtitle:'A Sage node at a site with its own existing network, separate from a NEON tower — e.g. CPER-ARS, a distinct installation on the same CPER property as the NEON tower.'},
+    {key:'stage4', label:'Wild Sage Node', subtitle:'A ruggedized, outdoor-hardened node for broad field deployment — camera, weather, and audio sensors on Xavier NX + Raspberry Pi compute, reaching the internet over cellular or Starlink depending on local coverage.'},
     {key:'osi', label:'OSI / TCP-IP', subtitle:null},
   ];
 
   static STAGE_DATA = {
-    stage1: {
-      nodes: [
-        {id:'csuWorkstation', x:260,y:440, w:160,h:56, label:'Your Workstation (CSU)', kicker:'Client', group:'client', desc:'Your machine at CSU, connecting over the internet through Sage’s own SSH gateway — no VPN required.', specs:['Access: Direct SSH / remote desktop']},
-        {id:'internet1', x:600,y:440, w:150,h:52, label:'Internet', kicker:'WAN', group:'wan', desc:'Public internet path between your workstation and Sage’s SSH gateway.', specs:['Path: Public internet']},
-        {id:'sshGateway', x:940,y:440, w:180,h:56, label:'Sage SSH Gateway (Bastion)', kicker:'Bastion', group:'wan', desc:'Sage’s own bastion host (beekeeper.sagecontinuum.org) — you authenticate here first, and it relays your connection on to the actual node. This is why logging in asks for your SSH key’s passphrase twice: once for this hop, once for the node itself.', specs:['Host: beekeeper.sagecontinuum.org','Auth: same SSH key, used for both hops']},
-        {id:'chicagoNode', x:1340,y:440, w:186,h:64, label:'Thor-Blade Test Node — Chicago', kicker:'Edge Compute', group:'compute', desc:'An NVIDIA Jetson Thor T5000 edge AI platform used to test Sage Grande Testbed (SGT) software and connectivity before field deployment.', specs:['Compute: NVIDIA Blackwell GPU','Memory: 128GB RAM · Storage: 4TB NVMe','Networking: integrated 1Gbps router','Power: network-controlled PDU'], drill:'thorBlade'},
-      ],
-      edges: [
-        {from:'csuWorkstation', to:'internet1', dashed:true, dataflow:true, label:'SSH / RDP'},
-        {from:'internet1', to:'sshGateway', dataflow:true},
-        {from:'sshGateway', to:'chicagoNode', dataflow:true, label:'relayed SSH'},
-      ],
-    },
+
     stage2: {
       nodes: [
         {id:'neonTower', x:780,y:90, w:190,h:56, label:'NEON Tower — CPER Site', kicker:'NEON Site', group:'site', desc:'A NEON flux tower operated by Battelle, instrumented with long-term environmental sensors. CPER is the first planned SGT site (not yet connected).', specs:['Site: Central Plains Experimental Range (CPER)','Operator: Battelle / NEON','Status: testbed planned, not yet connected']},
@@ -254,39 +241,37 @@ class Component extends DCLogic {
     },
     stage3: {
       nodes: [
-        {id:'fieldSite', x:780,y:80, w:190,h:56, label:'Field Deployment Site', kicker:'Future Site', group:'site', desc:'A future deployment site independent of a NEON tower \u2014 the long-term target for a stripped-down edge node.', specs:['Status: planned']},
-        {id:'envSensorsField', x:460,y:240, w:160,h:56, label:'Environmental Sensors', kicker:'LAN Device', group:'sensors', desc:'Temperature, humidity, and other environmental sensors wired to the node\u2019s private LAN.', specs:['Connection: node LAN port']},
-        {id:'cameraField', x:780,y:240, w:160,h:56, label:'Camera(s)', kicker:'LAN Device', group:'sensors', desc:'On-site camera(s) streaming to the node over its private LAN.', specs:['Connection: node LAN port']},
-        {id:'micField', x:1100,y:240, w:160,h:56, label:'Microphone', kicker:'LAN Device', group:'sensors', desc:'Audio sensor streaming to the node over its private LAN.', specs:['Connection: node LAN port']},
-        {id:'waggleNode', x:780,y:400, w:186,h:64, label:'Stripped-Down Edge Node', kicker:'Edge Compute', group:'compute', desc:'A lighter-weight version of the SGT node for broader field deployment, following the same WAN/LAN network model at reduced scale.', specs:['Same WAN/LAN policy as Thor-Blade','Reduced compute vs. tower node'], drill:'waggle'},
+        {id:'cperArsSite', x:780,y:80, w:190,h:56, label:'CPER-ARS', kicker:'Field Site', group:'site', desc:'A separate USDA-ARS installation at the Central Plains Experimental Range — on the same large property as the NEON tower, but a distinct site with its own existing network and internet connection.', specs:['Site: Central Plains Experimental Range (CPER)','Distinct from: the NEON tower (see NEON Tower tab)']},
+        {id:'cperArsNode', x:780,y:250, w:186,h:64, label:'SGT Node (AGX Thor)', kicker:'Edge Compute', group:'compute', desc:'The same Thor-family compute platform as the NEON tower deployment, running here at CPER-ARS instead — confirmed via Sage’s own node inventory.', specs:['Compute: NVIDIA AGX Thor','Networking: integrated router'], drill:'thorBlade'},
+        {id:'loraGatewayArs', x:1100,y:250, w:190,h:56, label:'LoRaWAN Gateway', kicker:'Local Hardware', group:'site', desc:'A LoRaWAN gateway attached to the node, relaying nearby low-power instrument data in over radio — confirmed via Sage’s own node inventory for this site.', specs:['Purpose: local instrument connectivity','Not for: internet backhaul']},
+        {id:'starlinkArs', x:780,y:420, w:160,h:52, label:'Starlink Terminal', kicker:'WAN', group:'wan', desc:'Satellite internet uplink used at this site for outbound connectivity.', specs:['Path: satellite (LEO)']},
         {id:'internet3', x:780,y:560, w:150,h:52, label:'Internet', kicker:'WAN', group:'wan', desc:'Outbound-only path to Sage cloud services.', specs:['Direction: outbound only']},
         {id:'sageCloud3', x:780,y:710, w:190,h:56, label:'Sage Cloud (Beehive)', kicker:'Cloud', group:'cloud', desc:'Cloud services hosted at Northwestern University for data upload, software updates, and remote management.', specs:['Host: Northwestern University']},
       ],
       edges: [
-        {from:'fieldSite', to:'waggleNode', dashed:true, label:'co-located'},
-        {from:'envSensorsField', to:'waggleNode', dataflow:true, label:'LAN'},
-        {from:'cameraField', to:'waggleNode', dataflow:true, label:'LAN'},
-        {from:'micField', to:'waggleNode', dataflow:true, label:'LAN'},
-        {from:'waggleNode', to:'internet3', dataflow:true, label:'WAN uplink'},
+        {from:'cperArsSite', to:'cperArsNode', dashed:true, label:'co-located'},
+        {from:'cperArsNode', to:'loraGatewayArs', dashed:true, label:'attached hardware'},
+        {from:'cperArsNode', to:'starlinkArs', dataflow:true, label:'WAN uplink'},
+        {from:'starlinkArs', to:'internet3', dataflow:true, label:'satellite'},
         {from:'internet3', to:'sageCloud3', dataflow:true},
       ],
     },
     stage4: {
       nodes: [
-        {id:'remoteSite', x:780,y:80, w:190,h:56, label:'Remote Field Site', kicker:'Field Site', group:'site', desc:'A remote deployment site (e.g. an ARS field station) with no pre-existing site network — unlike CPER (NEON Tower), which already has its own internet connection.', specs:['No pre-existing site network','Contrast: CPER (NEON Tower) provides its own internet']},
-        {id:'loraInstruments', x:460,y:400, w:170,h:56, label:'Remote Instrument Node', kicker:'Field Sensor', group:'sensors', desc:'A separate, battery-powered instrument node too far or impractical to wire directly to the edge node — reports in over long-range, low-power LoRaWAN radio instead of Ethernet/Wi-Fi.', specs:['Link: LoRaWAN (RF)','Not on the edge node’s own LAN']},
-        {id:'edgeNodeRemote', x:780,y:400, w:186,h:64, label:'Edge Node (Field House)', kicker:'Edge Compute', group:'compute', desc:'A field node with no wired or cellular backhaul available — runs the LoRaWAN network server (ChirpStack) to process data from its USB-attached gateway, and reaches the internet only via Starlink.', specs:['Runs: ChirpStack (LoRaWAN network server)','WAN: Starlink only (no wired/cellular ISP)']},
-        {id:'loraGatewayRemote', x:1100,y:400, w:190,h:56, label:'LoRaWAN Gateway', kicker:'On-Node Hardware', group:'site', desc:'A LoRaWAN concentrator plugged directly into the edge node via USB, rather than mounted as separate site infrastructure the way CPER’s tower-mounted gateway is — confirmed on a retired Thor-Blade test unit (an unidentified FT232 USB-serial device paired with a locally-running ChirpStack instance). Relays the remote instrument node’s readings into the edge node over USB, not the network.', specs:['Attachment: USB, directly on the node','Paired with: ChirpStack running on the same node','Not for: internet backhaul or device-to-device links']},
-        {id:'starlinkTerminal', x:780,y:560, w:160,h:52, label:'Starlink Terminal', kicker:'WAN', group:'wan', desc:'Satellite internet uplink — used at remote sites with no wired ISP or reliable cellular coverage. Provides outbound internet access only; unrelated to the LoRaWAN link, which is a separate, local, inbound data path.', specs:['Path: satellite (LEO)','Replaces wired/cellular WAN']},
-        {id:'internet4', x:780,y:700, w:150,h:52, label:'Internet', kicker:'WAN', group:'wan', desc:'Public internet reached via the Starlink satellite backhaul.', specs:['Direction: outbound only']},
-        {id:'sageCloud4', x:780,y:840, w:190,h:56, label:'Sage Cloud (Beehive)', kicker:'Cloud', group:'cloud', desc:'Cloud services hosted at Northwestern University for data upload, software updates, and remote management.', specs:['Host: Northwestern University']},
+        {id:'wsnSite', x:780,y:80, w:190,h:56, label:'Wild Sage Node Deployment', kicker:'Field Site', group:'site', desc:'A ruggedized, outdoor-hardened node built for broad field deployment, independent of a NEON tower or other existing site infrastructure.', specs:['Status: broad field deployment']},
+        {id:'wsnCompute', x:780,y:250, w:186,h:64, label:'Wild Sage Node (Xavier NX)', kicker:'Edge Compute', group:'compute', desc:'A smaller, weatherproofed compute platform — NVIDIA Jetson Xavier NX plus a Raspberry Pi 4B — confirmed across multiple real deployed nodes, distinct from the Thor-family compute used at the NEON tower and CPER-ARS.', specs:['Compute: NVIDIA Jetson Xavier NX','Also on-node: Raspberry Pi 4B'], drill:'waggle'},
+        {id:'wsnSensors', x:460,y:250, w:190,h:56, label:'Sensor Suite', kicker:'Field Sensors', group:'sensors', desc:'The consistent baseline instrument set confirmed across multiple deployed Wild Sage Nodes: two cameras, a rain gauge, a microphone, GPS, and combined temperature/pressure/humidity/gas sensors, all housed in a Stevenson Shield radiation screen.', specs:['Cameras: bottom + top (Hanwha)','Weather: rain gauge, T/P/H/gas','Housing: Stevenson Shield']},
+        {id:'wsnLoraGateway', x:1100,y:250, w:190,h:56, label:'LoRaWAN Gateway', kicker:'Site-Specific Hardware', group:'site', desc:'Present on some Wild Sage Node deployments, not all — confirmed on roughly a fifth of real nodes checked, typically paired with its own dedicated third compute unit. Relays nearby low-power instrument data (e.g. a separate soil sensor) in over radio.', specs:['Purpose: local instrument connectivity, where present','Often paired with: a dedicated Raspberry Pi']},
+        {id:'wsnWan', x:780,y:420, w:180,h:52, label:'Cellular or Starlink', kicker:'WAN', group:'wan', desc:'WAN path varies by site — cellular where signal is available, Starlink where it isn’t. Neither option is the fixed default; both are real, in-use paths depending on local coverage.', specs:['Path: cellular (typical) or satellite (where cell coverage is weak/absent)']},
+        {id:'internet4', x:780,y:560, w:150,h:52, label:'Internet', kicker:'WAN', group:'wan', desc:'Public internet reached via the node’s cellular or satellite WAN path.', specs:['Direction: outbound only']},
+        {id:'sageCloud4', x:780,y:710, w:190,h:56, label:'Sage Cloud (Beehive)', kicker:'Cloud', group:'cloud', desc:'Cloud services hosted at Northwestern University for data upload, software updates, and remote management.', specs:['Host: Northwestern University']},
       ],
       edges: [
-        {from:'remoteSite', to:'edgeNodeRemote', dashed:true, label:'co-located'},
-        {from:'edgeNodeRemote', to:'loraGatewayRemote', dashed:true, label:'USB-attached'},
-        {from:'loraInstruments', to:'loraGatewayRemote', dashed:true, dataflow:true, label:'LoRaWAN (RF)'},
-        {from:'edgeNodeRemote', to:'starlinkTerminal', dataflow:true, label:'WAN uplink'},
-        {from:'starlinkTerminal', to:'internet4', dataflow:true, label:'satellite'},
+        {from:'wsnSite', to:'wsnCompute', dashed:true, label:'co-located'},
+        {from:'wsnSensors', to:'wsnCompute', dataflow:true, label:'local sensors'},
+        {from:'wsnCompute', to:'wsnLoraGateway', dashed:true, label:'site-specific'},
+        {from:'wsnCompute', to:'wsnWan', dataflow:true, label:'WAN uplink'},
+        {from:'wsnWan', to:'internet4', dataflow:true},
         {from:'internet4', to:'sageCloud4', dataflow:true},
       ],
     },
@@ -312,16 +297,16 @@ class Component extends DCLogic {
     edges:[{from:'compute',to:'router'},{from:'router',to:'wan'},{from:'router',to:'lan'},{from:'router',to:'pdu'}],
   };
   static WAGGLE_DRILL = {
-    title:'Stripped-Down Node — Internal',
-    desc:'A reduced version of the same design: smaller compute module, one router, WAN out to Sage cloud, LAN in from local sensors/camera/mic.',
+    title:'Wild Sage Node — Internal',
+    desc:'A weatherproofed enclosure holding an NVIDIA Jetson Xavier NX (main compute) and a Raspberry Pi 4B (general-purpose I/O) — confirmed across multiple real deployed nodes.',
     viewBox:'0 0 620 260',
     nodes:[
-      {id:'compute', x:120,y:130, w:160,h:60, label:'Compute Module', kicker:'Reduced edge compute'},
-      {id:'router', x:340,y:130, w:150,h:60, label:'Router', kicker:'1Gbps'},
-      {id:'wan', x:530,y:60, w:120,h:52, label:'WAN Port', kicker:'To cloud'},
-      {id:'lan', x:530,y:200, w:150,h:56, label:'LAN Port', kicker:'Sensors · camera · mic'},
+      {id:'compute', x:120,y:130, w:160,h:60, label:'Xavier NX', kicker:'Main edge compute'},
+      {id:'rpi', x:340,y:60, w:150,h:56, label:'Raspberry Pi 4B', kicker:'General-purpose I/O'},
+      {id:'wan', x:530,y:130, w:120,h:52, label:'WAN Port', kicker:'Cellular or Starlink'},
+      {id:'lan', x:340,y:200, w:150,h:56, label:'Sensor I/O', kicker:'Cameras · weather · mic'},
     ],
-    edges:[{from:'compute',to:'router'},{from:'router',to:'wan'},{from:'router',to:'lan'}],
+    edges:[{from:'compute',to:'rpi'},{from:'compute',to:'wan'},{from:'compute',to:'lan'}],
   };
 
   static OSI_LAYERS = [
@@ -341,28 +326,28 @@ class Component extends DCLogic {
   ];
 
 static GLOSSARY = [
-    {term:'SGT', def:'Sage Grande Testbed — the AI-at-the-edge program these nodes support.', example:'This whole diagram documents SGT’s own node deployments, from the Chicago test node through to a remote field site.'},
+    {term:'SGT', def:'Sage Grande Testbed — the AI-at-the-edge program these nodes support.', example:'This whole diagram documents SGT’s own node deployments, from a NEON tower installation through to a ruggedized Wild Sage Node.'},
     {term:'NEON', def:'National Ecological Observatory Network — operates long-term environmental monitoring towers (run day-to-day by Battelle).', example:'NEON’s CPER tower is the specific site an SGT node is planned to be mounted at.'},
-    {term:'CPER', def:'Central Plains Experimental Range — the NEON site planned as the first SGT tower deployment.', example:'CPER already has its own internet connection, so its tower-mounted LoRaWAN gateway is only for local sensor telemetry — not a Starlink-style workaround for missing internet the way the Remote Site view needs.'},
+    {term:'CPER', def:'Central Plains Experimental Range — the NEON site planned as the first SGT tower deployment.', example:'CPER already has its own internet connection, so its tower-mounted LoRaWAN gateway is only for local sensor telemetry — not a Starlink-style workaround for missing internet, the way CPER-ARS or a remote Wild Sage Node might need.'},
     {term:'WAN', def:'Wide Area Network — here, the node’s outbound-facing internet port: the one path that leads away from the node, out to the rest of the internet.', example:'A Thor-Blade’s WAN port is the single cable (or Starlink link) that ultimately reaches Sage Cloud.'},
     {term:'LAN', def:'Local Area Network — the node’s own private network for directly attached sensors/camera/mic, kept separate from the WAN side.', example:'In the Field Node view, a camera and microphone plug into the node’s LAN port — they’re never directly reachable from the internet.'},
     {term:'Subnet', def:'A smaller, self-contained slice of a network. Devices inside the same subnet can usually reach each other directly; reaching anything outside it has to go through a router.', example:'A node’s camera and microphone sit on its own private subnet; the NEON Tower view’s “Host-Provided Sensors” explicitly don’t — they’re reachable a different way, over the site’s own network instead.'},
     {term:'Firewall', def:'A set of rules that decides what network traffic is allowed in or out of a device or network.', example:'Sage Cloud needs no special firewall exceptions to work with a node, because the node only ever starts outbound connections — nothing has to be let in from outside.'},
     {term:'Bastion', def:'A single, hardened server you connect to first, which then relays your connection onward to machines you can’t reach directly (also called a "jump host").', example:'Sage’s SSH gateway works this way — you authenticate once to Sage’s bastion, and it forwards you on to the actual node you asked for.'},
-    {term:'ISP', def:'Internet Service Provider — the company that actually connects a location to the wider internet.', example:'The Remote Site view has no ISP reaching it at all, wired or cellular — that’s exactly why it needs Starlink instead.'},
+    {term:'ISP', def:'Internet Service Provider — the company that actually connects a location to the wider internet.', example:'CPER-ARS has no wired ISP reaching it — that’s exactly why it uses Starlink instead.'},
     {term:'LEO', def:'Low Earth Orbit — a relatively close-to-Earth orbital band (a few hundred miles up) used by newer satellite internet constellations.', example:'Starlink’s LEO satellites sit much closer than older satellite internet, part of why its latency is low enough to comfortably run an SSH session or upload data over.'},
-    {term:'RF', def:'Radio Frequency — wireless transmission through the air, instead of over a physical cable.', example:'The link between the Remote Site view’s instrument node and its edge node is RF (a LoRaWAN radio signal), not an Ethernet cable.'},
+    {term:'RF', def:'Radio Frequency — wireless transmission through the air, instead of over a physical cable.', example:'A LoRaWAN gateway’s link to a nearby low-power sensor is RF (radio), not an Ethernet cable — e.g. the LoRaWAN gateways at the NEON tower or CPER-ARS.'},
     {term:'DHCP', def:'Dynamic Host Configuration Protocol — automatically assigns IP addresses on a network, so nobody has to type one in by hand.', example:'Plug a new camera into a Thor-Blade’s LAN port and DHCP is what hands it a usable IP address on its own.'},
-    {term:'PDU', def:'Two unrelated meanings here: on the Thor-Blade node, Power Distribution Unit (network-controlled power); in the OSI model, Protocol Data Unit (the generic name for "a unit of data" at each layer, e.g. a “Segment” or a “Packet”).', example:'The Thor-Blade’s network-controlled PDU lets someone power-cycle a stuck node remotely, without a trip to Chicago.'},
+    {term:'PDU', def:'Two unrelated meanings here: on the Thor-Blade node, Power Distribution Unit (network-controlled power); in the OSI model, Protocol Data Unit (the generic name for "a unit of data" at each layer, e.g. a “Segment” or a “Packet”).', example:'The Thor-Blade’s network-controlled PDU lets someone power-cycle a stuck node remotely, without a trip to the field.'},
     {term:'GPU', def:'Graphics Processing Unit — the Blackwell-architecture chip doing the AI compute.', example:'The Thor-Blade’s GPU is what actually runs an AI model against a camera image or sensor reading, right on the node itself.'},
     {term:'RAM', def:'Random Access Memory — the node’s working memory (128GB), used while it’s actively running something rather than for long-term storage.', example:'More RAM lets the node hold a bigger AI model (or several plugins at once) in memory instead of constantly reloading from disk.'},
     {term:'NVMe', def:'Non-Volatile Memory express — fast SSD storage (4TB).', example:'Captured images and sensor logs can sit on a node’s own NVMe storage before, or instead of, being uploaded anywhere.'},
-    {term:'SSH', def:'Secure Shell — encrypted command-line remote access to another machine.', example:'The Chicago view’s whole workflow is SSHing straight into the test node from a laptop.'},
+    {term:'SSH', def:'Secure Shell — encrypted command-line remote access to another machine.', example:'SSHing directly into a node from a laptop, through Sage’s own bastion host, is the standard way to reach any of these deployments.'},
     {term:'RDP', def:'Remote Desktop Protocol — remote graphical desktop access, as opposed to a command line.', example:'An alternative to SSH if you wanted a full graphical desktop on a node — not how these nodes are actually driven day to day.'},
-    {term:'VPN', def:'Virtual Private Network — an encrypted tunnel into a private network.', example:'The Chicago view explicitly has none: it’s direct SSH over the open internet, not through a VPN tunnel first.'},
+    {term:'VPN', def:'Virtual Private Network — an encrypted tunnel into a private network.', example:'None of these deployments use one: access is direct SSH over the open internet (through Sage’s own bastion host), not through a VPN tunnel first.'},
     {term:'DMZ', def:'Demilitarized Zone — a network segment deliberately exposed to untrusted traffic, kept separate from everything sensitive.', example:'Not needed here — a Sage node never opens inbound ports for the outside world to reach, so there’s nothing exposed that would need its own DMZ.'},
     {term:'LTE', def:'Long-Term Evolution — a cellular data standard, one option for field connectivity.', example:'A cellular/LTE modem is one alternative to Starlink for getting a remote node online, wherever a carrier actually has coverage.'},
-    {term:'LoRaWAN', def:'Long Range Wide Area Network — a low-power wireless protocol built for long-range, low-bandwidth sensor telemetry, not for general internet traffic.', example:'The Remote Site view’s instrument node uses LoRaWAN to send its readings to the edge node — it’s covering distance cheaply, not reaching the internet.'},
+    {term:'LoRaWAN', def:'Long Range Wide Area Network — a low-power wireless protocol built for long-range, low-bandwidth sensor telemetry, not for general internet traffic.', example:'A LoRaWAN gateway relays a nearby low-power sensor’s readings in over radio — covering distance cheaply, not reaching the internet.'},
     {term:'OSI', def:'Open Systems Interconnection — the 7-layer reference model traditionally taught for explaining network communication.', example:'The adjacent OSI/TCP-IP tab uses this model to explain how a sensor reading actually gets from a node to Sage Cloud, one layer at a time.'},
     {term:'TCP/IP', def:'The 4-layer model actually implemented on the real internet; it maps onto OSI’s 7 layers but groups some of them together.', example:'Every Sage node’s real traffic runs on TCP/IP — OSI is the teaching model, TCP/IP is what’s actually running.'},
     {term:'TCP', def:'Transmission Control Protocol — reliable, ordered data delivery; if a piece goes missing in transit, it gets resent automatically.', example:'An SSH session to a node needs TCP — you can’t have commands silently vanish partway through.'},
@@ -388,7 +373,7 @@ static GLOSSARY = [
   ];
 
   state = {
-    stage: 'stage1',
+    stage: 'stage2',
     showGlossary: false,
     selectedId: null,
     selectedSource: null,
