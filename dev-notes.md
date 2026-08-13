@@ -588,11 +588,13 @@ new fallback values confirmed present and old ones confirmed absent post-write).
 
 ### Same day: real names sanitized, glossary deepened past "networking for dummies"
 
-**Real names removed.** `David Clark` and `Pete Beckman` had been used by name in earlier
-entries in this file — fine for an internal engineering thread, but this repo (and its
-`mlevij/home` mirror) are both public, so both got replaced with role descriptions ("NEON's
-assigned network engineer," "Sage's team") throughout this file. Nothing in the diagram content
-itself ever had real names — this was a dev-notes-only fix.
+**Real names removed.** Two individuals' names had been used in earlier entries in this file —
+fine for an internal engineering thread, but this repo (and its `mlevij/home` mirror) are both
+public, so both got replaced with role descriptions ("NEON's assigned network engineer,"
+"Sage's team") throughout this file. Nothing in the diagram content itself ever had real names —
+this was a dev-notes-only fix. Note: this cleans the current/latest version only — the names
+still exist in this repo's earlier git history (prior commits), which would need an actual
+history rewrite to remove, not attempted here without being asked.
 
 **Scope deliberately expanded past the original "networking for dummies" framing** — user wants
 to move from "explain this to someone new" toward genuine troubleshooting proficiency, but
