@@ -645,3 +645,83 @@ hardware exists without attaching a number that isn't really representative. Now
 
 Same guardrails re-verified (brace/bracket balance, `json.loads` round-trip, no raw `</script>`,
 zero "confirmed" occurrences and the dropped fraction both confirmed absent post-write).
+
+### Same day: research pass over Sage's official GitHub org (waggle-sensor)
+
+User shared `github.com/waggle-sensor` (Sage's official org) and asked for an exhaustive-as-
+practical pass over it — 257 public repos total. Scanned every repo's name/description; opened
+roughly a dozen in real depth (READMEs, folder structure) where the description suggested
+something genuinely relevant to this diagram. **Nothing here changed anything already built** —
+this was purely research/corroboration, logged for future reference. No diagram edits from this
+pass.
+
+**A third compute platform exists, not currently modeled anywhere**: an **HPE blade with an
+NVIDIA L40S GPU**, alongside the Thor-Blade — found via `sage-website`'s
+`docs/node-installation-manuals.md`, which describes "HPE Blade Setup for Remote OS
+Installation" as a real SGT deployment guide, separate from the Thor-Blade guide. Not clear yet
+where/whether this belongs in the diagram (a fourth NEON-Tower-like tab? a compute-choice note
+on an existing tab?) — flagging only, not deciding.
+
+**Official manuals exist and are downloadable**, but two of three are effectively unreadable to
+me right now: `SGT_Manual_ThorDev_Blade_V1.0.pdf`, `HPE_L40s_Bringup.pdf`, and `WSN_GS_V1.pdf`
+(Wild Sage Node "Getting Started," presumably) all live in `sage-website`'s
+`docs/manuals/` folder. `WSN_GS_V1.pdf` specifically was downloaded (6.8MB) but neither the
+local PDF-page-render path (missing `poppler-utils`, not installed per standing guidance not to
+chase inaccessible things too hard) nor `WebFetch`'s text extraction could get readable content
+out of it — likely image-heavy. This is a genuinely valuable primary source if the user opens it
+directly; worth revisiting if a PDF-reading path becomes available.
+
+**Plugin repos independently corroborate the WSN sensor baseline** built from portal data
+earlier: `plugin-aqt` (Vaisala AQT530), `plugin-wxt536` (Vaisala WXT536), `plugin-metsense`
+(BME680), `plugin-raingauge` (RG-15), `plugin-mobotix-sampler` + `plugin-mobotix-move` (Mobotix
+image/thermal capture + PTZ control) all exist as real, dedicated plugin repos — not just
+something that happened to show up once on a node's attached-hardware list.
+
+**One new sensor type surfaced that isn't in the current baseline**: a METEK Sonic 3D
+anemometer (`waggle-sonic3d`, `sonic-3d-sampler`) — a dedicated wind sensor, distinct from the
+wind measurement built into the Vaisala WXT unit. Not added to the diagram; just noted as
+existing.
+
+**Switch hardware confirmed**: `wildnode-switch-config` — "configuration files and firmware used
+when provisioning the Wild Waggle Node **Unifi** network switch." First concrete confirmation of
+the actual switch brand (Ubiquiti Unifi) used in these deployments.
+
+**`honeycomb`** — a peripheral configuration/firmware update manager, explicitly described as
+being "for Wild SAGE nodes" (yet another real usage of that naming, alongside `wes-factory`'s
+"Wild Sage Node" from the earlier pass — for the record, per the user, don't chase the Wild
+Sage vs. Wild Waggle naming question further, it's not worth resolving right now). Runs as a
+`systemd` service with a local Flask server on each node. Software-layer detail, not currently
+represented anywhere in the network topology diagram — flagging as a possible future "how do
+updates reach a node" angle, not acted on.
+
+**LoRaWAN's real plugin architecture, from `plugin-lorawan-example`'s README**: data flows
+through a `lorawan-listener` plugin (consumes ChirpStack output) into downstream
+application-specific plugins filtered by app name/device name/location tag. Constrained to the
+US region specifically because of how `wes-chirpstack` is configured for radio-channel
+regulations. The example job spec in that README schedules against a real node, `W030` — a
+**W-prefix** node, not the V-prefix the user had guessed earlier (an easy mix-up between two
+similar letters, not worth dwelling on — same conclusion the user's own portal pulls already
+pointed to, since LHIA/W070/NU/W099/VLPK/W095/AMK/W06C were all W-prefixed too).
+
+**Beekeeper's bastion role is extensively real**, not a one-off inference from a login banner:
+`beekeeper`, `beekeeper-key-tools`, `beekeeper-netman-connectivity`, `waggle-bk-registration`,
+`waggle-bk-reverse-tunnel`, `waggle-wan-tunnel`, plus a legacy `node-registration-service`. All
+consistent with how the Chicago-tab bastion node was originally modeled (before that tab was
+removed).
+
+**`waggle-internet-share`** ("Service to share internet over local 10.31.81.1/24 network")
+independently corroborates the exact subnet already found in the Thor-Blade spec PDF much
+earlier in this project — same number, two unrelated sources.
+
+**AoT/Chicago has its own real legacy software stack** (`node_status`, `api_of_things`, `afb` —
+"Array of Things" being the original Chicago deployment's name) — consistent with treating
+Chicago as genuinely separate/retired rather than folded into anything else, which is what
+already happened when that tab was removed.
+
+**Dead ends, noted so they don't get re-chased**: `waggle-docs` is archived, fully superseded by
+`sage-website` (no content lost). `waggle-nodes` does NOT contain a browsable node registry
+despite the promising name — just process/validation scripts (`hotfixes`, `validate-node`
+folders). A guessed doc URL (`docs.waggle-edge.ai/docs/about/architecture`) 404'd and wasn't
+chased further with more guesses.
+
+No dev-notes guardrail checks needed for this entry — pure research, no diagram files touched.
