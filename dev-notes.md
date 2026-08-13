@@ -375,3 +375,50 @@ All standing guardrails re-verified (bracket balance matches within each file, `
 round-trip, no raw `</script>` survived escaping, new content confirmed present via a fresh
 independent re-read after writing). **Not yet confirmed live in a browser** — Chrome extension
 still not connected this session, same standing caveat as every round in this file so far.
+
+### Same session, continued: security camera added (NEON Tower), LoRaWAN pulled out on Remote Site too
+
+User's stated principle: "if a site has a lorawan, a phenocam and/or other instruments, we
+should have those showing with their connections" — instrumentation should be its own visible
+node with real edges, not folded into a compute node's description text. Applied to both stages
+that had this problem.
+
+**NEON Tower (`stage2`)**: added `cameraCper` (Security Camera, group `sensors`, tower-mounted,
+PoE-powered) — confirmed via the same physical schematic and hardware procurement list that
+confirmed the LoRaWAN gateway. Two new edges: `neonTower → cameraCper` (dashed, "mounted on
+tower") and `cameraCper → thorTower` (dashed, dataflow, "via site network" — same pattern as
+`hostSensors`'s edge, since it reaches the node the same way).
+
+**Remote Site (`stage4`)**: pulled the LoRaWAN gateway out of `edgeNodeRemote`'s description
+into its own node, `loraGatewayRemote` (LoRaWAN Gateway, group `site`, kicker "On-Node
+Hardware") — distinct from CPER's `loraGatewayCper` in one real way: this one is modeled as
+USB-attached directly to the edge node itself (per the W021 empirical finding: an unidentified
+FT232 USB-serial device + locally-running ChirpStack), not mounted as separate site
+infrastructure the way CPER's tower-mounted gateway is. `edgeNodeRemote`'s own desc/specs
+reworded to say it *runs ChirpStack* rather than *hosts the gateway*, now that the gateway
+hardware is its own node. Edges: `edgeNodeRemote → loraGatewayRemote` (dashed, "USB-attached")
+and `loraInstruments → loraGatewayRemote` (dashed, dataflow, "LoRaWAN (RF)") — replacing the old
+direct `loraInstruments → edgeNodeRemote` edge.
+
+**Also fixed while in there**: `remoteSite`'s desc/specs still said "unlike CPER (Stage 2)" in
+two places — stale now that the diagram's own tabs dropped "Stage N" labeling back on
+2026-08-04 (user asked to stop using "Stage N" in conversation too, going forward — refer to
+tabs by their actual names: Chicago, NEON Tower, Field Node, Remote Site, OSI/TCP-IP).
+
+**Process note — the Unicode-escaping convention is not uniform across the file.** Assumed after
+the last round that *all* apostrophes/dashes in the compiled template's decoded JS are literal
+`’`/`—` escape-text. Wrong — some regions (e.g. the `stage4` block, untouched since its
+original 2026-08-04 build) use the actual Unicode glyph directly, while others (e.g. content
+added in the previous LoRaWAN-gateway round) use literal escape text. A hand-typed edit against
+`stage4` using literal `’` text failed to match for exactly this reason. **Confirmed via
+direct `Read` tool calls on specific lines** (not through Bash/print pipes — a `python -c` call
+piped through Bash and a background-task output file produced a mangled `�` character for a
+real em-dash that the direct `Read` tool rendered correctly moments earlier; same false-alarm
+class as the 2026-07-30 mojibake investigation above, not real file corruption). **Practical
+approach that worked**: don't assume a convention at all — check each specific location directly
+via `Read` before constructing a match, and prefer whole-block anchor-slice replacement (start
+anchor to a stable end anchor, e.g. `"{id:'neonTower',"` through `"\n    stage3: {"`) over
+incremental hand-typed edits wherever the block is being substantially rewritten anyway.
+
+Same guardrails re-verified (brace/bracket balance in both files, `json.loads` round-trip, no
+raw `</script>`, new content confirmed present post-write). Not yet confirmed live in a browser.
