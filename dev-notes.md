@@ -69,7 +69,7 @@ hands-on operational reality behind each node — not just the conceptual networ
 already shown, but:
 - The actual commands used to connect to each node (SSH, tmux session management/attach
   conventions, venv activation, `hermes` launch, etc.) — the same workflow already logged in
-  the Sage workshop's own session notes (`Sage/session-notes/*.md`) for H037/Hermes work.
+  the Sage workshop's own dev notes (`Sage/dev-notes/*.md`) for H037/Hermes work.
 - What each diagram node actually maps to physically/technically — real hardware (physical
   machines, switches, routers) vs. software layers (venvs, Hermes itself) vs. conceptual/
   network entities that don't correspond to a single physical thing.
@@ -316,3 +316,62 @@ Both `source/*.dc.html` and the compiled `standalone.html` updated identically a
 (bracket balance matched between the two, `assert '</script>' not in encoded` and round-trip
 `json.loads` checks both passed before writing). Not yet re-confirmed live in a browser — same
 standing caveat as the last two rounds.
+
+## Session log — 2026-08-13
+
+### Stage 2 LoRaWAN gateway added — CPER topology confirmed via install photo
+
+Follow-up to the 2026-08-04 "topology clarified, Stage 4 built" entry above, which left CPER's
+own LoRaWAN setup unaddressed (Stage 4 was explicitly scoped to a *different* site archetype —
+a true remote site with no pre-existing network at all). Separately, while comparing this
+diagram against a real physical wiring schematic (`Simplified Network Connection Schematic
+20250922.pptx`/`.png`, showing a Tower + Instrument Hut with a PoE injector, switch network,
+security camera, and LoRaWAN IoT Gateway all wired via PoE/VLAN), and a hardware procurement
+list (dedicated floor-mount hardware for a "LoRaWAN Gateway," separate from the camera and from
+the PoE injector's own weatherproof outdoor housing), the user confirmed — first via
+`Sage Grande Deployments.txt` (PUUM described as "CPER mirror essentially," LoRaWAN "coming
+down to the middle of the tower/network switch"), then definitively via an actual install photo
+— that CPER does have a LoRaWAN gateway, tower-mounted and PoE/Ethernet-attached, not something
+they'd been involved in planning personally ("this is what happens when i dont do installs").
+
+**Confirmed topology**: the LoRaWAN gateway is a physically separate device mounted on the NEON
+tower itself, PoE-powered off the tower's own switch — not hosted locally on the Thor-Blade the
+way Stage 4's `edgeNodeRemote` node models it (USB-attached concentrator + local ChirpStack, per
+the W021 empirical finding). It's for current/future low-power sensor telemetry only — explicitly
+not for internet backhaul, and not for node-to-node communication (LoRaWAN is a star topology by
+design: every end device reports up to the gateway only, nothing talks peer-to-peer).
+
+**Built**, applied identically to both `source/*.dc.html` and the compiled `standalone.html`:
+- New `stage2` node `loraGatewayCper` ("LoRaWAN Gateway", group `site`, positioned near
+  `neonTower`) with a description covering the mount, PoE power, and the two explicit "not for"
+  clarifications above.
+- Two new `stage2` edges: `neonTower → loraGatewayCper` (dashed, "mounted on tower" — same
+  co-located convention as the existing tower/sensor/node edges) and
+  `loraGatewayCper → thorTower` (dashed, dataflow, "LoRaWAN sensor data").
+- New `PoE` glossary entry (Power over Ethernet) — didn't exist yet despite being implied by the
+  Thor-Blade spec doc's "LAN subnet ... for optional PoE-connected sensors" line found back on
+  2026-08-04.
+- **Fixed a glossary entry that would otherwise have gone stale**: the existing `CPER` glossary
+  example previously said CPER "doesn't need a Starlink/LoRaWAN setup the way the Remote Site
+  view does" — true for the Starlink/WAN part, but now wrong on LoRaWAN specifically now that
+  Stage 2 has its own gateway. Reworded to distinguish CPER's *local-telemetry-only* LoRaWAN use
+  from Stage 4's Starlink-style *WAN workaround* use, rather than implying CPER has no LoRaWAN at
+  all.
+
+**Process note — a new failure mode in the decode/edit/re-encode round trip**: the compiled
+template's underlying JS source represents apostrophes and em-dashes as literal 6-character
+`’`/`—` escape-sequence *text*, not the actual Unicode glyph — confirmed by direct
+`repr()` inspection after a first edit attempt raised `count == 0` for a search string built by
+hand-typing real Unicode characters into a Python script. Rather than hand-converting every
+apostrophe/dash (error-prone), the working script extracts the exact old/new text spans directly
+from the two files via anchor-string slicing (`str.index`/`str.count`-based, e.g. from
+`"{id:'hostSensors',"` up to `"\n    stage3: {"`) instead of retyping any Unicode-sensitive text
+at all — sidesteps the encoding-convention question entirely by never manually reproducing text
+that has to match byte-for-byte. **Lesson for next time**: never hand-type old/new strings for
+this file's edit script when the same text already exists verbatim in either file — extract it
+by anchor instead.
+
+All standing guardrails re-verified (bracket balance matches within each file, `json.loads`
+round-trip, no raw `</script>` survived escaping, new content confirmed present via a fresh
+independent re-read after writing). **Not yet confirmed live in a browser** — Chrome extension
+still not connected this session, same standing caveat as every round in this file so far.
