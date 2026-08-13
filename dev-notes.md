@@ -626,3 +626,22 @@ Same guardrails re-verified as every round (brace/bracket balance, `json.loads` 
 raw `</script>`, all ten new terms and both enriched OSI examples confirmed present post-write,
 zero remaining name references confirmed via direct search). Pushed directly per explicit
 instruction — no separate review-before-shipping step this round.
+
+### Same day: dropped "confirmed via..." language site-wide
+
+User feedback: phrasing like "confirmed via Sage's own node inventory" or "confirmed across
+multiple real deployed nodes" reads like a "told you so" — unintentional, but worth cutting.
+Removed from all seven node descriptions and the Wild Sage Node internal drilldown that had it
+(the NEON tower camera and LoRaWAN gateway, CPER-ARS's node and gateway, the Wild Sage Node
+compute and sensor-suite nodes, and its optional LoRaWAN gateway node) — same underlying facts,
+stated plainly instead of framed as a verification result.
+
+**Also caught in the same pass**: the Wild Sage Node LoRaWAN gateway's description cited "roughly
+a fifth of real nodes checked" — that fraction came from Sage's general fleet-wide hardware
+catalog, not anything specific to SGT sites, so stating it as a precise number implied more than
+what's actually known for this diagram's actual subject. Per the user: state that the optional
+hardware exists without attaching a number that isn't really representative. Now just says
+"present on some Wild Sage Node deployments, not all."
+
+Same guardrails re-verified (brace/bracket balance, `json.loads` round-trip, no raw `</script>`,
+zero "confirmed" occurrences and the dropped fraction both confirmed absent post-write).
