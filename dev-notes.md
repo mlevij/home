@@ -552,6 +552,36 @@ diagram before assuming it fits anywhere.
 
 Same guardrails re-verified as every prior round (brace/bracket balance in both files matches,
 `json.loads` round-trip, no raw `</script>`, all new content confirmed present and all removed
-content confirmed absent via independent post-write re-read). **Not yet confirmed live in a
-browser.** Not yet committed/pushed as of this note — this was a large enough change that it's
-being held for explicit review before shipping, same as every other round in this file.
+content confirmed absent via independent post-write re-read). Committed and pushed (both this
+repo and the `mlevij/home` `sage/` mirror) after user review — but see the follow-up bug below,
+found immediately after shipping.
+
+### Same-day bug: OSI/TCP-IP tab broke after stage1 removal — found and fixed
+
+User reported the OSI/TCP-IP tab wasn't displaying right after the rebuild above shipped, with
+console error `Cannot read properties of undefined (reading 'nodes')`.
+
+**Root cause**: `renderVals()` computes `const stageData = Component.STAGE_DATA[stage] ||
+Component.STAGE_DATA.stage1;` — a fallback for the OSI tab specifically, since OSI has no
+`STAGE_DATA` entry of its own (it uses the separate `isOsi` flag and `OSI_LAYERS`/`TCP_LAYERS`
+data instead). The very next line unconditionally does `stageData.nodes`, even when rendering
+OSI. This relied on `stage1` existing purely as a harmless non-null fallback object — deleting
+`stage1` in the tab-removal pass above turned that fallback into `undefined`, and `.nodes` on
+`undefined` threw. **Fixed**: fallback now points at `Component.STAGE_DATA.stage2` (the new
+first/default tab) instead of the deleted `stage1`.
+
+**Second, related bug found in the same sweep** (cosmetic, not yet reported by the user but
+would have been visibly wrong): the tab-bar styling logic skips the left-border divider only for
+`s.key !== 'stage1'`, so with `stage1` gone every remaining tab — including the new first tab,
+NEON Tower — would incorrectly render a divider before it. Fixed the same way, checking against
+`'stage2'` instead.
+
+**Lesson**: when removing a `STAGE_DATA`/`STAGE_META` key, grep the whole file for that literal
+key string afterward, not just the obvious node/edge definitions — this diagram has at least two
+places where a stage key is referenced as an implicit fallback/special-case rather than through
+`STAGE_META`/`STAGE_DATA` iteration, and neither was in the block that got directly rewritten.
+Confirmed via `grep -i stage1` across the whole file that these were the only two remaining
+references before treating this as closed.
+
+Same guardrails re-verified (brace/bracket balance, `json.loads` round-trip, no raw `</script>`,
+new fallback values confirmed present and old ones confirmed absent post-write).
