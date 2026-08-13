@@ -2,10 +2,22 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta http-equiv="refresh" content="0; url=design_handoff_network_architecture/Networking%20Architecture%20Flowchart%20-%20standalone.html">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SGT Network Architecture Flowchart</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+  iframe { border: 0; width: 100%; height: 100%; display: block; }
+</style>
 </head>
 <body>
-<p>Redirecting to the <a href="design_handoff_network_architecture/Networking%20Architecture%20Flowchart%20-%20standalone.html">network architecture flowchart</a>&hellip;</p>
+<!--
+  This file intentionally diverges from the upstream sgt-network-architecture repo's own
+  index.html (a meta-refresh redirect). That's fine for that repo's own separate GitHub Pages
+  URL, but a meta-refresh replaces the address bar with the long target path - looks bad landing
+  here from the mlevij.com homepage card. This iframe embed keeps mlevij.com/sage/ in the address
+  bar instead. If a future `git subtree pull` overwrites this with the upstream redirect version,
+  reapply this iframe version afterward.
+-->
+<iframe src="design_handoff_network_architecture/Networking%20Architecture%20Flowchart%20-%20standalone.html" title="SGT Network Architecture Flowchart"></iframe>
 </body>
 </html>
