@@ -442,13 +442,13 @@ technical detail (LoRaWAN link) stays in `specs`, just not in the first thing a 
 
 ### Noted for later, NOT started: Wild Sage Node (outdoor Thor) test rigs
 
-Info from Pete Beckman (Sage), relayed 2026-08-13 — **explicitly deferred, not this session**:
+Info from Sage's team, relayed 2026-08-13 — **explicitly deferred, not this session**:
 Sage is standing up three outdoor test enclosures for the Thor node (the "Wild Sage Node") at
 ANL, essentially the same Sage Blade hardware in a weatherproofed outdoor box:
 
 - **"BigBoy"** — 20x16x12in, oversized enclosure with an air-to-air heat exchanger (methanol
   heat pipe, 44W/C cooling capacity, likely overkill by design — "start big and scale down").
-  External + internal T/RH sensors, 24V power for the HX. Already at ANL, Raj and Yongho
+  External + internal T/RH sensors, 24V power for the HX. Already at ANL, Sage engineers
   configuring control-software plugins to cycle the cooler on/off.
 - **"Slim"** — 20x16x8in, smaller HX (22W/C, 2in thinner), saves 6in of depth vs. BigBoy. Being
   ordered, targeting assembly by Aug 26 — testing in hot weather to see if half the cooling
@@ -472,14 +472,14 @@ configuration is chosen as the production standard.
 
 ### Noted: CPER Sage node connectivity issue — NEON network engineer actively investigating
 
-David Clark (NEON's network engineer assigned to these deployments) is actively troubleshooting
-the known CPER Sage node connectivity issue (unresolved as of the 2026-07-28 workshop notes).
-He shared router-level diagnostics (ARP table on the node's VLAN) showing the node's address(es)
-unresolved — the router sent ARP requests and got no reply, while the router's own interface on
-that VLAN resolved normally. That pattern points toward a link-layer/power/config problem on the
-node's own side (not connected, not powered, or misconfigured) rather than a routing or firewall
-issue on the network side. Still open — revisit once David has more findings. (Specific IPs/
-hostnames intentionally omitted here — this is a general-context note only.)
+NEON's assigned network engineer is actively troubleshooting the known CPER Sage node
+connectivity issue (unresolved as of the 2026-07-28 workshop notes). Router-level diagnostics
+(ARP table on the node's VLAN) showed the node's address(es) unresolved — the router sent ARP
+requests and got no reply, while the router's own interface on that VLAN resolved normally. That
+pattern points toward a link-layer/power/config problem on the node's own side (not connected,
+not powered, or misconfigured) rather than a routing or firewall issue on the network side. Still
+open — revisit once there's more to report. (Specific IPs/hostnames/names intentionally omitted
+here — this is a general-context note only.)
 
 ### Same session, continued: full tab rebuild — Chicago removed, Field Node and Wild Sage Node
 
@@ -489,7 +489,7 @@ the Wild Sage Node / Waggle-fleet concept, not the Starlink+LoRaWAN-no-network s
 built under that name. Untangling this took several rounds of real data-gathering from Sage's
 own node portal before any file got touched — worth reading in full if this needs revisiting,
 since a lot of intermediate hypotheses turned out wrong (e.g. "WSN uses Thor-class compute like
-the tower" — false, confirmed WSN nodes run **Jetson Xavier NX**, not Thor; Pete Beckman's
+the tower" — false, confirmed WSN nodes run **Jetson Xavier NX**, not Thor; Sage's team's
 outdoor-Thor test rigs are the *next-generation* WSN, not what's currently deployed).
 
 **What actually settled it**: the user pulled real attached-hardware listings from Sage's portal
@@ -585,3 +585,42 @@ references before treating this as closed.
 
 Same guardrails re-verified (brace/bracket balance, `json.loads` round-trip, no raw `</script>`,
 new fallback values confirmed present and old ones confirmed absent post-write).
+
+### Same day: real names sanitized, glossary deepened past "networking for dummies"
+
+**Real names removed.** `David Clark` and `Pete Beckman` had been used by name in earlier
+entries in this file — fine for an internal engineering thread, but this repo (and its
+`mlevij/home` mirror) are both public, so both got replaced with role descriptions ("NEON's
+assigned network engineer," "Sage's team") throughout this file. Nothing in the diagram content
+itself ever had real names — this was a dev-notes-only fix.
+
+**Scope deliberately expanded past the original "networking for dummies" framing** — user wants
+to move from "explain this to someone new" toward genuine troubleshooting proficiency, but
+explicitly *not* via a step-by-step checklist. The framing given: like learning soil horizons —
+understand the mechanism well enough to recognize what you're looking at, not follow a script.
+So all additions use the diagram's existing term-plus-real-example format, not a new
+procedural/checklist section.
+
+**Ten new glossary terms added**: NAT, Default Gateway, Routing Table (routing fundamentals,
+inserted near Subnet), Bandwidth, Latency, QoS (inserted near LEO/Starlink), Certificate
+(inserted right after TLS — trust, not just encryption), and three diagnostic tools — Ping,
+Traceroute, DNS Lookup (inserted near ICMP, where `ping` was already mentioned in passing).
+
+**Three existing entries enriched** with a diagnostic-recognition angle folded into their
+existing example (not a separate checklist item): ARP now also covers what an "incomplete" ARP
+table entry actually indicates; PoE now notes what a power (vs. network) failure looks like;
+DHCP now notes the symptom of a device that never gets a usable address. Two OSI layer examples
+(Network, Data Link) similarly extended with "what a problem at this specific layer looks like,"
+so the existing OSI/TCP-IP tab does double duty as the "how do you reason about where to look"
+content, rather than adding a redundant flowchart next to it.
+
+**All examples kept generic/hypothetical per explicit instruction** — no real names, no real
+IPs/hostnames, phrased as "a device that..." rather than referencing any specific incident
+(including the real ARP-troubleshooting thread earlier in this file, which is exactly what
+prompted this rule — that stays as an internal dev-note, not something reflected in the
+public-facing diagram content).
+
+Same guardrails re-verified as every round (brace/bracket balance, `json.loads` round-trip, no
+raw `</script>`, all ten new terms and both enriched OSI examples confirmed present post-write,
+zero remaining name references confirmed via direct search). Pushed directly per explicit
+instruction — no separate review-before-shipping step this round.
