@@ -422,3 +422,50 @@ incremental hand-typed edits wherever the block is being substantially rewritten
 
 Same guardrails re-verified (brace/bracket balance in both files, `json.loads` round-trip, no
 raw `</script>`, new content confirmed present post-write). Not yet confirmed live in a browser.
+
+### Same session, continued: repo merged into mlevij/home, kicker simplified
+
+**This repo is now also mirrored into `mlevij/home` at `sage/`**, via `git subtree` (history
+preserved, same pattern as the earlier `findings-template` → `analysis/moffat/` merge in that
+repo). Live at `mlevij.com/sage/` as well as this repo's own GitHub Pages URL. Going forward,
+changes made here should be pushed to this repo first, then pulled into `mlevij/home` via
+`git subtree pull --prefix=sage <this-repo-url> main` — do not edit the `sage/` copy inside
+`mlevij/home` directly, or the two will drift. Whether this standalone repo eventually gets
+archived/made private once `mlevij/home` is the primary home (matching what was just done to
+`findings-template`, which had the same orphaned-duplicate problem after its own migration) is
+not yet decided — don't assume either way without checking.
+
+**Kicker simplified**: `loraInstruments`'s kicker changed from "LoRaWAN End Device" to "Field
+Sensor" — user feedback that the jargon-y kicker didn't say what the thing actually *is* (a
+sensor) even though the diagram is meant to be readable without prior networking literacy. The
+technical detail (LoRaWAN link) stays in `specs`, just not in the first thing a reader sees.
+
+### Noted for later, NOT started: Wild Sage Node (outdoor Thor) test rigs
+
+Info from Pete Beckman (Sage), relayed 2026-08-13 — **explicitly deferred, not this session**:
+Sage is standing up three outdoor test enclosures for the Thor node (the "Wild Sage Node") at
+ANL, essentially the same Sage Blade hardware in a weatherproofed outdoor box:
+
+- **"BigBoy"** — 20x16x12in, oversized enclosure with an air-to-air heat exchanger (methanol
+  heat pipe, 44W/C cooling capacity, likely overkill by design — "start big and scale down").
+  External + internal T/RH sensors, 24V power for the HX. Already at ANL, Raj and Yongho
+  configuring control-software plugins to cycle the cooler on/off.
+- **"Slim"** — 20x16x8in, smaller HX (22W/C, 2in thinner), saves 6in of depth vs. BigBoy. Being
+  ordered, targeting assembly by Aug 26 — testing in hot weather to see if half the cooling
+  capacity is still enough.
+- **"Zephyr"** — vented enclosure (Altelix, an enclosure vendor) using a telecom-style
+  hydrostat-controlled heating plate instead of an HX — keeps internals 5-10C above dew point
+  rather than actively cooling. Cheaper, but only suited to clean-air sites (not high-corrosion
+  environments like volcanic sites, where the stainless-steel HX route is the safer bet).
+  Configuration not yet back from Altelix as of this note.
+
+All three report T/RH (external and internal) and cooling-system-active status as sensor data.
+Sage's own team is setting up a separate repo with full documentation for the test parts.
+
+**Why this matters for the diagram**: none of the existing four tabs (Chicago, NEON Tower,
+Field Node, Remote Site) represent an *outdoor-enclosure* Thor deployment — Field Node
+("Stripped-Down Edge Node") is a reduced-compute variant, not an outdoor-hardening variant, so
+this may need to be its own tab/view eventually rather than folded into an existing one. Not
+enough is settled yet (enclosure choice undecided among the three, no repo link yet, no VSN) to
+model anything concretely — revisit once Sage's own test-parts repo exists and/or one
+configuration is chosen as the production standard.
