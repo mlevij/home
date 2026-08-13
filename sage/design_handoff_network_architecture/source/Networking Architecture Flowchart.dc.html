@@ -438,13 +438,13 @@ static GLOSSARY = [
     const isOsi = stage === 'osi';
     const isTopology = !isOsi;
     const OSI_LAYERS = Component.OSI_LAYERS, TCP_LAYERS = Component.TCP_LAYERS, GROUPS_META = Component.GROUPS_META;
-    const stageData = Component.STAGE_DATA[stage] || Component.STAGE_DATA.stage1;
+    const stageData = Component.STAGE_DATA[stage] || Component.STAGE_DATA.stage2;
     const NODES = stageData.nodes, EDGES = stageData.edges;
     const stageMeta = Component.STAGE_META.find(s => s.key === stage);
 
     const stageTabs = Component.STAGE_META.map(s => ({
       key: s.key, label: s.label,
-      style: 'padding:7px 14px;font-size:13px;cursor:pointer;' + (s.key !== 'stage1' ? 'border-left:1px solid rgba(233,233,237,0.16);' : '') +
+      style: 'padding:7px 14px;font-size:13px;cursor:pointer;' + (s.key !== 'stage2' ? 'border-left:1px solid rgba(233,233,237,0.16);' : '') +
         (stage === s.key ? 'color:#9184d9;background:rgba(145,132,217,0.12);' : 'color:#e9e9ed;'),
       onClick: () => this.setStage(s.key),
     }));
