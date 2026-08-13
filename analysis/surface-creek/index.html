@@ -145,6 +145,8 @@
       <a class="download-link" href="data/surface_creek_priority_ranking_correlations_extended.csv" download>Priority ranking correlations (CSV)</a>
       <a class="download-link" href="data/surface_creek_structures.csv" download>Diversion structure list (CSV)</a>
       <a class="download-link" href="data/surface_creek_monthly_2016-2025.csv" download>Monthly SNOTEL + streamflow data, 2016&ndash;2025 (CSV)</a>
+      <a class="download-link" href="data/surface_creek_monthly_1979-2025.csv" download>Monthly SNOTEL + streamflow data, 1979&ndash;2025 (CSV)</a>
+      <a class="download-link" href="data/surface_creek_snowmelt_streamflow_lag.csv" download>Snowmelt-streamflow lag correlations (CSV)</a>
       <a class="download-link" href="#" id="downloadSnotelChart">SNOTEL chart (PNG)</a>
       <a class="download-link" href="#" id="downloadVolumeChart">Streamflow &amp; diversion chart (PNG)</a>
       <a class="download-link" href="#" id="downloadRatioChart">Runoff ratio chart (PNG)</a>
@@ -152,6 +154,7 @@
       <a class="download-link" href="#" id="downloadMonthlySwePrecipChart">Monthly SWE &amp; precip chart (PNG)</a>
       <a class="download-link" href="#" id="downloadMonthlySoilMoistureChart">Monthly soil moisture chart (PNG)</a>
       <a class="download-link" href="#" id="downloadMonthlyStreamflowChart">Monthly streamflow chart (PNG)</a>
+      <a class="download-link" href="#" id="downloadLagChart">Snowmelt-streamflow lag chart (PNG)</a>
     </div>
   </div>
   <button id="themeToggle" type="button">Dark mode</button>
@@ -222,14 +225,19 @@
     </div>
 
     <div class="card">
-      <h2>Water-rights priority &amp; size effects (Spearman &rho;, 1979&ndash;2025)</h2>
+      <h2>Water-rights priority &amp; size effects (Spearman rho, 1979&ndash;2025)</h2>
       <div style="position:relative;height:240px;"><canvas id="rankingChart"></canvas></div>
-      <p class="chart-note">
-        45-structure subset with a complete record across all 47 years. Large/senior structures
-        correlate with SWE more weakly than small/junior ones in two of the three rankings. Full
-        numbers below.
-      </p>
       <div id="rankingTableWrap"></div>
+      <p class="chart-note">
+        Colorado water rights are prior-appropriation: in a dry year, senior rights get their
+        full decreed amount before junior rights see any water, and a large decreed amount
+        doesn't automatically insulate a structure from a small snowpack. This asks whether that
+        legal protection actually shows up in the data &mdash; do senior and large-decree
+        structures' diversions stay steady regardless of snowpack while junior and small ones
+        swing up and down with it? For this 45-structure subset with a complete record across all
+        47 years, large/senior structures do correlate with SWE more weakly than small/junior
+        ones in two of the three rankings.
+      </p>
     </div>
 
     <div class="card">
@@ -259,6 +267,18 @@
         than year-round, so its line has winter gaps. Scroll or pinch to zoom into a shorter
         window, drag to pan.
       </p>
+    </div>
+
+    <div class="card">
+      <h2>Snowmelt-to-streamflow lag (1979&ndash;2025)</h2>
+      <div style="position:relative;height:220px;"><canvas id="lagChart"></canvas></div>
+      <p class="chart-note">
+        Monthly snowmelt (the month-over-month decline in SWE) cross-correlated against
+        streamflow at 0&ndash;3 month lags. The relationship is strongest in the same month and
+        collapses within a month or two &mdash; consistent with this being a small, steep basin
+        with a short time of concentration. Full numbers below.
+      </p>
+      <div id="lagTableWrap"></div>
     </div>
 
     <div class="card">
@@ -378,6 +398,7 @@ wireChartDownload('downloadRankingChart', () => rankingChart, 'surface-creek-pri
 wireChartDownload('downloadMonthlySwePrecipChart', () => monthlySwePrecipChart, 'surface-creek-monthly-swe-precip.png');
 wireChartDownload('downloadMonthlySoilMoistureChart', () => monthlySoilMoistureChart, 'surface-creek-monthly-soil-moisture.png');
 wireChartDownload('downloadMonthlyStreamflowChart', () => monthlyStreamflowChart, 'surface-creek-monthly-streamflow.png');
+wireChartDownload('downloadLagChart', () => lagChart, 'surface-creek-snowmelt-streamflow-lag.png');
 
 const STRUCT_COLORS = {
   'Stream Gage': '#C44E52',
@@ -486,6 +507,7 @@ function zoomOpt() {
 
 let snotelChart, volumeChart, ratioChart, rankingChart;
 let monthlySwePrecipChart, monthlySoilMoistureChart, monthlyStreamflowChart;
+let lagChart;
 
 fetch('data/surface_creek_gage_relative_water_balance_1979-2025.json').then(r => r.json()).then(rows => {
   rows.sort((a, b) => parseInt(a.year) - parseInt(b.year));
@@ -564,13 +586,13 @@ fetch('data/surface_creek_priority_ranking_correlations_extended.json').then(r =
     type: 'bar',
     data: {
       labels,
-      datasets: [{ label: "Spearman ρ vs. peak SWE", data: rows.map(r => parseFloat(r.spearman_rho)), backgroundColor: rows.map(r => parseFloat(r.spearman_p) < 0.05 ? '#4C72B0' : '#CCB974') }],
+      datasets: [{ label: "Spearman rho vs. peak SWE", data: rows.map(r => parseFloat(r.spearman_rho)), backgroundColor: rows.map(r => parseFloat(r.spearman_p) < 0.05 ? '#4C72B0' : '#CCB974') }],
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       indexAxis: 'y',
       scales: {
-        x: { min: -1, max: 1, title: { display: true, text: "Spearman ρ", font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } },
+        x: { min: -1, max: 1, title: { display: true, text: "Spearman rho", font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } },
         y: { ticks: { font: { size: 12 } }, grid: { display: false } },
       },
       plugins: {
@@ -592,7 +614,7 @@ fetch('data/surface_creek_priority_ranking_correlations_extended.json').then(r =
   const table = document.createElement('table');
   table.className = 'data-table';
   table.innerHTML = `
-    <thead><tr><th>Ranking</th><th>Tier</th><th class="num">n</th><th class="num">Pearson r</th><th class="num">log-Pearson r</th><th class="num">Spearman &rho;</th><th class="num">p (Spearman)</th></tr></thead>
+    <thead><tr><th>Ranking</th><th>Tier</th><th class="num">n</th><th class="num">Pearson r</th><th class="num">log-Pearson r</th><th class="num">Spearman rho</th><th class="num">p (Spearman)</th></tr></thead>
     <tbody>${rows.map(r => `
       <tr>
         <td>${r.ranking}</td><td>${r.tier}</td>
@@ -670,6 +692,54 @@ fetch('data/surface_creek_monthly_2016-2025.json').then(r => r.json()).then(rows
       plugins: { legend: legendOpt, tooltip: tooltipOpt, zoom: zoomOpt() },
     },
   });
+});
+
+// Snowmelt-to-streamflow lag correlations
+fetch('data/surface_creek_snowmelt_streamflow_lag.json').then(r => r.json()).then(rows => {
+  const gridColor = 'rgba(128,128,128,0.12)';
+  const legendOpt = { labels: { font: { size: 12 }, boxWidth: 12, padding: 8 } };
+  const lagLabels = ['0 mo', '1 mo', '2 mo', '3 mo'];
+  const byGage = gage => rows.filter(r => r.gage === gage).sort((a, b) => a.lag_months - b.lag_months);
+  const surcedco = byGage('SURCEDCO');
+  const suraceco = byGage('SURACECO');
+
+  lagChart = new Chart(document.getElementById('lagChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: lagLabels,
+      datasets: [
+        { label: 'SURCEDCO Pearson r', data: surcedco.map(r => r.pearson_r), backgroundColor: '#4C72B0' },
+        { label: 'SURACECO Pearson r', data: suraceco.map(r => r.pearson_r), backgroundColor: '#55A868' },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { font: { size: 12 } }, grid: { color: gridColor }, title: { display: true, text: 'lag (months)', font: { size: 12 } } },
+        y: { min: -1, max: 1, title: { display: true, text: 'Pearson r', font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } },
+      },
+      plugins: {
+        legend: legendOpt,
+        tooltip: { titleFont: { size: 15, weight: '600' }, bodyFont: { size: 14 }, padding: 10, boxPadding: 5 },
+      },
+    },
+  });
+
+  const table = document.createElement('table');
+  table.className = 'data-table';
+  table.innerHTML = `
+    <thead><tr><th>Gage</th><th class="num">Lag (mo)</th><th class="num">n</th><th class="num">Pearson r</th><th class="num">p (Pearson)</th><th class="num">Spearman rho</th><th class="num">p (Spearman)</th></tr></thead>
+    <tbody>${rows.map(r => `
+      <tr>
+        <td>${r.gage}</td>
+        <td class="num">${r.lag_months}</td>
+        <td class="num">${r.n}</td>
+        <td class="num">${r.pearson_r.toFixed(3)}</td>
+        <td class="num">${r.pearson_p < 0.001 ? '<0.001' : r.pearson_p.toFixed(3)}</td>
+        <td class="num">${r.spearman_rho.toFixed(3)}</td>
+        <td class="num">${r.spearman_p < 0.001 ? '<0.001' : r.spearman_p.toFixed(3)}</td>
+      </tr>`).join('')}</tbody>`;
+  document.getElementById('lagTableWrap').appendChild(table);
 });
 </script>
 </body>

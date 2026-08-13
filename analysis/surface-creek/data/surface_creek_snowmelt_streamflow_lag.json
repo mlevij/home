@@ -1,0 +1,74 @@
+[
+  {
+    "gage": "SURCEDCO",
+    "lag_months": 0,
+    "n": 435,
+    "pearson_r": 0.8092,
+    "pearson_p": 4.431935108804017e-102,
+    "spearman_rho": 0.6494,
+    "spearman_p": 1.8913762414611638e-53
+  },
+  {
+    "gage": "SURCEDCO",
+    "lag_months": 1,
+    "n": 434,
+    "pearson_r": 0.3919,
+    "pearson_p": 2.1951502273242384e-17,
+    "spearman_rho": 0.5711,
+    "spearman_p": 6.198079436747761e-39
+  },
+  {
+    "gage": "SURCEDCO",
+    "lag_months": 2,
+    "n": 433,
+    "pearson_r": 0.0796,
+    "pearson_p": 0.098279972686313,
+    "spearman_rho": 0.3714,
+    "spearman_p": 1.306769975844542e-15
+  },
+  {
+    "gage": "SURCEDCO",
+    "lag_months": 3,
+    "n": 432,
+    "pearson_r": -0.0565,
+    "pearson_p": 0.24148544727000698,
+    "spearman_rho": 0.1378,
+    "spearman_p": 0.004101612388841738
+  },
+  {
+    "gage": "SURACECO",
+    "lag_months": 0,
+    "n": 502,
+    "pearson_r": 0.7703,
+    "pearson_p": 9.67620304048959e-100,
+    "spearman_rho": 0.6666,
+    "spearman_p": 8.206868876944342e-66
+  },
+  {
+    "gage": "SURACECO",
+    "lag_months": 1,
+    "n": 501,
+    "pearson_r": 0.2547,
+    "pearson_p": 7.387600353990352e-09,
+    "spearman_rho": 0.5071,
+    "spearman_p": 4.374935126310383e-34
+  },
+  {
+    "gage": "SURACECO",
+    "lag_months": 2,
+    "n": 500,
+    "pearson_r": -0.0205,
+    "pearson_p": 0.6480489632926848,
+    "spearman_rho": 0.2751,
+    "spearman_p": 3.9466225310860637e-10
+  },
+  {
+    "gage": "SURACECO",
+    "lag_months": 3,
+    "n": 499,
+    "pearson_r": -0.0967,
+    "pearson_p": 0.030715828644117718,
+    "spearman_rho": 0.0902,
+    "spearman_p": 0.04402707290699463
+  }
+]
