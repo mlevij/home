@@ -289,12 +289,12 @@
       <div style="position:relative;height:220px;"><canvas id="soilMoistureLagChart"></canvas></div>
       <p class="chart-note">
         Departure from saturation (each depth's own dataset maximum, treated as a saturation proxy)
-        cross-correlated against SWE at lags of 0&ndash;120 days. Same-day correlation is
-        weak-to-moderate at every depth; shifting to account for melt/infiltration timing roughly
-        doubles the correlation strength, and the best-fit lag grows with depth &mdash; 45 days at
-        2in, 51 at 8in, 72 at 20in &mdash; consistent with meltwater taking longer to reach deeper
-        soil. Correlation strength itself is similar across depths (r &asymp; &minus;0.42 to
-        &minus;0.45); it's the lag that shifts, not the fit quality.
+        cross-correlated against SWE at lags of 0&ndash;120 days, excluding readings while soil
+        temperature at that depth is at or below 32&deg;F (frozen soil reads as a sharp, artificial
+        VWC drop rather than a real moisture change). Same-day correlation is weak-to-moderate at
+        every depth; shifting to account for melt/infiltration timing roughly doubles the
+        correlation strength, and the best-fit lag grows with depth &mdash; 33 days at 2in, 45 at
+        8in, 72 at 20in &mdash; consistent with meltwater taking longer to reach deeper soil.
       </p>
     </div>
 
@@ -339,13 +339,16 @@
           explain the pattern in the runoff ratio chart.
         </p>
         <p>
-          Soil moisture&ndash;SWE lag: for each SNOTEL soil-moisture depth (2, 8, 20in), a
-          saturation proxy is defined as the maximum volumetric water content observed at that
-          depth across the full 2016&ndash;2025 record, and departure from saturation is the daily
-          difference between that proxy and the day's reading. Departure was cross-correlated
-          against SWE at lags from 0 to 120 days in 3-day steps (SWE on day D&minus;lag vs.
-          departure on day D), separately per depth, using Pearson's r as the primary statistic
-          (Spearman's &rho; also computed and reported alongside it in the downloadable CSV).
+          Soil moisture&ndash;SWE lag: readings while soil temperature at a given depth is at or
+          below 32&deg;F are excluded first, since frozen soil produces a sharp, artificial drop in
+          reported volumetric water content rather than a real moisture change. For each SNOTEL
+          soil-moisture depth (2, 8, 20in), a saturation proxy is defined as the maximum volumetric
+          water content observed at that depth across the full 2016&ndash;2025 record (unfrozen
+          readings only), and departure from saturation is the daily difference between that proxy
+          and the day's reading. Departure was cross-correlated against SWE at lags from 0 to 120
+          days in 3-day steps (SWE on day D&minus;lag vs. departure on day D), separately per
+          depth, using Pearson's r as the primary statistic (Spearman's &rho; also computed and
+          reported alongside it in the downloadable CSV).
         </p>
       </div>
     </div>
