@@ -147,6 +147,8 @@
       <a class="download-link" href="data/surface_creek_monthly_2016-2025.csv" download>Monthly SNOTEL + streamflow data, 2016&ndash;2025 (CSV)</a>
       <a class="download-link" href="data/surface_creek_monthly_1979-2025.csv" download>Monthly SNOTEL + streamflow data, 1979&ndash;2025 (CSV)</a>
       <a class="download-link" href="data/surface_creek_snowmelt_streamflow_lag.csv" download>Snowmelt-streamflow lag correlations (CSV)</a>
+      <a class="download-link" href="data/surface_creek_soil_moisture_swe_lag.csv" download>Soil moisture&ndash;SWE lag correlations (CSV)</a>
+      <a class="download-link" href="data/Surface_Creek_Data_2016-2025.xlsx" download>Raw daily + monthly data, 2016&ndash;2025 (XLSX)</a>
       <a class="download-link" href="#" id="downloadSnotelChart">SNOTEL chart (PNG)</a>
       <a class="download-link" href="#" id="downloadVolumeChart">Streamflow &amp; diversion chart (PNG)</a>
       <a class="download-link" href="#" id="downloadRatioChart">Runoff ratio chart (PNG)</a>
@@ -155,6 +157,7 @@
       <a class="download-link" href="#" id="downloadMonthlySoilMoistureChart">Monthly soil moisture chart (PNG)</a>
       <a class="download-link" href="#" id="downloadMonthlyStreamflowChart">Monthly streamflow chart (PNG)</a>
       <a class="download-link" href="#" id="downloadLagChart">Snowmelt-streamflow lag chart (PNG)</a>
+      <a class="download-link" href="#" id="downloadSoilMoistureLagChart">Soil moisture&ndash;SWE lag chart (PNG)</a>
     </div>
   </div>
   <button id="themeToggle" type="button">Dark mode</button>
@@ -282,6 +285,20 @@
     </div>
 
     <div class="card">
+      <h2>Soil moisture&ndash;SWE lag, by depth (2016&ndash;2025)</h2>
+      <div style="position:relative;height:220px;"><canvas id="soilMoistureLagChart"></canvas></div>
+      <p class="chart-note">
+        Departure from saturation (each depth's own dataset maximum, treated as a saturation proxy)
+        cross-correlated against SWE at lags of 0&ndash;120 days. Same-day correlation is
+        weak-to-moderate at every depth; shifting to account for melt/infiltration timing roughly
+        doubles the correlation strength, and the best-fit lag grows with depth &mdash; 45 days at
+        2in, 51 at 8in, 72 at 20in &mdash; consistent with meltwater taking longer to reach deeper
+        soil. Correlation strength itself is similar across depths (r &asymp; &minus;0.42 to
+        &minus;0.45); it's the lag that shifts, not the fit quality.
+      </p>
+    </div>
+
+    <div class="card">
       <h2>Methodology</h2>
       <div class="summary">
         <p>
@@ -320,6 +337,15 @@
           associated with higher runoff potential, actually cover a larger share of the added
           area (86 percent) than SURCEDCO's own drainage (48 percent), so soil type alone doesn't
           explain the pattern in the runoff ratio chart.
+        </p>
+        <p>
+          Soil moisture&ndash;SWE lag: for each SNOTEL soil-moisture depth (2, 8, 20in), a
+          saturation proxy is defined as the maximum volumetric water content observed at that
+          depth across the full 2016&ndash;2025 record, and departure from saturation is the daily
+          difference between that proxy and the day's reading. Departure was cross-correlated
+          against SWE at lags from 0 to 120 days in 3-day steps (SWE on day D&minus;lag vs.
+          departure on day D), separately per depth, using Pearson's r as the primary statistic
+          (Spearman's &rho; also computed and reported alongside it in the downloadable CSV).
         </p>
       </div>
     </div>
@@ -399,6 +425,7 @@ wireChartDownload('downloadMonthlySwePrecipChart', () => monthlySwePrecipChart, 
 wireChartDownload('downloadMonthlySoilMoistureChart', () => monthlySoilMoistureChart, 'surface-creek-monthly-soil-moisture.png');
 wireChartDownload('downloadMonthlyStreamflowChart', () => monthlyStreamflowChart, 'surface-creek-monthly-streamflow.png');
 wireChartDownload('downloadLagChart', () => lagChart, 'surface-creek-snowmelt-streamflow-lag.png');
+wireChartDownload('downloadSoilMoistureLagChart', () => soilMoistureLagChart, 'surface-creek-soil-moisture-swe-lag.png');
 
 const STRUCT_COLORS = {
   'Stream Gage': '#C44E52',
@@ -508,6 +535,7 @@ function zoomOpt() {
 let snotelChart, volumeChart, ratioChart, rankingChart;
 let monthlySwePrecipChart, monthlySoilMoistureChart, monthlyStreamflowChart;
 let lagChart;
+let soilMoistureLagChart;
 
 fetch('data/surface_creek_gage_relative_water_balance_1979-2025.json').then(r => r.json()).then(rows => {
   rows.sort((a, b) => parseInt(a.year) - parseInt(b.year));
@@ -740,6 +768,38 @@ fetch('data/surface_creek_snowmelt_streamflow_lag.json').then(r => r.json()).the
         <td class="num">${r.spearman_p < 0.001 ? '<0.001' : r.spearman_p.toFixed(3)}</td>
       </tr>`).join('')}</tbody>`;
   document.getElementById('lagTableWrap').appendChild(table);
+});
+
+// Soil moisture (departure from saturation) vs. SWE lag correlations, by depth
+fetch('data/surface_creek_soil_moisture_swe_lag.json').then(r => r.json()).then(rows => {
+  const gridColor = 'rgba(128,128,128,0.12)';
+  const legendOpt = { labels: { font: { size: 12 }, boxWidth: 12, padding: 8 } };
+  const byDepth = depth => rows.filter(r => r.depth === depth).sort((a, b) => a.lag_days - b.lag_days);
+  const d2 = byDepth('2in'), d8 = byDepth('8in'), d20 = byDepth('20in');
+  const lagLabels = d2.map(r => r.lag_days + 'd');
+
+  soilMoistureLagChart = new Chart(document.getElementById('soilMoistureLagChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: lagLabels,
+      datasets: [
+        { label: '2in depth', data: d2.map(r => r.pearson_r), borderColor: '#C44E52', backgroundColor: '#C44E52', tension: 0.15, pointRadius: 0 },
+        { label: '8in depth', data: d8.map(r => r.pearson_r), borderColor: '#4C72B0', backgroundColor: '#4C72B0', tension: 0.15, pointRadius: 0 },
+        { label: '20in depth', data: d20.map(r => r.pearson_r), borderColor: '#55A868', backgroundColor: '#55A868', tension: 0.15, pointRadius: 0 },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { font: { size: 12 }, maxTicksLimit: 12 }, grid: { color: gridColor }, title: { display: true, text: 'lag (days, SWE leading soil moisture)', font: { size: 12 } } },
+        y: { min: -0.5, max: 0.3, title: { display: true, text: 'Pearson r', font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } },
+      },
+      plugins: {
+        legend: legendOpt,
+        tooltip: { titleFont: { size: 15, weight: '600' }, bodyFont: { size: 14 }, padding: 10, boxPadding: 5 },
+      },
+    },
+  });
 });
 </script>
 </body>
