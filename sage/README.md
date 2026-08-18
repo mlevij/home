@@ -7,17 +7,17 @@ Starlink/LoRaWAN — plus a reference OSI/TCP-IP model tab.
 
 ## Viewing it
 
-Download `design_handoff_network_architecture/Networking Architecture Flowchart -
+Download `network-architecture/Networking Architecture Flowchart -
 standalone.html` and open it in a browser — it's a single self-contained file, no server or
 build step required.
 
 ## Structure
 
-- `design_handoff_network_architecture/Networking Architecture Flowchart - standalone.html` —
+- `network-architecture/Networking Architecture Flowchart - standalone.html` —
   the working, deployable file. Open this to view/use the diagram.
-- `design_handoff_network_architecture/source/Networking Architecture Flowchart.dc.html` —
+- `network-architecture/source/Networking Architecture Flowchart.dc.html` —
   the human-readable source (original Claude Design export format), useful for understanding or
   modifying the diagram's content and logic.
-- `design_handoff_network_architecture/README.md` — detailed spec of the diagram's design,
+- `network-architecture/README.md` — detailed spec of the diagram's design,
   interactions, and data model.
 - `dev-notes.md` — running log of what's changed since the initial handoff, and why.
