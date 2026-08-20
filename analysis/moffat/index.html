@@ -95,6 +95,25 @@
   }
   .download-link:hover { text-decoration: underline; }
 
+  /* Downloads dropdown -- same visual/interaction language as the project picker below. */
+  .downloads-dropdown { position: relative; display: inline-block; margin-top: 2px; }
+  .downloads-trigger {
+    display: flex; align-items: center; gap: 6px; background: none;
+    border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px;
+    cursor: pointer; font: inherit; font-size: 0.78rem; font-weight: 600; color: var(--text);
+  }
+  .downloads-trigger:hover { border-color: var(--accent); }
+  .downloads-trigger .picker-chevron { width: 14px; height: 14px; flex-shrink: 0; opacity: 0.5; transition: transform 0.15s; }
+  .downloads-trigger[aria-expanded="true"] .picker-chevron { transform: rotate(180deg); }
+  .downloads-menu {
+    position: absolute; top: 100%; left: 0; margin-top: 6px; background: var(--panel);
+    border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow);
+    list-style: none; padding: 6px; margin-left: 0; min-width: 240px; z-index: 50;
+  }
+  .downloads-menu li.download-all { border-bottom: 1px solid var(--border); margin-bottom: 4px; padding-bottom: 4px; }
+  .downloads-menu .download-link { display: block; padding: 7px 10px; border-radius: 6px; }
+  .downloads-menu .download-link:hover { background: var(--bg); text-decoration: none; }
+
   #themeToggle {
     background: var(--panel);
     border: 1px solid var(--border);
@@ -309,9 +328,17 @@
     </div>
     <p class="subtitle" id="pageSubtitle"></p>
     <div class="summary" id="pageSummary"></div>
-    <a id="downloadLink" class="download-link" download>Download raw data (CSV)</a>
-    <a id="downloadKmlLink" class="download-link" download>Download KML</a>
-    <a id="downloadZipLink" class="download-link" download>Download all data (ZIP)</a>
+    <div class="downloads-dropdown">
+      <button class="downloads-trigger" id="downloadsBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
+        Downloads
+        <svg class="picker-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+      </button>
+      <ul class="downloads-menu" id="downloadsMenu" role="listbox" hidden>
+        <li class="download-all" id="downloadZipItem"><a id="downloadZipLink" class="download-link" download>All (ZIP)</a></li>
+        <li><a id="downloadLink" class="download-link" download>Raw data (CSV)</a></li>
+        <li id="downloadKmlItem"><a id="downloadKmlLink" class="download-link" download>KML</a></li>
+      </ul>
+    </div>
   </div>
   <button id="themeToggle" type="button">Dark mode</button>
 </header>
@@ -386,6 +413,28 @@
   });
 })();
 
+// Downloads dropdown toggle -- same click/outside-click/Escape pattern as the project picker.
+(function () {
+  const btn = document.getElementById('downloadsBtn');
+  const menu = document.getElementById('downloadsMenu');
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    const opening = menu.hidden;
+    menu.hidden = !opening;
+    btn.setAttribute('aria-expanded', String(opening));
+  });
+  document.addEventListener('click', function () {
+    menu.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      menu.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+
 // Swap this to point at a different project's data file when reusing this template.
 const DATA_URL = "data/moffat-siting.json";
 const CSV_URL = "data/moffat-siting.csv";
@@ -418,10 +467,10 @@ const CACHE_BUST = "?v=" + Date.now();
 document.getElementById("downloadLink").href = CSV_URL;
 const downloadKmlLink = document.getElementById("downloadKmlLink");
 if (KML_URL) downloadKmlLink.href = KML_URL;
-else downloadKmlLink.style.display = "none";
+else document.getElementById("downloadKmlItem").style.display = "none";
 const downloadZipLink = document.getElementById("downloadZipLink");
 if (ZIP_URL) downloadZipLink.href = ZIP_URL;
-else downloadZipLink.style.display = "none";
+else document.getElementById("downloadZipItem").style.display = "none";
 
 const SLOT_VARS = { 1: "--slot1", 2: "--slot2" };
 

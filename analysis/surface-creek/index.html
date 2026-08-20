@@ -14,6 +14,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
 <script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3/dist/jszip.min.js"></script>
 
 <style>
   :root {
@@ -55,10 +56,29 @@
   .summary { margin: 0 0 8px; max-width: 900px; }
   .summary p { color: var(--text); font-size: 0.83rem; line-height: 1.6; margin: 0 0 10px; }
   .summary p:last-child { margin-bottom: 0; }
-  .downloads { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin-top: 2px; }
-  .downloads-label { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
   .download-link { font-size: 0.78rem; font-weight: 600; color: var(--accent); text-decoration: none; }
   .download-link:hover { text-decoration: underline; }
+
+  /* Downloads dropdown -- same visual/interaction language as the project picker below. */
+  .downloads-dropdown { position: relative; display: inline-block; margin-top: 2px; }
+  .downloads-trigger {
+    display: flex; align-items: center; gap: 6px; background: none;
+    border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px;
+    cursor: pointer; font: inherit; font-size: 0.78rem; font-weight: 600; color: var(--text);
+  }
+  .downloads-trigger:hover { border-color: var(--accent); }
+  .downloads-trigger .picker-chevron { width: 14px; height: 14px; flex-shrink: 0; opacity: 0.5; transition: transform 0.15s; }
+  .downloads-trigger[aria-expanded="true"] .picker-chevron { transform: rotate(180deg); }
+  .downloads-menu {
+    position: absolute; top: 100%; left: 0; margin-top: 6px; background: var(--panel);
+    border: 1px solid var(--border); border-radius: 10px; box-shadow: var(--shadow);
+    list-style: none; padding: 6px; margin-left: 0; min-width: 300px;
+    max-height: 60vh; overflow-y: auto; z-index: 50;
+  }
+  .downloads-menu li.download-all { border-bottom: 1px solid var(--border); margin-bottom: 4px; padding-bottom: 4px; }
+  .downloads-menu .download-link { display: block; padding: 7px 10px; border-radius: 6px; }
+  .downloads-menu .download-link:hover { background: var(--bg); text-decoration: none; }
+  .downloads-menu .download-link.disabled { opacity: 0.5; pointer-events: none; }
 
   #themeToggle {
     background: var(--panel); border: 1px solid var(--border); color: var(--text);
@@ -139,25 +159,31 @@
         HUC12s, Delta County, Colorado.
       </p>
     </div>
-    <div class="downloads">
-      <span class="downloads-label">Downloads:</span>
-      <a class="download-link" href="data/surface_creek_gage_relative_water_balance_1979-2025.csv" download>SNOTEL + streamflow + diversion data (CSV)</a>
-      <a class="download-link" href="data/surface_creek_priority_ranking_correlations_extended.csv" download>Priority ranking correlations (CSV)</a>
-      <a class="download-link" href="data/surface_creek_structures.csv" download>Diversion structure list (CSV)</a>
-      <a class="download-link" href="data/surface_creek_monthly_2016-2025.csv" download>Monthly SNOTEL + streamflow data, 2016&ndash;2025 (CSV)</a>
-      <a class="download-link" href="data/surface_creek_monthly_1979-2025.csv" download>Monthly SNOTEL + streamflow data, 1979&ndash;2025 (CSV)</a>
-      <a class="download-link" href="data/surface_creek_snowmelt_streamflow_lag.csv" download>Snowmelt-streamflow lag correlations (CSV)</a>
-      <a class="download-link" href="data/surface_creek_soil_moisture_swe_lag.csv" download>Soil moisture&ndash;SWE lag correlations (CSV)</a>
-      <a class="download-link" href="data/Surface_Creek_Data_2016-2025.xlsx" download>Raw daily + monthly data, 2016&ndash;2025 (XLSX)</a>
-      <a class="download-link" href="#" id="downloadSnotelChart">SNOTEL chart (PNG)</a>
-      <a class="download-link" href="#" id="downloadVolumeChart">Streamflow &amp; diversion chart (PNG)</a>
-      <a class="download-link" href="#" id="downloadRatioChart">Runoff ratio chart (PNG)</a>
-      <a class="download-link" href="#" id="downloadRankingChart">Priority ranking chart (PNG)</a>
-      <a class="download-link" href="#" id="downloadMonthlySwePrecipChart">Monthly SWE &amp; precip chart (PNG)</a>
-      <a class="download-link" href="#" id="downloadMonthlySoilMoistureChart">Monthly soil moisture chart (PNG)</a>
-      <a class="download-link" href="#" id="downloadMonthlyStreamflowChart">Monthly streamflow chart (PNG)</a>
-      <a class="download-link" href="#" id="downloadLagChart">Snowmelt-streamflow lag chart (PNG)</a>
-      <a class="download-link" href="#" id="downloadSoilMoistureLagChart">Soil moisture&ndash;SWE lag chart (PNG)</a>
+    <div class="downloads-dropdown">
+      <button class="downloads-trigger" id="downloadsBtn" type="button" aria-haspopup="listbox" aria-expanded="false">
+        Downloads
+        <svg class="picker-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+      </button>
+      <ul class="downloads-menu" id="downloadsMenu" role="listbox" hidden>
+        <li class="download-all"><a class="download-link" href="#" id="downloadAll">All (ZIP)</a></li>
+        <li><a class="download-link" href="data/surface_creek_gage_relative_water_balance_1979-2025.csv" download>SNOTEL + streamflow + diversion data (CSV)</a></li>
+        <li><a class="download-link" href="data/surface_creek_priority_ranking_correlations_extended.csv" download>Priority ranking correlations (CSV)</a></li>
+        <li><a class="download-link" href="data/surface_creek_structures.csv" download>Diversion structure list (CSV)</a></li>
+        <li><a class="download-link" href="data/surface_creek_monthly_2016-2025.csv" download>Monthly SNOTEL + streamflow data, 2016&ndash;2025 (CSV)</a></li>
+        <li><a class="download-link" href="data/surface_creek_monthly_1979-2025.csv" download>Monthly SNOTEL + streamflow data, 1979&ndash;2025 (CSV)</a></li>
+        <li><a class="download-link" href="data/surface_creek_snowmelt_streamflow_lag.csv" download>Snowmelt-streamflow lag correlations (CSV)</a></li>
+        <li><a class="download-link" href="data/surface_creek_soil_moisture_swe_lag.csv" download>Soil moisture&ndash;SWE lag correlations (CSV)</a></li>
+        <li><a class="download-link" href="data/Surface_Creek_Data_2016-2025.xlsx" download>Raw daily + monthly data, 2016&ndash;2025 (XLSX)</a></li>
+        <li><a class="download-link" href="#" id="downloadSnotelChart">SNOTEL chart (PNG)</a></li>
+        <li><a class="download-link" href="#" id="downloadVolumeChart">Streamflow &amp; diversion chart (PNG)</a></li>
+        <li><a class="download-link" href="#" id="downloadRatioChart">Runoff ratio chart (PNG)</a></li>
+        <li><a class="download-link" href="#" id="downloadRankingChart">Priority ranking chart (PNG)</a></li>
+        <li><a class="download-link" href="#" id="downloadMonthlySwePrecipChart">Monthly SWE &amp; precip chart (PNG)</a></li>
+        <li><a class="download-link" href="#" id="downloadMonthlySoilMoistureChart">Monthly soil moisture chart (PNG)</a></li>
+        <li><a class="download-link" href="#" id="downloadMonthlyStreamflowChart">Monthly streamflow chart (PNG)</a></li>
+        <li><a class="download-link" href="#" id="downloadLagChart">Snowmelt-streamflow lag chart (PNG)</a></li>
+        <li><a class="download-link" href="#" id="downloadSoilMoistureLagChart">Soil moisture&ndash;SWE lag chart (PNG)</a></li>
+      </ul>
     </div>
   </div>
   <button id="themeToggle" type="button">Dark mode</button>
@@ -378,6 +404,28 @@
   });
 })();
 
+// Downloads dropdown toggle -- same click/outside-click/Escape pattern as the project picker.
+(function () {
+  const btn = document.getElementById('downloadsBtn');
+  const menu = document.getElementById('downloadsMenu');
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    const opening = menu.hidden;
+    menu.hidden = !opening;
+    btn.setAttribute('aria-expanded', String(opening));
+  });
+  document.addEventListener('click', function () {
+    menu.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      menu.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+})();
+
 // Theme toggle (light/dark), independent of OS preference, same pattern as moffat/.
 (function () {
   const btn = document.getElementById('themeToggle');
@@ -401,34 +449,148 @@
 // grab the current one at click time rather than at page load. Exports always composite onto
 // a white background regardless of the page's current theme, since that's the more usable
 // default for pasting into documents/slides.
-function wireChartDownload(linkId, getChart, filename) {
+//
+// Charts with a real year/month category x-axis (timeAxis: true below) get the current zoom
+// window baked into the corner as a caption, since the exported image otherwise gives no
+// indication of what range it's showing. Not every chart qualifies: rankingChart's x-axis is a
+// correlation-value axis (not time), and lagChart/soilMoistureLagChart use a fixed lag offset
+// with zoom not even enabled -- captioning those would be meaningless.
+function chartPng(chart, title, caption) {
+  const src = chart.canvas;
+  // Chart.js renders the canvas at devicePixelRatio scale already, so the title strip and its
+  // font need the same scaling or they'd look tiny relative to the chart on a high-DPI screen.
+  const dpr = window.devicePixelRatio || 1;
+  const titleHeight = Math.round(30 * dpr);
+  const out = document.createElement('canvas');
+  out.width = src.width;
+  out.height = src.height + titleHeight;
+  const ctx = out.getContext('2d');
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, out.width, out.height);
+  if (title) {
+    ctx.font = `bold ${Math.round(15 * dpr)}px sans-serif`;
+    ctx.fillStyle = '#1f2937';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(title, Math.round(10 * dpr), titleHeight / 2);
+  }
+  ctx.drawImage(src, 0, titleHeight);
+  if (caption) {
+    ctx.font = `${Math.round(12 * dpr)}px sans-serif`;
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText(caption, out.width - Math.round(8 * dpr), out.height - Math.round(8 * dpr));
+  }
+  return out.toDataURL('image/png');
+}
+
+// scale.min/max are fractional index positions into chart.data.labels when the chart is
+// zoomed partway between two labels, hence the round(). Returns null at full range (nothing
+// worth captioning).
+function timeAxisCaption(chart) {
+  const scale = chart.scales.x;
+  const labels = chart.data.labels;
+  const minIdx = Math.max(0, Math.round(scale.min));
+  const maxIdx = Math.min(labels.length - 1, Math.round(scale.max));
+  if (minIdx <= 0 && maxIdx >= labels.length - 1) return null;
+  return `${labels[minIdx]} – ${labels[maxIdx]}`;
+}
+
+// Titles match each chart's on-page <h2> heading (plain text, no HTML entities -- canvas
+// fillText needs real characters) so an exported image is self-identifying without the
+// surrounding page for context.
+const CHART_TITLES = {
+  snotelChart: 'SNOTEL (Park Reservoir) — inches',
+  volumeChart: 'Streamflow & diverted volume — acre-feet',
+  ratioChart: 'Runoff ratio — dimensionless',
+  rankingChart: 'Water-rights priority & size effects (Spearman ρ, 1979–2025)',
+  monthlySwePrecipChart: 'Monthly SWE & precipitation (Park Reservoir) — inches',
+  monthlySoilMoistureChart: 'Monthly soil moisture (Park Reservoir) — % VWC',
+  monthlyStreamflowChart: 'Monthly streamflow — cfs',
+  lagChart: 'Snowmelt-to-streamflow lag (1979–2025)',
+  soilMoistureLagChart: 'Soil moisture–SWE lag, by depth (2016–2025)',
+};
+
+function wireChartDownload(linkId, getChart, filename, title, opts) {
+  const timeAxis = opts && opts.timeAxis;
   document.getElementById(linkId).addEventListener('click', function (e) {
     e.preventDefault();
     const chart = getChart();
     if (!chart) return;
-    const src = chart.canvas;
-    const out = document.createElement('canvas');
-    out.width = src.width;
-    out.height = src.height;
-    const ctx = out.getContext('2d');
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, out.width, out.height);
-    ctx.drawImage(src, 0, 0);
+    const caption = timeAxis ? timeAxisCaption(chart) : null;
     const a = document.createElement('a');
-    a.href = out.toDataURL('image/png');
+    a.href = chartPng(chart, title, caption);
     a.download = filename;
     a.click();
   });
 }
-wireChartDownload('downloadSnotelChart', () => snotelChart, 'surface-creek-snotel.png');
-wireChartDownload('downloadVolumeChart', () => volumeChart, 'surface-creek-streamflow-diversions.png');
-wireChartDownload('downloadRatioChart', () => ratioChart, 'surface-creek-runoff-ratio.png');
-wireChartDownload('downloadRankingChart', () => rankingChart, 'surface-creek-priority-ranking.png');
-wireChartDownload('downloadMonthlySwePrecipChart', () => monthlySwePrecipChart, 'surface-creek-monthly-swe-precip.png');
-wireChartDownload('downloadMonthlySoilMoistureChart', () => monthlySoilMoistureChart, 'surface-creek-monthly-soil-moisture.png');
-wireChartDownload('downloadMonthlyStreamflowChart', () => monthlyStreamflowChart, 'surface-creek-monthly-streamflow.png');
-wireChartDownload('downloadLagChart', () => lagChart, 'surface-creek-snowmelt-streamflow-lag.png');
-wireChartDownload('downloadSoilMoistureLagChart', () => soilMoistureLagChart, 'surface-creek-soil-moisture-swe-lag.png');
+wireChartDownload('downloadSnotelChart', () => snotelChart, 'surface-creek-snotel.png', CHART_TITLES.snotelChart, { timeAxis: true });
+wireChartDownload('downloadVolumeChart', () => volumeChart, 'surface-creek-streamflow-diversions.png', CHART_TITLES.volumeChart, { timeAxis: true });
+wireChartDownload('downloadRatioChart', () => ratioChart, 'surface-creek-runoff-ratio.png', CHART_TITLES.ratioChart, { timeAxis: true });
+wireChartDownload('downloadRankingChart', () => rankingChart, 'surface-creek-priority-ranking.png', CHART_TITLES.rankingChart);
+wireChartDownload('downloadMonthlySwePrecipChart', () => monthlySwePrecipChart, 'surface-creek-monthly-swe-precip.png', CHART_TITLES.monthlySwePrecipChart, { timeAxis: true });
+wireChartDownload('downloadMonthlySoilMoistureChart', () => monthlySoilMoistureChart, 'surface-creek-monthly-soil-moisture.png', CHART_TITLES.monthlySoilMoistureChart, { timeAxis: true });
+wireChartDownload('downloadMonthlyStreamflowChart', () => monthlyStreamflowChart, 'surface-creek-monthly-streamflow.png', CHART_TITLES.monthlyStreamflowChart, { timeAxis: true });
+wireChartDownload('downloadLagChart', () => lagChart, 'surface-creek-snowmelt-streamflow-lag.png', CHART_TITLES.lagChart);
+wireChartDownload('downloadSoilMoistureLagChart', () => soilMoistureLagChart, 'surface-creek-soil-moisture-swe-lag.png', CHART_TITLES.soilMoistureLagChart);
+
+// "All" download: merges the static data-files zip (built by scripts/build_zip_bundle.py) with
+// a fresh full-range render of every chart, into one zip, generated entirely client-side.
+// Charts that support zoom get reset to their full range for this render (a bundle meant for
+// someone who's never touched the page shouldn't depend on whatever the last visitor happened
+// to be zoomed into), then restored to whatever state they were actually in before the click.
+const ZOOMABLE_CHARTS = () => [snotelChart, volumeChart, ratioChart, rankingChart, monthlySwePrecipChart, monthlySoilMoistureChart, monthlyStreamflowChart].filter(Boolean);
+const ALL_CHARTS = () => [
+  ['surface-creek-snotel.png', snotelChart],
+  ['surface-creek-streamflow-diversions.png', volumeChart],
+  ['surface-creek-runoff-ratio.png', ratioChart],
+  ['surface-creek-priority-ranking.png', rankingChart],
+  ['surface-creek-monthly-swe-precip.png', monthlySwePrecipChart],
+  ['surface-creek-monthly-soil-moisture.png', monthlySoilMoistureChart],
+  ['surface-creek-monthly-streamflow.png', monthlyStreamflowChart],
+  ['surface-creek-snowmelt-streamflow-lag.png', lagChart],
+  ['surface-creek-soil-moisture-swe-lag.png', soilMoistureLagChart],
+].filter(([, chart]) => chart);
+
+document.getElementById('downloadAll').addEventListener('click', async function (e) {
+  e.preventDefault();
+  const link = e.currentTarget;
+  if (link.classList.contains('disabled')) return;
+  const originalText = link.textContent;
+  link.textContent = 'Preparing…';
+  link.classList.add('disabled');
+  try {
+    const zoomable = ZOOMABLE_CHARTS();
+    const savedRanges = zoomable.map(chart => ({ chart, min: chart.scales.x.min, max: chart.scales.x.max }));
+    zoomable.forEach(chart => chart.resetZoom('none'));
+
+    const zip = await fetch('data/surface_creek_data_files.zip')
+      .then(r => r.blob())
+      .then(blob => JSZip.loadAsync(blob));
+
+    ALL_CHARTS().forEach(([filename, chart]) => {
+      const dataUrl = chartPng(chart, CHART_TITLES[chart.canvas.id], null);
+      zip.file(filename, dataUrl.split(',')[1], { base64: true });
+    });
+
+    savedRanges.forEach(({ chart, min, max }) => chart.zoomScale('x', { min, max }, 'none'));
+
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'surface-creek-transect-all.zip';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  } catch (err) {
+    console.error('All-download failed:', err);
+    link.textContent = 'Failed — try again';
+    link.classList.remove('disabled');
+    return;
+  }
+  link.textContent = originalText;
+  link.classList.remove('disabled');
+});
 
 const STRUCT_COLORS = {
   'Stream Gage': '#C44E52',
