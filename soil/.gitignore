@@ -1,0 +1,13 @@
+# Dev notes / working files -- not part of the site's display
+dev-notes/
+*.xlsx
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor/scratch
+*.tmp
+*.bak
+~$*
