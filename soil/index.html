@@ -1214,10 +1214,13 @@
       { key: 'oter1-tim',  name: 'OTER1-TIM',  lat: 37.7976734, lon: -103.7870996, elevation: 4515 },
       { key: 'park1-sp',   name: 'PARK1-SP',   lat: 38.8361854, lon: -105.8219611, elevation: 9280 },
       { key: 'park2-ark',  name: 'PARK2-ARK',  lat: 38.7735649, lon: -105.8089205, elevation: 9790 },
-      { key: 'sc1-haypark', name: 'SC#1-HayPark', lat: 39.0603337, lon: -107.8820656, elevation: 10089 },
-      { key: 'sc2-scrd',    name: 'SC#2-SCRd',    lat: 39.01888,   lon: -107.8549575, elevation: 9103 },
-      { key: 'sc4-horseck', name: 'SC#4-HorseCk', lat: 38.9939282, lon: -107.8925138, elevation: 9026 },
-      { key: 'sc5-cedar',   name: 'SC#5-Cedar',   lat: 38.9244795, lon: -107.8998754, elevation: 6717 },
+      // Surface Creek Transect: its own contained project, distinct from the
+      // general CO Soil Health network above -- same underlying Zentra pipeline
+      // and map layer/toggle, but labeled separately in the site-info panel.
+      { key: 'sc1-haypark', name: 'SC#1-HayPark', lat: 39.0603337, lon: -107.8820656, elevation: 10089, group: 'Surface Creek Transect' },
+      { key: 'sc2-scrd',    name: 'SC#2-SCRd',    lat: 39.01888,   lon: -107.8549575, elevation: 9103,  group: 'Surface Creek Transect' },
+      { key: 'sc4-horseck', name: 'SC#4-HorseCk', lat: 38.9939282, lon: -107.8925138, elevation: 9026,  group: 'Surface Creek Transect' },
+      { key: 'sc5-cedar',   name: 'SC#5-Cedar',   lat: 38.9244795, lon: -107.8998754, elevation: 6717,  group: 'Surface Creek Transect' },
     ];
 
     // ── Leaflet map ──────────────────────────────────────────────────────────
@@ -2673,6 +2676,10 @@
         document.getElementById('snowSection').classList.add('hidden');
       }
 
+      // Zentra sites (CO Soil Health / Surface Creek Transect) have no humidity
+      // sensor at all -- every other network still shows the Humidity section.
+      document.getElementById('humiditySection').classList.toggle('hidden', network === 'Zentra');
+
       if (!stationId) {
         // loadSoilMoisture only ever runs with network='RAWS' via showSite(), which
         // requires a RAWS_SOIL match -- so this is always a known soil-monitored site;
@@ -3195,7 +3202,7 @@
 
           // No relative humidity channel on the ATMOS 41 as configured here --
           // only Vapor Pressure/VPD, which live in the Pressure chart below.
-          humidityStatus.textContent = 'No relative humidity sensor at CO Soil Health sites.';
+          // Whole Humidity section is hidden for this network (see toggle above).
 
           const precipVals = slice(st.precip);
           if (precipVals.some(v => v != null)) {
@@ -3215,10 +3222,20 @@
             solarStatus.textContent = 'No solar radiation data available for this site.';
           }
 
-          // Wind: rose only (direction paired with concurrent wind speed), no
-          // separate time-series chart -- matches CoAgMET's aside pattern but
-          // intentionally skips its extra wind-speed/gust line chart here.
-          windStatus.textContent = 'See wind rose in the sidebar.';
+          const windDatasets = [
+            { ...base,  label:'Avg Wind Speed', data:slice(st.windSpeed), borderColor:'#2986B8' },
+            { ...tBase, label:'Gust Speed',      data:slice(st.gustSpeed), borderColor:'#D35400' }
+          ].filter(ds => ds.data.length && !ds.data.every(v => v == null));
+          if (windDatasets.length) {
+            windStatus.textContent = '';
+            windWrap.classList.remove('hidden');
+            buildWindChart(labels, windDatasets);
+          } else {
+            windStatus.textContent = 'No wind data available for this site.';
+          }
+
+          // Wind rose (direction paired with concurrent wind speed), same
+          // sidebar treatment as every other network.
           renderWeatherAside(slice(st.windDir), slice(st.windSpeed), span, null);
 
           const atmPressureVals   = slice(st.atmPressure);
@@ -3450,12 +3467,17 @@
       currentSoil = null;
       currentDepthIdx = 0;
 
+      // Surface Creek Transect is its own contained project sharing this same
+      // Zentra pipeline/map layer -- labeled distinctly, not folded into the
+      // general "CO Soil Health" name, wherever that name would otherwise show.
+      const groupLabel = site.group || 'CO Soil Health';
+
       // Sidebar card — no texture/pH, just a note that no lab sample exists yet
       document.getElementById('siteInfoName').textContent = site.name;
       document.getElementById('siteInfoDepthLabel').textContent =
         site.county ? `${Math.round(site.elevation)} ft · ${site.county}` : `${Math.round(site.elevation)} ft`;
       document.getElementById('siteCharts').classList.add('hidden');
-      document.getElementById('noLabNote').textContent = 'No lab soil sample available yet for this CO Soil Health site — see live sensor data in the panel below.';
+      document.getElementById('noLabNote').textContent = `No lab soil sample available yet for this ${groupLabel} site — see live sensor data in the panel below.`;
       document.getElementById('noLabNote').classList.remove('hidden');
       document.getElementById('depthNav').classList.add('hidden');
 
@@ -3463,11 +3485,11 @@
       const panel = document.getElementById('dataPanel');
       panel.classList.remove('hidden');
       document.getElementById('dataPanelTitle').textContent = site.name;
-      document.getElementById('dataPanelSub').textContent = 'CO Soil Health site';
+      document.getElementById('dataPanelSub').textContent = `${groupLabel} site`;
       document.getElementById('dataPanelNetwork').setAttribute('style', NETWORK_BADGE_STYLE.Zentra);
-      document.getElementById('dataPanelNetwork').textContent = 'CO Soil Health';
+      document.getElementById('dataPanelNetwork').textContent = groupLabel;
       document.getElementById('depthTableWrap').classList.add('hidden');
-      document.getElementById('depthTableNote').textContent = 'No lab soil sample for this CO Soil Health site — live sensor data below.';
+      document.getElementById('depthTableNote').textContent = `No lab soil sample for this ${groupLabel} site — live sensor data below.`;
       document.getElementById('depthTableNote').classList.remove('hidden');
       toggleSmSections(true);
       setDataPanelMeta({ elevation: site.elevation, place: site.county || null });
