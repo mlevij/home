@@ -584,6 +584,28 @@
               <canvas id="solarChart"></canvas>
             </div>
           </div>
+
+          <!-- Pressure (CO Soil Health / Zentra ATMOS 41 sites only) -->
+          <div class="mt-4 pt-3 border-t border-gray-100" id="pressureSection">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Pressure</span>
+            </div>
+            <div id="pressureStatus" class="text-xs text-gray-400 text-center py-4 italic"></div>
+            <div style="position:relative;height:180px;" id="pressureChartWrap" class="hidden">
+              <canvas id="pressureChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Lightning (CO Soil Health / Zentra ATMOS 41 sites only) -->
+          <div class="mt-4 pt-3 border-t border-gray-100" id="lightningSection">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Lightning</span>
+            </div>
+            <div id="lightningStatus" class="text-xs text-gray-400 text-center py-4 italic"></div>
+            <div style="position:relative;height:180px;" id="lightningChartWrap" class="hidden">
+              <canvas id="lightningChart"></canvas>
+            </div>
+          </div>
         </div>
 
       </section>
@@ -2155,6 +2177,8 @@
     let humidityChart = null;
     let windChart = null;
     let solarChart = null;
+    let pressureChart = null;
+    let lightningChart = null;
     let smCurrentSite = null;
 
     // ── Wind rose: direction distribution over the selected span, stacked by
@@ -2546,6 +2570,64 @@
       });
     }
 
+    // Atmospheric Pressure sits on a much larger scale (~70-90 kPa at these
+    // elevations) than Vapor Pressure/VPD (~0-5 kPa) -- shared secondary axis
+    // for the latter two so neither gets flattened by the former.
+    function buildPressureChart(labels, atmPressure, vaporPressure, vpd) {
+      if (pressureChart) { pressureChart.destroy(); pressureChart = null; }
+      const ctx = document.getElementById('pressureChart').getContext('2d');
+      pressureChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets: [
+          { label:'Atmospheric Pressure', data:atmPressure,   borderColor:'#164863', backgroundColor:'transparent', borderWidth:2,   pointRadius:0, tension:0.3, spanGaps:true, yAxisID:'yAtm' },
+          { label:'Vapor Pressure',       data:vaporPressure, borderColor:'#2986B8', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, tension:0.3, spanGaps:true, yAxisID:'yVap' },
+          { label:'VPD',                  data:vpd,           borderColor:'#D35400', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, tension:0.3, spanGaps:true, yAxisID:'yVap', borderDash:[4,3] }
+        ] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            x:    { ticks: { maxTicksLimit: 6, font:{size:9}, maxRotation:0 }, grid:{color:'rgba(0,0,0,0.04)'} },
+            yAtm: { position:'left',  title: { display:true, text:'Atm. Pressure (kPa)', font:{size:9} }, ticks: { font:{size:9} }, grid: { color:'rgba(0,0,0,0.04)' } },
+            yVap: { position:'right', title: { display:true, text:'Vapor Pressure / VPD (kPa)', font:{size:9} }, min:0, ticks: { font:{size:9} }, grid: { display:false } }
+          },
+          plugins: {
+            legend: { labels: { font:{size:9}, boxWidth:10, padding:8 } },
+            tooltip: { titleFont: { size:13, weight:'600' }, bodyFont: { size:12 }, padding: 10, boxPadding: 5 }
+          }
+        }
+      });
+    }
+
+    // Lightning Activity (strike count) and Distance (km to nearest strike) --
+    // both genuinely sparse (mostly zero/null outside storms), shown together
+    // since a distance reading is only meaningful alongside its activity count.
+    function buildLightningChart(labels, activity, distance) {
+      if (lightningChart) { lightningChart.destroy(); lightningChart = null; }
+      const ctx = document.getElementById('lightningChart').getContext('2d');
+      lightningChart = new Chart(ctx, {
+        data: { labels, datasets: [
+          { type:'bar',  label:'Activity (strikes)', data:activity, backgroundColor:'#800B04', yAxisID:'yAct', maxBarThickness:6 },
+          { type:'line', label:'Distance (km)',       data:distance, borderColor:'#C9A227', backgroundColor:'transparent', borderWidth:1.5, pointRadius:0, spanGaps:true, yAxisID:'yDist' }
+        ] },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            x:     { ticks: { maxTicksLimit: 6, font:{size:9}, maxRotation:0 }, grid:{display:false} },
+            yAct:  { position:'left',  min:0, title: { display:true, text:'Activity (strikes)', font:{size:9} }, ticks: { font:{size:9}, precision:0 }, grid: { color:'rgba(0,0,0,0.04)' } },
+            yDist: { position:'right', min:0, title: { display:true, text:'Distance (km)', font:{size:9} }, ticks: { font:{size:9} }, grid: { display:false } }
+          },
+          plugins: {
+            legend: { labels: { font:{size:9}, boxWidth:10, padding:8 } },
+            tooltip: { titleFont: { size:13, weight:'600' }, bodyFont: { size:12 }, padding: 10, boxPadding: 5 }
+          }
+        }
+      });
+    }
+
     async function loadSoilMoisture(stationId, depths, network, smsDepths) {
       smCurrentSite = { id: stationId, depths, network, smsDepths };
       const vwcWrap      = document.getElementById('vwcChartWrap');
@@ -2562,6 +2644,10 @@
       const windStatus      = document.getElementById('windStatus');
       const solarWrap       = document.getElementById('solarChartWrap');
       const solarStatus     = document.getElementById('solarStatus');
+      const pressureWrap    = document.getElementById('pressureChartWrap');
+      const pressureStatus  = document.getElementById('pressureStatus');
+      const lightningWrap   = document.getElementById('lightningChartWrap');
+      const lightningStatus = document.getElementById('lightningStatus');
       vwcWrap.classList.add('hidden');
       tempWrap.classList.add('hidden');
       precipWrap.classList.add('hidden');
@@ -2569,6 +2655,8 @@
       humidityWrap.classList.add('hidden');
       windWrap.classList.add('hidden');
       solarWrap.classList.add('hidden');
+      pressureWrap.classList.add('hidden');
+      lightningWrap.classList.add('hidden');
       vwcStatus.textContent = '';
       tempStatus.textContent = '';
       precipStatus.textContent = '';
@@ -2576,6 +2664,8 @@
       humidityStatus.textContent = '';
       windStatus.textContent = '';
       solarStatus.textContent = '';
+      pressureStatus.textContent = '';
+      lightningStatus.textContent = '';
       renderWeatherAside(null, null, null, null);
 
       // Snowpack section only applies to SNOTEL — reset/hide for every other network
@@ -2598,6 +2688,8 @@
         humidityStatus.textContent = msg;
         windStatus.textContent = msg;
         solarStatus.textContent = msg;
+        pressureStatus.textContent = msg;
+        lightningStatus.textContent = msg;
         return;
       }
 
@@ -2608,6 +2700,8 @@
       humidityStatus.textContent = 'Loading…';
       windStatus.textContent = 'Loading…';
       solarStatus.textContent = 'Loading…';
+      pressureStatus.textContent = 'Loading…';
+      lightningStatus.textContent = 'Loading…';
       const span = parseInt(document.getElementById('smSpan').value, 10);
 
       try {
@@ -2748,6 +2842,8 @@
             windStatus.textContent = 'No wind data available for this site.';
             solarStatus.textContent = 'No solar radiation data available for this site.';
           }
+          pressureStatus.textContent = 'No pressure sensor at CoAgMET stations.';
+          lightningStatus.textContent = 'No lightning sensor at CoAgMET stations.';
 
         } else if (network === 'SNOTEL') {
           // ── SNOTEL path: NRCS AWDB REST API, stationId is the station triplet ──
@@ -2898,6 +2994,8 @@
           const wdirv = find('WDIRV', null);
           const [roseDirs, roseSpeeds] = pairByDate(wdirv, wspdv);
           renderWeatherAside(roseDirs, roseSpeeds, span, null);
+          pressureStatus.textContent = 'No pressure sensor at SNOTEL stations.';
+          lightningStatus.textContent = 'No lightning sensor at SNOTEL stations.';
 
         } else if (network === 'RAWS') {
           // ── RAWS path: NIFC DATA4 endpoint, stationId is the NESS ID ─────────
@@ -2915,6 +3013,8 @@
             humidityStatus.textContent = 'No humidity data available for this site.';
             windStatus.textContent = 'No wind data available for this site.';
             solarStatus.textContent = 'No solar radiation data available for this site.';
+            pressureStatus.textContent = 'No pressure sensor at RAWS stations.';
+            lightningStatus.textContent = 'No lightning sensor at RAWS stations.';
             return;
           }
 
@@ -3019,6 +3119,8 @@
           // RAWS has no reference-ET equivalent (that's a CoAgMET-only stat).
           const wdd = records.map(r => getObs(r, 'WDD'));
           renderWeatherAside(wdd, wsm, span, null);
+          pressureStatus.textContent = 'No pressure sensor at RAWS stations.';
+          lightningStatus.textContent = 'No lightning sensor at RAWS stations.';
 
         } else if (network === 'Zentra') {
           // ── ZENTRA path: local JSON built by the fetch/aggregate pipeline in
@@ -3029,11 +3131,13 @@
           if (!st || !st.time || !st.time.length) {
             vwcStatus.textContent = 'No live soil moisture data available for this site.';
             tempStatus.textContent = 'No live soil temperature data available for this site.';
-            precipStatus.textContent = 'No precipitation sensor at CO Soil Health sites.';
+            precipStatus.textContent = 'No weather sensors at CO Soil Health sites.';
             airTempStatus.textContent = 'No weather sensors at CO Soil Health sites.';
             humidityStatus.textContent = 'No weather sensors at CO Soil Health sites.';
             windStatus.textContent = 'No weather sensors at CO Soil Health sites.';
             solarStatus.textContent = 'No weather sensors at CO Soil Health sites.';
+            pressureStatus.textContent = 'No weather sensors at CO Soil Health sites.';
+            lightningStatus.textContent = 'No weather sensors at CO Soil Health sites.';
             return;
           }
 
@@ -3072,14 +3176,71 @@
             tempStatus.textContent = 'No soil temperature data available for this site.';
           }
 
-          // No rain gauge on the CO Soil Health (Zentra) sites -- confirmed against
-          // soil_zentra.json's actual fields, not assumed. Same goes for every other
-          // weather field: Zentra probes are soil-only, no air/wind/solar sensors.
-          precipStatus.textContent = 'No precipitation sensor at CO Soil Health sites.';
-          airTempStatus.textContent = 'No weather sensors at CO Soil Health sites.';
-          humidityStatus.textContent = 'No weather sensors at CO Soil Health sites.';
-          windStatus.textContent = 'No weather sensors at CO Soil Health sites.';
-          solarStatus.textContent = 'No weather sensors at CO Soil Health sites.';
+          // Every CO Soil Health logger also carries an ATMOS 41 (G2) weather
+          // station -- confirmed via the API's port/sensor metadata 2026-08-26.
+          // (This block used to assume Zentra probes were soil-only; that was
+          // wrong, or at least stale -- the sensor's been there all along.)
+          const airTempDatasets = [
+            { ...base,  label:'Avg', data:slice(st.airTemp),    borderColor:'#164863' },
+            { ...tBase, label:'Max', data:slice(st.airTempMax), borderColor:'#D35400' },
+            { ...tBase, label:'Min', data:slice(st.airTempMin), borderColor:'#32A5E2' }
+          ].filter(ds => ds.data.length && !ds.data.every(v => v == null));
+          if (airTempDatasets.length) {
+            airTempStatus.textContent = '';
+            airTempWrap.classList.remove('hidden');
+            buildAirTempChart(labels, airTempDatasets);
+          } else {
+            airTempStatus.textContent = 'No air temperature data available for this site.';
+          }
+
+          // No relative humidity channel on the ATMOS 41 as configured here --
+          // only Vapor Pressure/VPD, which live in the Pressure chart below.
+          humidityStatus.textContent = 'No relative humidity sensor at CO Soil Health sites.';
+
+          const precipVals = slice(st.precip);
+          if (precipVals.some(v => v != null)) {
+            precipStatus.textContent = '';
+            precipWrap.classList.remove('hidden');
+            buildPrecipChart(labels, precipVals);
+          } else {
+            precipStatus.textContent = 'No precipitation data available for this site.';
+          }
+
+          const solarVals = slice(st.solar);
+          if (solarVals.some(v => v != null)) {
+            solarStatus.textContent = '';
+            solarWrap.classList.remove('hidden');
+            buildSolarChart(labels, solarVals);
+          } else {
+            solarStatus.textContent = 'No solar radiation data available for this site.';
+          }
+
+          // Wind: rose only (direction paired with concurrent wind speed), no
+          // separate time-series chart -- matches CoAgMET's aside pattern but
+          // intentionally skips its extra wind-speed/gust line chart here.
+          windStatus.textContent = 'See wind rose in the sidebar.';
+          renderWeatherAside(slice(st.windDir), slice(st.windSpeed), span, null);
+
+          const atmPressureVals   = slice(st.atmPressure);
+          const vaporPressureVals = slice(st.vaporPressure);
+          const vpdVals           = slice(st.vpd);
+          if ([...atmPressureVals, ...vaporPressureVals, ...vpdVals].some(v => v != null)) {
+            pressureStatus.textContent = '';
+            pressureWrap.classList.remove('hidden');
+            buildPressureChart(labels, atmPressureVals, vaporPressureVals, vpdVals);
+          } else {
+            pressureStatus.textContent = 'No pressure data available for this site.';
+          }
+
+          const lightningActivityVals = slice(st.lightningActivity);
+          const lightningDistanceVals = slice(st.lightningDistance);
+          if ([...lightningActivityVals, ...lightningDistanceVals].some(v => v != null)) {
+            lightningStatus.textContent = '';
+            lightningWrap.classList.remove('hidden');
+            buildLightningChart(labels, lightningActivityVals, lightningDistanceVals);
+          } else {
+            lightningStatus.textContent = 'No lightning activity detected in this span.';
+          }
         }
       } catch(e) {
         vwcStatus.textContent = 'Could not load soil moisture data.';
@@ -3089,6 +3250,8 @@
         humidityStatus.textContent = 'Could not load humidity data.';
         windStatus.textContent = 'Could not load wind data.';
         solarStatus.textContent = 'Could not load solar radiation data.';
+        pressureStatus.textContent = 'Could not load pressure data.';
+        lightningStatus.textContent = 'Could not load lightning data.';
         console.warn('SM fetch error:', e);
       }
     }
@@ -3338,10 +3501,10 @@
       document.getElementById('snowSection').classList.add('hidden');
       // No live station here (no lab sample, no sensor) -- reset every weather
       // chart/aside to empty so a prior site's data doesn't linger on screen.
-      ['precipStatus','airTempStatus','humidityStatus','windStatus','solarStatus'].forEach(id => {
+      ['precipStatus','airTempStatus','humidityStatus','windStatus','solarStatus','pressureStatus','lightningStatus'].forEach(id => {
         document.getElementById(id).textContent = `No lab soil sample or live sensor at this ${network} station.`;
       });
-      ['precipChartWrap','airTempChartWrap','humidityChartWrap','windChartWrap','solarChartWrap'].forEach(id => {
+      ['precipChartWrap','airTempChartWrap','humidityChartWrap','windChartWrap','solarChartWrap','pressureChartWrap','lightningChartWrap'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
       });
       renderWeatherAside(null, null, null, null);
