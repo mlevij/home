@@ -1,9 +1,9 @@
 {
-  "generated": "2026-09-09T10:37:05Z",
+  "generated": "2026-09-10T10:24:46Z",
   "stations": {
     "BLACK MOUNTAIN": {
-      "vwc2": 0.11,
-      "vwc8": 0.21,
+      "vwc2": 0.1,
+      "vwc8": 0.2,
       "vwc20": 0.08,
       "precip_recent_in": 0.0
     },
@@ -26,16 +26,16 @@
       "precip_recent_in": 0.0
     },
     "CORRAL CREEK": {
-      "vwc2": 0.08,
-      "vwc8": 0.11,
+      "vwc2": 0.07,
+      "vwc8": 0.1,
       "vwc20": 0.06,
-      "precip_recent_in": 0.11
+      "precip_recent_in": 0.09
     },
     "ESTES PARK": {
       "vwc2": 0.01,
       "vwc8": 0.05,
       "vwc20": 0.04,
-      "precip_recent_in": 0.01
+      "precip_recent_in": 0.0
     },
     "FT CARSON": {
       "vwc2": 0.13,
@@ -44,16 +44,16 @@
       "precip_recent_in": 0.06
     },
     "GRAND MESA": {
-      "vwc2": 0.09,
+      "vwc2": 0.08,
       "vwc8": 0.11,
       "vwc20": 0.13,
-      "precip_recent_in": 0.12
+      "precip_recent_in": 0.0
     },
     "HARBISON": {
-      "vwc2": 0.08,
+      "vwc2": 0.07,
       "vwc8": 0.12,
       "vwc20": 0.02,
-      "precip_recent_in": 0.01
+      "precip_recent_in": 0.0
     },
     "LODGEPOLE FLATS": {
       "vwc2": 0.04,
@@ -68,7 +68,7 @@
       "precip_recent_in": 0.21
     },
     "RED CREEK": {
-      "vwc2": 0.07,
+      "vwc2": 0.08,
       "vwc8": 0.08,
       "vwc20": 0.1,
       "precip_recent_in": 0.3
@@ -83,7 +83,7 @@
       "vwc2": 0.04,
       "vwc8": 0.08,
       "vwc20": 0.08,
-      "precip_recent_in": 0.02
+      "precip_recent_in": 0.0
     },
     "SANBORN PARK": {
       "vwc2": 0.09,
@@ -93,18 +93,18 @@
     },
     "SILVER JACK": {
       "vwc2": 0.15,
-      "vwc8": 0.17,
+      "vwc8": 0.16,
       "vwc20": 0.13,
       "precip_recent_in": 0.01
     },
     "UTE CANYON": {
-      "vwc2": 0.09,
+      "vwc2": 0.08,
       "vwc8": 0.06,
       "vwc20": 0.07,
       "precip_recent_in": 0.61
     },
     "WILLIS CREEK": {
-      "vwc2": 0.15,
+      "vwc2": 0.14,
       "vwc8": 0.18,
       "vwc20": 0.12,
       "precip_recent_in": 0.17
