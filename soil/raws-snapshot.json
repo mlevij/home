@@ -1,23 +1,23 @@
 {
-  "generated": "2026-09-11T10:26:19Z",
+  "generated": "2026-09-12T09:56:03Z",
   "stations": {
     "BLACK MOUNTAIN": {
-      "vwc2": 0.1,
-      "vwc8": 0.2,
+      "vwc2": 0.09,
+      "vwc8": 0.19,
       "vwc20": 0.08,
       "precip_recent_in": 0.0
     },
     "BOSQUE": {
       "vwc2": 0.14,
       "vwc8": 0.25,
-      "vwc20": 0.28,
-      "precip_recent_in": 0.29
+      "vwc20": 0.27,
+      "precip_recent_in": 0.23
     },
     "BUCKLES": {
       "vwc2": 0.04,
       "vwc8": 0.09,
       "vwc20": 0.12,
-      "precip_recent_in": 0.01
+      "precip_recent_in": 0.0
     },
     "CHEESEMAN": {
       "vwc2": 0.03,
@@ -28,7 +28,7 @@
     "CORRAL CREEK": {
       "vwc2": 0.07,
       "vwc8": 0.09,
-      "vwc20": 0.06,
+      "vwc20": 0.05,
       "precip_recent_in": 0.09
     },
     "ESTES PARK": {
@@ -45,7 +45,7 @@
     },
     "GRAND MESA": {
       "vwc2": 0.08,
-      "vwc8": 0.11,
+      "vwc8": 0.1,
       "vwc20": 0.12,
       "precip_recent_in": 0.0
     },
@@ -70,7 +70,7 @@
     "RED CREEK": {
       "vwc2": 0.08,
       "vwc8": 0.08,
-      "vwc20": 0.1,
+      "vwc20": 0.09,
       "precip_recent_in": 0.3
     },
     "RED DEER": {
@@ -89,7 +89,7 @@
       "vwc2": 0.09,
       "vwc8": 0.09,
       "vwc20": 0.1,
-      "precip_recent_in": 0.0
+      "precip_recent_in": 0.13
     },
     "SILVER JACK": {
       "vwc2": 0.14,
@@ -101,13 +101,13 @@
       "vwc2": 0.07,
       "vwc8": 0.06,
       "vwc20": 0.07,
-      "precip_recent_in": 0.61
+      "precip_recent_in": 0.6
     },
     "WILLIS CREEK": {
-      "vwc2": 0.14,
+      "vwc2": 0.13,
       "vwc8": 0.17,
-      "vwc20": 0.12,
-      "precip_recent_in": 0.17
+      "vwc20": 0.11,
+      "precip_recent_in": 0.0
     }
   }
 }
