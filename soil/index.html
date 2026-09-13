@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CoAgMET & RAWS Soil Health Monitoring</title>
-  <meta name="description" content="Soil health monitoring data from CoAgMET and RAWS networks across Colorado, 2025 sampling season.">
+  <title>CoAgMET & RAWS CO Soil Moisture Monitoring</title>
+  <meta name="description" content="Soil moisture monitoring data from CoAgMET and RAWS networks across Colorado, 2025 sampling season.">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -68,38 +68,58 @@
     /* Depth table alternating rows */
     #depthTableBody tr:nth-child(odd) { background: #f9fafb; }
 
-    /* ── Mini pH scale ── */
-    .mini-ph-wrap { display:flex; align-items:stretch; gap:4px; height:160px; }
-    .mini-ph-bar {
-      width:22px; border-radius:4px; flex-shrink:0; position:relative;
-      background: linear-gradient(to bottom,
-        #d32f2f 0%, #e65100 12%, #f9a825 25%, #cddc39 36%,
-        #4caf50 43%, #2e7d32 50%, #4caf50 57%,
-        #cddc39 64%, #f9a825 75%, #e65100 88%, #d32f2f 100%);
+    /* ── pH bullet bar: a static full-width gradient with a single line
+       marker at the current value. Same mechanism/colors as the AES site's
+       pH/CaCO3/EC/OM/BD bars, so the two sites read consistently. ── */
+    .bullet-bar { position: relative; }
+    .bullet-bar-track {
+      position: relative; height: 22px; border-radius: 4px;
+      background: #e5e7eb; overflow: visible;
     }
-    .mini-ph-ticks {
-      display:flex; flex-direction:column; justify-content:space-between;
-      font-size:0.55rem; color:#9ca3af; padding:0;
+    .bullet-bar-gradient { position: absolute; inset: 0; border-radius: 4px; }
+    .bullet-bar-marker {
+      position: absolute; top: -4px; bottom: -4px; width: 3px;
+      background: #1f2937; border-radius: 2px; transform: translateX(-50%);
+      transition: left 0.8s cubic-bezier(.4,0,.2,1);
     }
-    .mini-ph-zones {
-      display:flex; flex-direction:column; justify-content:space-between;
-      font-size:0.6rem; color:#9ca3af; text-align:right; padding:2px 0;
+    .bullet-bar-marker-tip {
+      position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%);
+      background: #1f2937; color: #fff; font-size: 0.68rem; font-weight: 600;
+      padding: 2px 7px; border-radius: 4px; white-space: nowrap;
+      opacity: 0; transition: opacity 0.15s; pointer-events: none;
     }
-    .mini-ph-marker {
-      position:absolute; left:100%; top:100%;
-      transform:translateY(-50%);
-      transition:top 0.8s cubic-bezier(.4,0,.2,1);
-      display:flex; align-items:center; margin-left:3px;
+    .bullet-bar-marker:hover .bullet-bar-marker-tip { opacity: 1; }
+    .bullet-bar-value-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-top: 6px; font-size: 0.8rem;
     }
-    .mini-ph-pin {
-      width:0; height:0;
-      border-top:5px solid transparent; border-bottom:5px solid transparent;
-      border-right:7px solid #1f2937;
+    .bullet-bar-name { font-weight: 600; color: #374151; }
+    .bullet-bar-value { font-size: 1.05rem; font-weight: 700; color: #1f2937; }
+    .bullet-bar-ticks { position: relative; height: 16px; margin-top: 4px; }
+    .bullet-bar-ticks span {
+      position: absolute; top: 0; font-size: 0.62rem; color: #9ca3af; white-space: nowrap;
     }
-    .mini-ph-label {
-      background:#1f2937; color:#fff; font-size:0.65rem; font-weight:600;
-      padding:1px 5px; border-radius:3px; white-space:nowrap; margin-left:1px;
+    /* Acidic/Neutral/Alkaline, angled above the bar (not the numeric ticks). */
+    .ph-zone-labels {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      height: 26px; margin-bottom: 8px; padding: 0 2px;
     }
+    .ph-zone-labels span {
+      font-size: 0.62rem; color: #9ca3af; white-space: nowrap;
+      transform: rotate(-20deg); transform-origin: bottom left;
+    }
+
+    /* County/HUC filter lists — always-visible click-to-toggle rows (multi-
+       select), same highlight mechanism the map's boundary polygons use for
+       their own selected state, so list and map read consistently. */
+    .filter-list {
+      max-height: 8rem; overflow-y: auto;
+      border: 1px solid #e5e7eb; border-radius: 4px;
+    }
+    .filter-row { padding: 2px 8px; cursor: pointer; color: #4b5563; }
+    .filter-row:hover { background: rgba(30,77,43,0.07); }
+    .filter-row.selected { background: rgba(30,77,43,0.14); font-weight: 600; color: #1f2937; }
+    .filter-list-empty { padding: 4px 8px; color: #9ca3af; font-style: italic; }
 
     /* Remove square focus outline on network circle markers */
     .leaflet-interactive:focus { outline: none; }
@@ -150,7 +170,7 @@
         </a>
       </div>
       <div class="hidden md:flex items-center space-x-6">
-        <h1 class="text-xl font-normal">Soil Health Monitoring</h1>
+        <h1 class="text-xl font-normal">CO Soil Moisture Monitoring</h1>
         <span class="text-white/40">|</span>
         <a href="/" class="hover:text-green-200">Home</a>
       </div>
@@ -179,37 +199,52 @@
             class="w-full text-sm border border-gray-200 rounded px-2 py-1.5 mb-3 focus:outline-none focus:ring-1 focus:ring-[#1E4D2B]">
 
           <div class="space-y-2">
-            <select id="filterNetwork" class="w-full text-xs text-gray-600 border border-gray-200 rounded px-2 py-1 bg-white">
-              <option value="">All Networks</option>
-              <option value="CoAgMET">CoAgMET</option>
-              <option value="RAWS">RAWS</option>
-              <option value="SNOTEL">SNOTEL</option>
-              <option value="Zentra">CO Soil Health</option>
-            </select>
-
-            <select id="filterTexture" class="w-full text-xs text-gray-600 border border-gray-200 rounded px-2 py-1 bg-white">
-              <option value="">All Textures</option>
-            </select>
-
-            <select id="filterCounty" class="w-full text-xs text-gray-600 border border-gray-200 rounded px-2 py-1 bg-white">
-              <option value="">All Counties</option>
-            </select>
-
-            <div class="flex gap-1">
-              <select id="filterHucLevel" class="w-20 flex-shrink-0 text-xs text-gray-600 border border-gray-200 rounded px-1 py-1 bg-white">
-                <option value="6">HUC6</option>
-                <option value="8" selected>HUC8</option>
-                <option value="10">HUC10</option>
-                <option value="12">HUC12</option>
-              </select>
-              <select id="filterHuc" class="flex-1 min-w-0 text-xs text-gray-600 border border-gray-200 rounded px-2 py-1 bg-white">
-                <option value="">All HUCs</option>
-              </select>
+            <div>
+              <span class="text-xs text-gray-500">Networks</span>
+              <div id="filterNetworkList" class="filter-list mt-1"></div>
             </div>
 
-            <select id="filterLanduse" class="w-full text-xs text-gray-600 border border-gray-200 rounded px-2 py-1 bg-white">
-              <option value="">All Land Uses</option>
-            </select>
+            <div>
+              <span class="text-xs text-gray-500">Textures</span>
+              <div id="filterTextureList" class="filter-list mt-1"></div>
+            </div>
+
+            <!-- County: an always-visible click-to-toggle-highlight list rather
+                 than a single-select dropdown, so more than one county can be
+                 picked at once -- and so a selection here can stay in sync with
+                 clicking county polygons directly on the map (see
+                 toggleCountySelection()/renderCountyList() below). -->
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs text-gray-500">Counties</span>
+                <button id="showCountiesBtn" type="button" class="text-[10px] text-[#1E4D2B] hover:underline">Show on map</button>
+              </div>
+              <div id="filterCountyList" class="filter-list"></div>
+            </div>
+
+            <!-- HUC: same list-based multi-select as County, scoped to one level
+                 at a time (the level dropdown still single-selects, since a HUC8
+                 code isn't meaningful once you're looking at HUC12). -->
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center gap-1">
+                  <span class="text-xs text-gray-500">HUC</span>
+                  <select id="filterHucLevel" class="text-xs text-gray-600 border border-gray-200 rounded px-1 py-0.5 bg-white">
+                    <option value="6">6</option>
+                    <option value="8" selected>8</option>
+                    <option value="10">10</option>
+                    <option value="12">12</option>
+                  </select>
+                </div>
+                <button id="showHucsBtn" type="button" class="text-[10px] text-[#1E4D2B] hover:underline">Show on map</button>
+              </div>
+              <div id="filterHucList" class="filter-list"></div>
+            </div>
+
+            <div>
+              <span class="text-xs text-gray-500">Land Uses</span>
+              <div id="filterLanduseList" class="filter-list mt-1"></div>
+            </div>
 
             <!-- Eco Region filter -- no data source yet. Would need an EPA Level
                  III/IV ecoregion polygon spatial join against each station's
@@ -266,7 +301,7 @@
             <label class="flex items-center gap-3 cursor-pointer select-none">
               <button class="toggle-btn on purple" id="btn-zentra"></button>
               <span class="w-3 h-3 rounded-full flex-shrink-0 opacity-50" style="background:#9B59B6;"></span>
-              <span class="text-sm text-gray-700">CO Soil Health</span>
+              <span class="text-sm text-gray-700">CSU-SMM</span>
             </label>
 
             <div class="h-px bg-gray-100 my-2"></div>
@@ -334,14 +369,14 @@
           <div class="hidden" id="siteCharts">
             <!-- Texture label + doughnut -->
             <p class="text-xs uppercase tracking-wide text-gray-400 mb-2">Texture</p>
-            <div class="flex items-center gap-3 mb-4">
-              <div style="width:110px;height:110px;flex-shrink:0;"><canvas id="sidebarTexture"></canvas></div>
-              <div class="text-xs space-y-1">
+            <div class="flex flex-col items-center mb-4">
+              <div style="width:110px;height:110px;"><canvas id="sidebarTexture"></canvas></div>
+              <div class="flex items-center justify-center gap-3 text-xs mt-2">
                 <div class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-sm flex-shrink-0" style="background:#C8C372;"></span><span class="text-gray-600">Sand</span></div>
                 <div class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-sm flex-shrink-0" style="background:#D9782D;"></span><span class="text-gray-600">Silt</span></div>
                 <div class="flex items-center gap-1"><span class="inline-block w-2.5 h-2.5 rounded-sm flex-shrink-0" style="background:#1E4D2B;"></span><span class="text-gray-600">Clay</span></div>
-                <div class="mt-2 text-gray-400" id="sidebarTexLabel">—</div>
               </div>
+              <div class="mt-1 text-xs text-gray-400" id="sidebarTexLabel">—</div>
             </div>
             <!-- pH label + scale -->
             <p class="text-xs uppercase tracking-wide text-gray-400 mb-2">pH</p>
@@ -585,7 +620,7 @@
             </div>
           </div>
 
-          <!-- Pressure (CO Soil Health / Zentra ATMOS 41 sites only) -->
+          <!-- Pressure (CSU-SMM / Zentra ATMOS 41 sites only) -->
           <div class="mt-4 pt-3 border-t border-gray-100" id="pressureSection">
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Pressure</span>
@@ -596,7 +631,7 @@
             </div>
           </div>
 
-          <!-- Lightning (CO Soil Health / Zentra ATMOS 41 sites only) -->
+          <!-- Lightning (CSU-SMM / Zentra ATMOS 41 sites only) -->
           <div class="mt-4 pt-3 border-t border-gray-100" id="lightningSection">
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Lightning</span>
@@ -613,7 +648,7 @@
   </main>
 
   <footer class="text-center py-10 text-gray-400 text-sm">
-    Colorado State University — CoAgMET &amp; RAWS Soil Health Monitoring 2025
+    Colorado State University — CoAgMET &amp; RAWS CO Soil Moisture Monitoring 2025
   </footer>
 
   <script>
@@ -1215,12 +1250,14 @@
       { key: 'park1-sp',   name: 'PARK1-SP',   lat: 38.8361854, lon: -105.8219611, elevation: 9280 },
       { key: 'park2-ark',  name: 'PARK2-ARK',  lat: 38.7735649, lon: -105.8089205, elevation: 9790 },
       // Surface Creek Transect: its own contained project, distinct from the
-      // general CO Soil Health network above -- same underlying Zentra pipeline
+      // general CSU-SMM network above -- same underlying Zentra pipeline
       // and map layer/toggle, but labeled separately in the site-info panel.
       { key: 'sc1-haypark', name: 'SC#1-HayPark', lat: 39.0603337, lon: -107.8820656, elevation: 10089, group: 'Surface Creek Transect' },
       { key: 'sc2-scrd',    name: 'SC#2-SCRd',    lat: 39.01888,   lon: -107.8549575, elevation: 9103,  group: 'Surface Creek Transect' },
       { key: 'sc4-horseck', name: 'SC#4-HorseCk', lat: 38.9939282, lon: -107.8925138, elevation: 9026,  group: 'Surface Creek Transect' },
       { key: 'sc5-cedar',   name: 'SC#5-Cedar',   lat: 38.9244795, lon: -107.8998754, elevation: 6717,  group: 'Surface Creek Transect' },
+      { key: 'sc3-leonlk',  name: 'SC#3-LeonLk',  lat: 39.0036528, lon: -107.8505821, elevation: 8774,  group: 'Surface Creek Transect' },
+      { key: 'sc6-harts',   name: 'SC#6-Harts',   lat: 38.8683637, lon: -107.9107288, elevation: 5746,  group: 'Surface Creek Transect' },
     ];
 
     // ── Leaflet map ──────────────────────────────────────────────────────────
@@ -1250,6 +1287,115 @@
     map.getPane('precipPane').style.zIndex = 610;
     map.createPane('waterPane');
     map.getPane('waterPane').style.zIndex = 620;
+    // Any vector layer (GeoJSON polygons included) renders into the default
+    // overlayPane (z-index 400) unless told otherwise, same pane the water
+    // content/precip circleMarker layers above were pulled out of for the
+    // same reason. A dedicated pane below overlayPane keeps a boundary
+    // layer's fill from ever competing with markers or other vector layers,
+    // regardless of add order.
+    map.createPane('boundaryPane');
+    map.getPane('boundaryPane').style.zIndex = 350;
+
+    // ---------- Boundary layers (HUC6/8/10/12 + County) ----------
+    // Toggled on/off via the "Show on map" buttons next to the County/HUC
+    // filter lists (see renderCountyList/renderHucList and
+    // toggleCountySelection/toggleHucSelection above). Each boundary type
+    // has two pre-simplified GeoJSON tiers -- "coarse" for a zoomed-out
+    // overview, "fine" once zoomed in close enough to actually tell
+    // individual small polygons apart -- swapped automatically on zoom
+    // rather than always loading full detail (see BOUNDARY_ZOOM_THRESHOLD).
+    // Selection state (selectedCounties/selectedHucs) is shared with the
+    // filter lists: clicking a polygon here calls the same toggle function a
+    // list-row click does, so both stay in sync regardless of which one
+    // triggered the change.
+    const BOUNDARY_ZOOM_THRESHOLD = 9; // >= this zoom uses the "fine" tier
+    const boundaryDataCache = {};      // "<key>_<tier>" -> parsed GeoJSON
+    const boundaryLayers = { huc: null, county: null }; // active L.geoJSON layers
+
+    function tierForZoom(zoom) { return zoom >= BOUNDARY_ZOOM_THRESHOLD ? 'fine' : 'coarse'; }
+
+    function boundaryBaseKey(type) {
+      return type === 'huc' ? `huc${document.getElementById('filterHucLevel').value}` : 'county';
+    }
+
+    async function loadBoundaryData(key) {
+      if (boundaryDataCache[key]) return boundaryDataCache[key];
+      const data = await fetch(`/soil/data/${key}.geojson`).then(r => r.json());
+      boundaryDataCache[key] = data;
+      return data;
+    }
+
+    function boundarySelectedSet(type) { return type === 'huc' ? selectedHucs : selectedCounties; }
+    function boundaryToggleFn(type) { return type === 'huc' ? toggleHucSelection : toggleCountySelection; }
+
+    function boundaryStyle(type, feature) {
+      const selected = boundarySelectedSet(type).has(String(feature.properties.id));
+      return selected
+        ? { color: '#1E4D2B', weight: 2, fillColor: '#1E4D2B', fillOpacity: 0.35 }
+        : { color: '#1E4D2B', weight: 1, fillColor: '#1E4D2B', fillOpacity: 0.03 };
+    }
+
+    // Hover-glow (a lighter fill on mouseover, reverted on mouseout unless
+    // the feature is actually selected) + click-to-toggle, shared with the
+    // filter list via the same Set/toggle function.
+    function wireBoundaryFeature(type) {
+      const selectedSet = boundarySelectedSet(type);
+      const toggleFn = boundaryToggleFn(type);
+      return (feature, layer) => {
+        const id = String(feature.properties.id);
+        layer.on('mouseover', () => { if (!selectedSet.has(id)) layer.setStyle({ fillOpacity: 0.18 }); });
+        layer.on('mouseout',  () => { if (!selectedSet.has(id)) layer.setStyle(boundaryStyle(type, feature)); });
+        layer.on('click', (e) => { L.DomEvent.stopPropagation(e); toggleFn(id); });
+      };
+    }
+
+    async function showBoundaryLayer(type) {
+      const baseKey = boundaryBaseKey(type);
+      const tier = tierForZoom(map.getZoom());
+      const data = await loadBoundaryData(`${baseKey}_${tier}`);
+      if (boundaryLayers[type]) map.removeLayer(boundaryLayers[type]);
+      boundaryLayers[type] = L.geoJSON(data, {
+        pane: 'boundaryPane',
+        style: f => boundaryStyle(type, f),
+        onEachFeature: wireBoundaryFeature(type),
+      }).addTo(map);
+      boundaryLayers[type]._baseKey = baseKey;
+      boundaryLayers[type]._tier = tier;
+    }
+
+    function hideBoundaryLayer(type) {
+      if (boundaryLayers[type]) { map.removeLayer(boundaryLayers[type]); boundaryLayers[type] = null; }
+    }
+
+    // Called after a selection changes (from either the list or the map) so
+    // an already-loaded layer restyles without a re-fetch.
+    function restyleBoundaryLayer(type) {
+      const layer = boundaryLayers[type];
+      if (!layer) return;
+      layer.eachLayer(l => l.setStyle(boundaryStyle(type, l.feature)));
+    }
+
+    // Swap tiers (and, for HUC, the level) as the user zooms, but only for
+    // whichever boundary layer(s) are actually turned on right now.
+    map.on('zoomend', () => {
+      ['huc', 'county'].forEach(type => {
+        if (!boundaryLayers[type]) return;
+        const baseKey = boundaryBaseKey(type);
+        const tier = tierForZoom(map.getZoom());
+        if (boundaryLayers[type]._baseKey !== baseKey || boundaryLayers[type]._tier !== tier) {
+          showBoundaryLayer(type);
+        }
+      });
+    });
+
+    document.getElementById('showCountiesBtn').addEventListener('click', (e) => {
+      if (boundaryLayers.county) { hideBoundaryLayer('county'); e.target.textContent = 'Show on map'; }
+      else { showBoundaryLayer('county'); e.target.textContent = 'Hide from map'; }
+    });
+    document.getElementById('showHucsBtn').addEventListener('click', (e) => {
+      if (boundaryLayers.huc) { hideBoundaryLayer('huc'); e.target.textContent = 'Show on map'; }
+      else { showBoundaryLayer('huc'); e.target.textContent = 'Hide from map'; }
+    });
 
     // Shared marker factory
     function circ(latlng, color, radius, opacity, weight) {
@@ -1392,7 +1538,7 @@
     // ── Station count label (loaders run concurrently, so track counts in state) ──
     const stationCounts = {};
     const pendingNetworks = new Set(['raws', 'snotel']); // CoAgMET/ZENTRA load synchronously, never "pending"
-    const NETWORK_LABEL = { coagmet: 'CoAgMET', raws: 'RAWS', snotel: 'SNOTEL', zentra: 'CO Soil Health' };
+    const NETWORK_LABEL = { coagmet: 'CoAgMET', raws: 'RAWS', snotel: 'SNOTEL', zentra: 'CSU-SMM' };
 
     function updateStationCountText() {
       const loadedParts  = Object.keys(stationCounts).map(k => `${stationCounts[k]} ${NETWORK_LABEL[k]}`);
@@ -1463,46 +1609,131 @@
       // instead, so load order doesn't matter either way.
       markerRegistry.forEach(entry => {
         applyHucLandUse(entry);
-        addFilterOptions('filterLanduse', entry.landUse);
+        addFilterListOptions(knownLanduses, entry.landUse, renderLanduseList);
       });
-      rebuildHucOptions(document.getElementById('filterHucLevel').value);
       applySearchFilter();
     }).catch(e => console.warn('HUC/Land Use lookup unavailable:', e));
 
-    // A few RAWS station names are punctuated differently between this site's
-    // own network list and Master_List_with_HUC (the huc-landuse.json source) --
-    // e.g. "FT CARSON" here vs "FT. CARSON" there. Same class of problem
-    // RAWS_SOIL_KEY already solves for the lab-sample join, just for this
-    // different data source -- add more pairs here if verification turns up others.
-    const RAWS_HUC_KEY_ALIASES = { 'FT CARSON': 'FT. CARSON' };
+    // ---------- County/HUC boundary selection (shared by the filter lists
+    // and the map's own boundary layers -- see "Boundary layers" below) ----------
+    // Every county (64) and every HUC at every level (18/92/574/3158) is
+    // listed regardless of whether any station currently falls inside it --
+    // this is a map/geographic selection tool, not just a filter over what's
+    // already registered, so an empty HUC is still a valid, clickable area.
+    let boundaryNames = { 6: [], 8: [], 10: [], 12: [], county: [] };
+    fetch('/soil/data/boundary_names.json').then(r => r.json()).then(data => {
+      boundaryNames = data;
+      renderCountyList();
+      renderHucList(document.getElementById('filterHucLevel').value);
+    }).catch(e => console.warn('Boundary name lookup unavailable:', e));
 
+    const selectedCounties = new Set();
+    const selectedHucs = new Set(); // codes for whichever HUC level is currently active
+
+    function renderCountyList() {
+      const host = document.getElementById('filterCountyList');
+      if (!boundaryNames.county.length) { host.innerHTML = '<div class="filter-list-empty">Loading…</div>'; return; }
+      host.innerHTML = boundaryNames.county.map(name =>
+        `<div class="filter-row${selectedCounties.has(name) ? ' selected' : ''}" data-county="${name}">${name}</div>`
+      ).join('');
+    }
+
+    function renderHucList(level) {
+      const host = document.getElementById('filterHucList');
+      const rows = boundaryNames[level] || [];
+      if (!rows.length) { host.innerHTML = '<div class="filter-list-empty">Loading…</div>'; return; }
+      host.innerHTML = rows.map(r =>
+        `<div class="filter-row${selectedHucs.has(r.id) ? ' selected' : ''}" data-huc="${r.id}">${r.id} — ${r.name}</div>`
+      ).join('');
+    }
+
+    // Both called from list-row clicks AND from clicking a polygon on the
+    // map (see wireBoundaryFeature) -- one shared Set/render pair keeps
+    // both in sync regardless of which one triggered the change.
+    function toggleCountySelection(name) {
+      if (selectedCounties.has(name)) selectedCounties.delete(name); else selectedCounties.add(name);
+      renderCountyList();
+      restyleBoundaryLayer('county');
+      applySearchFilter();
+    }
+    function toggleHucSelection(code) {
+      if (selectedHucs.has(code)) selectedHucs.delete(code); else selectedHucs.add(code);
+      renderHucList(document.getElementById('filterHucLevel').value);
+      restyleBoundaryLayer('huc');
+      applySearchFilter();
+    }
+
+    document.getElementById('filterCountyList').addEventListener('click', (e) => {
+      const row = e.target.closest('.filter-row');
+      if (row) toggleCountySelection(row.dataset.county);
+    });
+    document.getElementById('filterHucList').addEventListener('click', (e) => {
+      const row = e.target.closest('.filter-row');
+      if (row) toggleHucSelection(row.dataset.huc);
+    });
+
+    // ---------- Network/Texture/Land Use: same click-to-toggle-highlight
+    // multi-select as County/HUC, just without a map layer to sync with.
+    // Network's value set is fixed; Texture/Land Use grow incrementally as
+    // stations register. ----------
+    const NETWORK_VALUES = ['CoAgMET', 'RAWS', 'SNOTEL', 'Zentra'];
+    const selectedNetworks = new Set();
+    const knownTextures = new Set();
+    const selectedTextures = new Set();
+    const knownLanduses = new Set();
+    const selectedLanduses = new Set();
+
+    function renderSimpleFilterList(hostId, values, selectedSet) {
+      const host = document.getElementById(hostId);
+      const sorted = [...values].sort();
+      if (!sorted.length) { host.innerHTML = '<div class="filter-list-empty">Loading…</div>'; return; }
+      host.innerHTML = sorted.map(v =>
+        `<div class="filter-row${selectedSet.has(v) ? ' selected' : ''}" data-value="${v}">${v}</div>`
+      ).join('');
+    }
+    function renderNetworkList() { renderSimpleFilterList('filterNetworkList', NETWORK_VALUES, selectedNetworks); }
+    function renderTextureList() { renderSimpleFilterList('filterTextureList', knownTextures, selectedTextures); }
+    function renderLanduseList() { renderSimpleFilterList('filterLanduseList', knownLanduses, selectedLanduses); }
+
+    function toggleSetSelection(set, value, renderFn) {
+      if (set.has(value)) set.delete(value); else set.add(value);
+      renderFn();
+      applySearchFilter();
+    }
+
+    // Appends any genuinely-new values, called incrementally as each
+    // network's async load progresses, re-rendering only if something
+    // actually changed.
+    function addFilterListOptions(knownSet, values, renderFn) {
+      let added = false;
+      (values || []).forEach(v => { if (v && !knownSet.has(v)) { knownSet.add(v); added = true; } });
+      if (added) renderFn();
+    }
+
+    renderNetworkList(); // fixed set, no async load to wait on
+
+    document.getElementById('filterNetworkList').addEventListener('click', (e) => {
+      const row = e.target.closest('.filter-row');
+      if (row) toggleSetSelection(selectedNetworks, row.dataset.value, renderNetworkList);
+    });
+    document.getElementById('filterTextureList').addEventListener('click', (e) => {
+      const row = e.target.closest('.filter-row');
+      if (row) toggleSetSelection(selectedTextures, row.dataset.value, renderTextureList);
+    });
+    document.getElementById('filterLanduseList').addEventListener('click', (e) => {
+      const row = e.target.closest('.filter-row');
+      if (row) toggleSetSelection(selectedLanduses, row.dataset.value, renderLanduseList);
+    });
+
+    // huc-landuse.json's RAWS keys come from the same live NIFC station
+    // list (its Name field) that entry.ids[0] does, so they match directly
+    // -- no alias/translation layer needed for RAWS specifically.
     function applyHucLandUse(entry) {
-      const key = entry.network === 'RAWS' ? (RAWS_HUC_KEY_ALIASES[entry.ids[0]] || entry.ids[0]) : entry.ids[0];
+      const key = entry.ids[0];
       const rec = hucLandUseData[entry.network]?.[key];
       if (!rec) return;
       entry.huc = { 6: rec.huc06 || null, 8: rec.huc08 || null, 10: rec.huc10 || null, 12: rec.huc12 || null };
       entry.landUse = rec.land_use || [];
-    }
-
-    // Rebuilds (not appends) filterHuc's options for one HUC level -- switching
-    // levels needs a wholly different value set, unlike county/texture/land use
-    // which only ever grow. Labeled "code — name" when a name is known.
-    function rebuildHucOptions(level) {
-      const select = document.getElementById('filterHuc');
-      const labelByCode = {};
-      markerRegistry.forEach(entry => {
-        const code = entry.huc[level];
-        if (!code || labelByCode[code]) return;
-        const rec = hucLandUseData[entry.network]?.[entry.ids[0]];
-        const nm = rec ? rec[`huc${level}_name`] : null;
-        labelByCode[code] = nm ? `${code} — ${nm}` : code;
-      });
-      select.innerHTML = '<option value="">All HUCs</option>';
-      Object.keys(labelByCode).sort().forEach(code => {
-        const opt = document.createElement('option');
-        opt.value = code; opt.textContent = labelByCode[code];
-        select.appendChild(opt);
-      });
     }
 
     // Returns the created entry -- some fields (CoAgMET/Zentra county, in
@@ -1513,45 +1744,14 @@
       const entry = { network, name, ids, county, huc: { 6:null, 8:null, 10:null, 12:null }, landUse: [], texture: texture || [], entries };
       applyHucLandUse(entry); // covers the case where the fetch above already resolved before this station registered
       markerRegistry.push(entry);
-      addFilterOptions('filterCounty', county ? [county] : []);
-      addFilterOptions('filterTexture', texture || []);
-      addFilterOptions('filterLanduse', entry.landUse);
+      addFilterListOptions(knownTextures, texture || [], renderTextureList);
+      addFilterListOptions(knownLanduses, entry.landUse, renderLanduseList);
       return entry;
-    }
-
-    // Appends any genuinely-new values to a <select>, then re-sorts alphabetically
-    // (keeping the existing "All X" placeholder first) -- called incrementally as
-    // each network's async load progresses, so options accumulate rather than reset.
-    function addFilterOptions(selectId, values) {
-      const select = document.getElementById(selectId);
-      const existing = new Set([...select.options].map(o => o.value));
-      let added = false;
-      values.forEach(v => {
-        if (v && !existing.has(v)) {
-          existing.add(v);
-          const opt = document.createElement('option');
-          opt.value = v; opt.textContent = v;
-          select.appendChild(opt);
-          added = true;
-        }
-      });
-      if (added) {
-        const [placeholder, ...rest] = [...select.options];
-        rest.sort((a, b) => a.textContent.localeCompare(b.textContent));
-        select.innerHTML = '';
-        select.appendChild(placeholder);
-        rest.forEach(o => select.appendChild(o));
-      }
     }
 
     function applySearchFilter() {
       const q        = document.getElementById('siteSearchInput').value.trim().toLowerCase();
-      const network  = document.getElementById('filterNetwork').value;
-      const texture  = document.getElementById('filterTexture').value;
-      const county   = document.getElementById('filterCounty').value;
       const hucLevel = document.getElementById('filterHucLevel').value;
-      const huc      = document.getElementById('filterHuc').value;
-      const landuse  = document.getElementById('filterLanduse').value;
       // Eco Region would add one more `const ... = document.getElementById
       // ('filterEcoregion').value` line here, plus a matching `matchesX` clause
       // below, once that <select> is uncommented and markerRegistry entries
@@ -1561,11 +1761,16 @@
       markerRegistry.forEach(entry => {
         const matchesQuery   = !q || entry.name.toLowerCase().includes(q) ||
           entry.ids.some(id => String(id).toLowerCase().includes(q));
-        const matchesNetwork = !network || entry.network === network;
-        const matchesTexture = !texture || entry.texture.includes(texture);
-        const matchesCounty  = !county || entry.county === county;
-        const matchesHuc     = !huc || entry.huc[hucLevel] === huc;
-        const matchesLanduse = !landuse || entry.landUse.includes(landuse);
+        // Network/Texture/County/HUC/Land Use are all multi-select now (a
+        // Set of picks from a click-to-toggle list, County/HUC also from the
+        // map) rather than a single dropdown value -- a station matches if
+        // it (or, for Texture/Land Use, any one of its several values) is in
+        // the selected set, or if nothing's selected for that filter at all.
+        const matchesNetwork = !selectedNetworks.size || selectedNetworks.has(entry.network);
+        const matchesTexture = !selectedTextures.size || entry.texture.some(t => selectedTextures.has(t));
+        const matchesCounty  = !selectedCounties.size || selectedCounties.has(entry.county);
+        const matchesHuc     = !selectedHucs.size || selectedHucs.has(entry.huc[hucLevel]);
+        const matchesLanduse = !selectedLanduses.size || entry.landUse.some(l => selectedLanduses.has(l));
         const visible = matchesQuery && matchesNetwork && matchesTexture && matchesCounty && matchesHuc && matchesLanduse;
 
         entry.entries.forEach(({ marker, layer }) => {
@@ -1580,24 +1785,32 @@
     }
 
     document.getElementById('siteSearchInput').addEventListener('input', applySearchFilter);
-    ['filterNetwork', 'filterTexture', 'filterCounty', 'filterHuc', 'filterLanduse'].forEach(id => {
-      document.getElementById(id).addEventListener('change', applySearchFilter);
-    });
-    // Changing the level needs a full options rebuild (a different value set
-    // per level), not just re-filtering -- and whatever was selected at the old
-    // level is almost never a valid value at the new one, so reset it too.
+    // Changing the level needs a full list rebuild (a different value set per
+    // level), not just re-filtering -- and whatever was selected at the old
+    // level is almost never meaningful at the new one, so reset it too. If the
+    // HUC boundary layer is currently shown on the map, it needs reloading at
+    // the new level as well.
     document.getElementById('filterHucLevel').addEventListener('change', (e) => {
-      document.getElementById('filterHuc').value = '';
-      rebuildHucOptions(e.target.value);
+      selectedHucs.clear();
+      renderHucList(e.target.value);
+      if (boundaryLayers.huc) showBoundaryLayer('huc');
       applySearchFilter();
     });
     document.getElementById('filterClear').addEventListener('click', () => {
       document.getElementById('siteSearchInput').value = '';
-      ['filterNetwork', 'filterTexture', 'filterCounty', 'filterHuc', 'filterLanduse'].forEach(id => {
-        document.getElementById(id).value = '';
-      });
       document.getElementById('filterHucLevel').value = '8';
-      rebuildHucOptions('8');
+      selectedNetworks.clear();
+      selectedTextures.clear();
+      selectedCounties.clear();
+      selectedHucs.clear();
+      selectedLanduses.clear();
+      renderNetworkList();
+      renderTextureList();
+      renderCountyList();
+      renderHucList('8');
+      renderLanduseList();
+      restyleBoundaryLayer('county');
+      restyleBoundaryLayer('huc');
       applySearchFilter();
     });
 
@@ -1666,7 +1879,6 @@
           // `place`) -- only the registry's filter-facing copy gets normalized.
           if (s._regEntry) s._regEntry.county = normalizeCounty(s.county);
         });
-        addFilterOptions('filterCounty', COAGMET_NETWORK.map(s => normalizeCounty(s.county)).filter(Boolean));
         applySearchFilter();
       }).catch(e => console.warn('Station county lookup unavailable:', e));
     }
@@ -1675,7 +1887,7 @@
     // Two markers per site, exactly like CoAgMET/RAWS: a subdued "plain dot" (on
     // zentraLayer, controlled only by its own toggle -- same look as every station
     // in those networks) plus a brighter glowing marker (on soilLayer, controlled
-    // only by "Soil Moisture / Monitoring Sites"). Since every CO Soil Health site
+    // only by "Soil Moisture / Monitoring Sites"). Since every CSU-SMM site
     // is inherently soil-monitored, both markers sit at the same point; the subdued
     // one is what's left showing when SMM is off but the network itself is on.
     function loadZentraSites() {
@@ -1713,7 +1925,6 @@
           site.county = counties.zentra?.[site.key] || null;
           if (site._regEntry) site._regEntry.county = normalizeCounty(site.county);
         });
-        addFilterOptions('filterCounty', ZENTRA_SITES.map(s => normalizeCounty(s.county)).filter(Boolean));
         applySearchFilter();
       }).catch(e => console.warn('Station county lookup unavailable:', e));
     }
@@ -2008,12 +2219,6 @@
       stationCounts.raws = rawsCount;
       pendingNetworks.delete('raws');
       updateStationCountText();
-      // rebuildHucOptions (unlike addFilterOptions) only runs off the
-      // huc-landuse.json fetch's own .then() and the level-change handler --
-      // neither of those re-fires once RAWS finishes registering its stations,
-      // so the dropdown would otherwise silently miss every HUC this network
-      // alone contributes. Re-run for whichever level is currently selected.
-      rebuildHucOptions(document.getElementById('filterHucLevel').value);
       applySearchFilter();
     }
 
@@ -2080,8 +2285,6 @@
       stationCounts.snotel = stns.length;
       pendingNetworks.delete('snotel');
       updateStationCountText();
-      // Same reasoning as the RAWS load function above.
-      rebuildHucOptions(document.getElementById('filterHucLevel').value);
       applySearchFilter();
     }
 
@@ -2676,7 +2879,7 @@
         document.getElementById('snowSection').classList.add('hidden');
       }
 
-      // Zentra sites (CO Soil Health / Surface Creek Transect) have no humidity
+      // Zentra sites (CSU-SMM / Surface Creek Transect) have no humidity
       // sensor at all -- every other network still shows the Humidity section.
       document.getElementById('humiditySection').classList.toggle('hidden', network === 'Zentra');
 
@@ -3138,13 +3341,13 @@
           if (!st || !st.time || !st.time.length) {
             vwcStatus.textContent = 'No live soil moisture data available for this site.';
             tempStatus.textContent = 'No live soil temperature data available for this site.';
-            precipStatus.textContent = 'No weather sensors at CO Soil Health sites.';
-            airTempStatus.textContent = 'No weather sensors at CO Soil Health sites.';
-            humidityStatus.textContent = 'No weather sensors at CO Soil Health sites.';
-            windStatus.textContent = 'No weather sensors at CO Soil Health sites.';
-            solarStatus.textContent = 'No weather sensors at CO Soil Health sites.';
-            pressureStatus.textContent = 'No weather sensors at CO Soil Health sites.';
-            lightningStatus.textContent = 'No weather sensors at CO Soil Health sites.';
+            precipStatus.textContent = 'No weather sensors at CSU-SMM sites.';
+            airTempStatus.textContent = 'No weather sensors at CSU-SMM sites.';
+            humidityStatus.textContent = 'No weather sensors at CSU-SMM sites.';
+            windStatus.textContent = 'No weather sensors at CSU-SMM sites.';
+            solarStatus.textContent = 'No weather sensors at CSU-SMM sites.';
+            pressureStatus.textContent = 'No weather sensors at CSU-SMM sites.';
+            lightningStatus.textContent = 'No weather sensors at CSU-SMM sites.';
             return;
           }
 
@@ -3183,7 +3386,7 @@
             tempStatus.textContent = 'No soil temperature data available for this site.';
           }
 
-          // Every CO Soil Health logger also carries an ATMOS 41 (G2) weather
+          // Every CSU-SMM logger also carries an ATMOS 41 (G2) weather
           // station -- confirmed via the API's port/sensor metadata 2026-08-26.
           // (This block used to assume Zentra probes were soil-only; that was
           // wrong, or at least stale -- the sensor's been there all along.)
@@ -3278,26 +3481,42 @@
     let currentSoil = null;
     let currentDepthIdx = 0;
 
+    // Same faded red/yellow/green reference AES's pH/CaCO3/EC/BD bars use —
+    // symmetric since both extremes (strongly acidic/alkaline) read as "bad".
+    const PH_GRADIENT = 'linear-gradient(to right, rgba(220,38,38,0.35) 0%, rgba(234,179,8,0.35) 35%, rgba(120,190,32,0.35) 50%, rgba(234,179,8,0.35) 65%, rgba(220,38,38,0.35) 100%)';
+    const PH_MAX = 14;
+    const PH_TICKS = [0, 2, 4, 6, 8, 10, 12, 14];
+
     function renderMiniPhScale(phVal) {
       const safe = Number.isFinite(phVal) ? phVal : 0;
-      const pct  = ((14 - safe) / 14 * 100).toFixed(2);
-      const ticks = Array.from({length:8}, (_,i) => `<span>${14 - i*2}</span>`).join('');
+      const pct  = Math.min(safe / PH_MAX * 100, 100).toFixed(1);
+      const ticks = PH_TICKS.map((t, i) => {
+        const left = (t / PH_MAX * 100).toFixed(1);
+        const align = i === 0 ? 'left:0%;'
+          : i === PH_TICKS.length - 1 ? `left:${left}%; transform:translateX(-100%);`
+          : `left:${left}%; transform:translateX(-50%);`;
+        return `<span style="${align}">${t}</span>`;
+      }).join('');
       document.getElementById('sidebarPhHost').innerHTML = `
-        <div class="mini-ph-wrap">
-          <div class="mini-ph-zones">
-            <span>Alk.</span><span>Neu.</span><span>Acid</span>
+        <div class="bullet-bar">
+          <div class="ph-zone-labels">
+            <span>Acidic</span><span>Neutral</span><span>Alkaline</span>
           </div>
-          <div class="mini-ph-ticks">${ticks}</div>
-          <div class="mini-ph-bar">
-            <div class="mini-ph-marker" id="miniPhMarker" style="top:0%">
-              <div class="mini-ph-pin"></div>
-              <div class="mini-ph-label">${safe.toFixed(1)}</div>
+          <div class="bullet-bar-track">
+            <div class="bullet-bar-gradient" style="background:${PH_GRADIENT}"></div>
+            <div class="bullet-bar-marker" id="miniPhMarker" style="left:0%">
+              <span class="bullet-bar-marker-tip">${safe.toFixed(2)}</span>
             </div>
           </div>
+          <div class="bullet-bar-value-row">
+            <span class="bullet-bar-name">pH</span>
+            <span class="bullet-bar-value">${safe.toFixed(2)}</span>
+          </div>
+          <div class="bullet-bar-ticks">${ticks}</div>
         </div>`;
       requestAnimationFrame(()=>requestAnimationFrame(()=>{
         const el = document.getElementById('miniPhMarker');
-        if (el) el.style.top = pct + '%';
+        if (el) el.style.left = pct + '%';
       }));
     }
 
@@ -3469,8 +3688,8 @@
 
       // Surface Creek Transect is its own contained project sharing this same
       // Zentra pipeline/map layer -- labeled distinctly, not folded into the
-      // general "CO Soil Health" name, wherever that name would otherwise show.
-      const groupLabel = site.group || 'CO Soil Health';
+      // general "CSU-SMM" name, wherever that name would otherwise show.
+      const groupLabel = site.group || 'CSU-SMM';
 
       // Sidebar card — no texture/pH, just a note that no lab sample exists yet
       document.getElementById('siteInfoName').textContent = site.name;
