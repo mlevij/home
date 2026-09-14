@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CoAgMET & RAWS CO Soil Moisture Monitoring</title>
-  <meta name="description" content="Soil moisture monitoring data from CoAgMET and RAWS networks across Colorado, 2025 sampling season.">
+  <title>CO Soil Moisture Monitoring</title>
+  <meta name="description" content="Soil moisture monitoring data from CoAgMET, RAWS, SNOTEL, and CSU-SMM networks across Colorado, 2025 sampling season.">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -648,7 +648,7 @@
   </main>
 
   <footer class="text-center py-10 text-gray-400 text-sm">
-    Colorado State University — CoAgMET &amp; RAWS CO Soil Moisture Monitoring 2025
+    Colorado State University — CO Soil Moisture Monitoring 2025
   </footer>
 
   <script>
@@ -1683,15 +1683,22 @@
     const knownLanduses = new Set();
     const selectedLanduses = new Set();
 
-    function renderSimpleFilterList(hostId, values, selectedSet) {
+    // labelFor: the underlying matched value (data-value, used against
+    // entry.network) can differ from what's actually displayed -- needed
+    // for Network specifically, since the Zentra network's real value must
+    // stay 'Zentra' to match entry.network, but displays as "CSU-SMM".
+    function renderSimpleFilterList(hostId, values, selectedSet, labelFor = v => v) {
       const host = document.getElementById(hostId);
       const sorted = [...values].sort();
       if (!sorted.length) { host.innerHTML = '<div class="filter-list-empty">Loading…</div>'; return; }
       host.innerHTML = sorted.map(v =>
-        `<div class="filter-row${selectedSet.has(v) ? ' selected' : ''}" data-value="${v}">${v}</div>`
+        `<div class="filter-row${selectedSet.has(v) ? ' selected' : ''}" data-value="${v}">${labelFor(v)}</div>`
       ).join('');
     }
-    function renderNetworkList() { renderSimpleFilterList('filterNetworkList', NETWORK_VALUES, selectedNetworks); }
+    const NETWORK_LABELS = { Zentra: 'CSU-SMM' };
+    function renderNetworkList() {
+      renderSimpleFilterList('filterNetworkList', NETWORK_VALUES, selectedNetworks, v => NETWORK_LABELS[v] || v);
+    }
     function renderTextureList() { renderSimpleFilterList('filterTextureList', knownTextures, selectedTextures); }
     function renderLanduseList() { renderSimpleFilterList('filterLanduseList', knownLanduses, selectedLanduses); }
 
