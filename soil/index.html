@@ -266,11 +266,6 @@
             <span class="text-gray-400" id="filterCount"></span>
             <button id="filterClear" class="text-[#1E4D2B] hover:underline">Clear filters</button>
           </div>
-
-          <!-- Moved here from the bottom of "Map Layers" -- with Search & Filter
-               now the first card, the loading/station-count text was getting
-               pushed too far down the sidebar to be seen right away. -->
-          <div class="mt-3 pt-2 border-t text-xs text-gray-400" id="stationCount">Loading CoAgMET…</div>
         </div>
 
         <!-- Layer Controls -->
@@ -414,8 +409,10 @@
         <div>
           <!-- Map card -->
           <div class="card overflow-hidden rounded-b-none" data-aos="fade-up">
-            <div class="px-4 pt-4 pb-2 flex items-center">
+            <div class="px-4 pt-4 pb-2 flex items-baseline flex-wrap gap-x-2">
               <h2 class="text-lg font-semibold text-gray-800">Colorado Station Network</h2>
+              <span class="text-gray-300" aria-hidden="true">–</span>
+              <span class="text-xs text-gray-400" id="stationCount">Loading CoAgMET…</span>
             </div>
             <div id="map"></div>
             <div class="px-4 py-2 text-xs text-gray-400 border-t">
