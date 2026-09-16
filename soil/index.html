@@ -196,7 +196,11 @@
           <h2 class="text-lg font-semibold text-gray-800 mb-3">Search &amp; Filter</h2>
 
           <input type="text" id="siteSearchInput" placeholder="Search by name or station ID…"
-            class="w-full text-sm border border-gray-200 rounded px-2 py-1.5 mb-3 focus:outline-none focus:ring-1 focus:ring-[#1E4D2B]">
+            class="w-full text-sm border border-gray-200 rounded px-2 py-1.5 mb-2 focus:outline-none focus:ring-1 focus:ring-[#1E4D2B]">
+
+          <div class="flex justify-end mb-3">
+            <button id="filterClear" class="text-xs text-[#1E4D2B] hover:underline">Clear filters</button>
+          </div>
 
           <div class="space-y-2">
             <div>
@@ -262,9 +266,8 @@
             -->
           </div>
 
-          <div class="flex items-center justify-between mt-3 pt-2 border-t text-xs">
+          <div class="mt-3 pt-2 border-t text-xs">
             <span class="text-gray-400" id="filterCount"></span>
-            <button id="filterClear" class="text-[#1E4D2B] hover:underline">Clear filters</button>
           </div>
         </div>
 
@@ -1249,11 +1252,11 @@
       // Surface Creek Transect: its own contained project, distinct from the
       // general CSU-SMM network above -- same underlying Zentra pipeline
       // and map layer/toggle, but labeled separately in the site-info panel.
-      { key: 'sc1-haypark', name: 'SC#1-HayPark', lat: 39.0603337, lon: -107.8820656, elevation: 10089, group: 'Surface Creek Transect' },
+      { key: 'sc1-haypark', name: 'SC#1-HayPark', lat: 39.0281465, lon: -107.9215594, elevation: 10088, group: 'Surface Creek Transect' },
       { key: 'sc2-scrd',    name: 'SC#2-SCRd',    lat: 39.01888,   lon: -107.8549575, elevation: 9103,  group: 'Surface Creek Transect' },
       { key: 'sc4-horseck', name: 'SC#4-HorseCk', lat: 38.9939282, lon: -107.8925138, elevation: 9026,  group: 'Surface Creek Transect' },
       { key: 'sc5-cedar',   name: 'SC#5-Cedar',   lat: 38.9244795, lon: -107.8998754, elevation: 6717,  group: 'Surface Creek Transect' },
-      { key: 'sc3-leonlk',  name: 'SC#3-LeonLk',  lat: 39.0036528, lon: -107.8505821, elevation: 8774,  group: 'Surface Creek Transect' },
+      { key: 'sc3-leonlk',  name: 'SC#3-LeonLk',  lat: 39.0036528, lon: -107.8505821, elevation: 8815,  group: 'Surface Creek Transect' },
       { key: 'sc6-harts',   name: 'SC#6-Harts',   lat: 38.8683637, lon: -107.9107288, elevation: 5746,  group: 'Surface Creek Transect' },
     ];
 
