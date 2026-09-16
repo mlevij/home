@@ -204,8 +204,40 @@
 
           <div class="space-y-2">
             <div>
-              <span class="text-xs text-gray-500">Networks</span>
-              <div id="filterNetworkList" class="filter-list mt-1"></div>
+              <span class="text-xs text-gray-500 uppercase tracking-wide">Networks</span>
+              <div class="space-y-2 mt-1">
+                <label class="flex items-center gap-3 cursor-pointer select-none">
+                  <button class="toggle-btn on green" id="btn-coagmet"></button>
+                  <span class="w-3 h-3 rounded-full flex-shrink-0 opacity-50" style="background:#4CE600;"></span>
+                  <span class="text-sm text-gray-700">CoAgMET</span>
+                </label>
+
+                <label class="flex items-center gap-3 cursor-pointer select-none">
+                  <button class="toggle-btn on orange" id="btn-raws"></button>
+                  <span class="w-3 h-3 rounded-full flex-shrink-0 opacity-50" style="background:#ff0000;"></span>
+                  <span class="text-sm text-gray-700">RAWS</span>
+                </label>
+
+                <label class="flex items-center gap-3 cursor-pointer select-none">
+                  <button class="toggle-btn on teal" id="btn-snotel"></button>
+                  <span class="w-3 h-3 rounded-full flex-shrink-0 opacity-50" style="background:#00C5FF;"></span>
+                  <span class="text-sm text-gray-700">SNOTEL</span>
+                </label>
+
+                <label class="flex items-center gap-3 cursor-pointer select-none">
+                  <button class="toggle-btn on purple" id="btn-zentra"></button>
+                  <span class="w-3 h-3 rounded-full flex-shrink-0 opacity-50" style="background:#9B59B6;"></span>
+                  <span class="text-sm text-gray-700">CSU-SMM</span>
+                </label>
+
+                <label class="flex items-center gap-3 cursor-pointer select-none">
+                  <button class="toggle-btn on gold self-center" id="btn-soil"></button>
+                  <span class="flex flex-col">
+                    <span class="text-sm text-gray-700 leading-tight">Soil Moisture Monitoring Sites</span>
+                    <span class="text-[10px] text-gray-400" id="smmCount"></span>
+                  </span>
+                </label>
+              </div>
             </div>
 
             <div>
@@ -273,47 +305,9 @@
 
         <!-- Layer Controls -->
         <div class="card p-4" data-aos="fade-right">
-          <h2 class="text-lg font-semibold text-gray-800 mb-3">Map Layers</h2>
+          <h2 class="text-lg font-semibold text-gray-800 mb-3">Moisture &amp; Precipitation</h2>
 
           <div class="space-y-2">
-            <div class="text-xs uppercase tracking-wide text-gray-400 mb-1">Networks</div>
-
-            <label class="flex items-center gap-3 cursor-pointer select-none">
-              <button class="toggle-btn on green" id="btn-coagmet"></button>
-              <span class="w-3 h-3 rounded-full flex-shrink-0 opacity-50" style="background:#4CE600;"></span>
-              <span class="text-sm text-gray-700">CoAgMET</span>
-            </label>
-
-            <label class="flex items-center gap-3 cursor-pointer select-none">
-              <button class="toggle-btn on orange" id="btn-raws"></button>
-              <span class="w-3 h-3 rounded-full flex-shrink-0 opacity-50" style="background:#ff0000;"></span>
-              <span class="text-sm text-gray-700">RAWS</span>
-            </label>
-
-            <label class="flex items-center gap-3 cursor-pointer select-none">
-              <button class="toggle-btn on teal" id="btn-snotel"></button>
-              <span class="w-3 h-3 rounded-full flex-shrink-0 opacity-50" style="background:#00C5FF;"></span>
-              <span class="text-sm text-gray-700">SNOTEL</span>
-            </label>
-
-            <label class="flex items-center gap-3 cursor-pointer select-none">
-              <button class="toggle-btn on purple" id="btn-zentra"></button>
-              <span class="w-3 h-3 rounded-full flex-shrink-0 opacity-50" style="background:#9B59B6;"></span>
-              <span class="text-sm text-gray-700">CSU-SMM</span>
-            </label>
-
-            <div class="h-px bg-gray-100 my-2"></div>
-
-            <label class="flex items-center gap-3 cursor-pointer select-none">
-              <button class="toggle-btn on gold self-center" id="btn-soil"></button>
-              <span class="flex flex-col">
-                <span class="text-xs uppercase tracking-wide text-gray-400 leading-tight">Soil Moisture<br>Monitoring Sites</span>
-                <span class="text-[10px] text-gray-400" id="smmCount"></span>
-              </span>
-            </label>
-
-            <div class="h-px bg-gray-100 my-2"></div>
-
             <label class="flex items-center gap-3 cursor-pointer select-none">
               <button class="toggle-btn blue self-center" id="btn-water"></button>
               <span class="flex flex-col flex-1">
@@ -1672,21 +1666,14 @@
       if (row) toggleHucSelection(row.dataset.huc);
     });
 
-    // ---------- Network/Texture/Land Use: same click-to-toggle-highlight
-    // multi-select as County/HUC, just without a map layer to sync with.
-    // Network's value set is fixed; Texture/Land Use grow incrementally as
-    // stations register. ----------
-    const NETWORK_VALUES = ['CoAgMET', 'RAWS', 'SNOTEL', 'Zentra'];
-    const selectedNetworks = new Set();
+    // ---------- Texture/Land Use: same click-to-toggle-highlight multi-select
+    // as County/HUC, just without a map layer to sync with. Values grow
+    // incrementally as stations register. ----------
     const knownTextures = new Set();
     const selectedTextures = new Set();
     const knownLanduses = new Set();
     const selectedLanduses = new Set();
 
-    // labelFor: the underlying matched value (data-value, used against
-    // entry.network) can differ from what's actually displayed -- needed
-    // for Network specifically, since the Zentra network's real value must
-    // stay 'Zentra' to match entry.network, but displays as "CSU-SMM".
     function renderSimpleFilterList(hostId, values, selectedSet, labelFor = v => v) {
       const host = document.getElementById(hostId);
       const sorted = [...values].sort();
@@ -1694,10 +1681,6 @@
       host.innerHTML = sorted.map(v =>
         `<div class="filter-row${selectedSet.has(v) ? ' selected' : ''}" data-value="${v}">${labelFor(v)}</div>`
       ).join('');
-    }
-    const NETWORK_LABELS = { Zentra: 'CSU-SMM' };
-    function renderNetworkList() {
-      renderSimpleFilterList('filterNetworkList', NETWORK_VALUES, selectedNetworks, v => NETWORK_LABELS[v] || v);
     }
     function renderTextureList() { renderSimpleFilterList('filterTextureList', knownTextures, selectedTextures); }
     function renderLanduseList() { renderSimpleFilterList('filterLanduseList', knownLanduses, selectedLanduses); }
@@ -1717,12 +1700,6 @@
       if (added) renderFn();
     }
 
-    renderNetworkList(); // fixed set, no async load to wait on
-
-    document.getElementById('filterNetworkList').addEventListener('click', (e) => {
-      const row = e.target.closest('.filter-row');
-      if (row) toggleSetSelection(selectedNetworks, row.dataset.value, renderNetworkList);
-    });
     document.getElementById('filterTextureList').addEventListener('click', (e) => {
       const row = e.target.closest('.filter-row');
       if (row) toggleSetSelection(selectedTextures, row.dataset.value, renderTextureList);
@@ -1768,17 +1745,18 @@
       markerRegistry.forEach(entry => {
         const matchesQuery   = !q || entry.name.toLowerCase().includes(q) ||
           entry.ids.some(id => String(id).toLowerCase().includes(q));
-        // Network/Texture/County/HUC/Land Use are all multi-select now (a
-        // Set of picks from a click-to-toggle list, County/HUC also from the
-        // map) rather than a single dropdown value -- a station matches if
-        // it (or, for Texture/Land Use, any one of its several values) is in
-        // the selected set, or if nothing's selected for that filter at all.
-        const matchesNetwork = !selectedNetworks.size || selectedNetworks.has(entry.network);
+        // Texture/County/HUC/Land Use are all multi-select now (a Set of
+        // picks from a click-to-toggle list, County/HUC also from the map)
+        // rather than a single dropdown value -- a station matches if it (or,
+        // for Texture/Land Use, any one of its several values) is in the
+        // selected set, or if nothing's selected for that filter at all.
+        // Network visibility is handled entirely by the toggle buttons
+        // (whole layer-group show/hide), not by this per-marker filter.
         const matchesTexture = !selectedTextures.size || entry.texture.some(t => selectedTextures.has(t));
         const matchesCounty  = !selectedCounties.size || selectedCounties.has(entry.county);
         const matchesHuc     = !selectedHucs.size || selectedHucs.has(entry.huc[hucLevel]);
         const matchesLanduse = !selectedLanduses.size || entry.landUse.some(l => selectedLanduses.has(l));
-        const visible = matchesQuery && matchesNetwork && matchesTexture && matchesCounty && matchesHuc && matchesLanduse;
+        const visible = matchesQuery && matchesTexture && matchesCounty && matchesHuc && matchesLanduse;
 
         entry.entries.forEach(({ marker, layer }) => {
           if (visible) { if (!layer.hasLayer(marker)) layer.addLayer(marker); }
@@ -1806,12 +1784,10 @@
     document.getElementById('filterClear').addEventListener('click', () => {
       document.getElementById('siteSearchInput').value = '';
       document.getElementById('filterHucLevel').value = '8';
-      selectedNetworks.clear();
       selectedTextures.clear();
       selectedCounties.clear();
       selectedHucs.clear();
       selectedLanduses.clear();
-      renderNetworkList();
       renderTextureList();
       renderCountyList();
       renderHucList('8');
