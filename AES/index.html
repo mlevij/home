@@ -893,11 +893,11 @@
               <div id="prof-${mukey}" style="position:relative;transform-style:preserve-3d;transition:transform 0.5s ease;width:110px;height:320px;">
                 <div style="position:absolute;width:110px;height:320px;top:0;background:white;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(55px);">
                   ${osdSVG}
-                  <div style="font-size:9px;color:#9ca3af;margin-top:2px;text-align:center;">depth (cm)</div>
+                  <div style="font-size:9px;color:#9ca3af;margin-top:6px;text-align:center;">depth (cm)</div>
                 </div>
                 <div style="position:absolute;width:110px;height:320px;top:0;background:white;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(90deg) translateZ(55px);">
                   ${ssurgoSVG}
-                  <div style="font-size:9px;color:#9ca3af;margin-top:2px;text-align:center;">depth (cm)</div>
+                  <div style="font-size:9px;color:#9ca3af;margin-top:6px;text-align:center;">depth (cm)</div>
                 </div>
               </div>
             </div>
@@ -910,7 +910,7 @@
             </div>
           ` : useOSD ? `
             ${osdSVG}
-            <div style="font-size:9px;color:#9ca3af;margin-top:2px;text-align:center;">depth (cm)</div>
+            <div style="font-size:9px;color:#9ca3af;margin-top:6px;text-align:center;">depth (cm)</div>
           ` : hasSsurgo ? `
             <button onclick="this.nextElementSibling.style.display='block';this.style.display='none';"
               style="font-size:10px;color:#1E4D2B;background:none;border:none;padding:0;cursor:pointer;text-decoration:underline;margin-top:4px;text-align:left;">
@@ -918,7 +918,7 @@
             </button>
             <div style="display:none;">
               ${ssurgoSVG}
-              <div style="font-size:9px;color:#9ca3af;margin-top:2px;text-align:center;">depth (cm)</div>
+              <div style="font-size:9px;color:#9ca3af;margin-top:6px;text-align:center;">depth (cm)</div>
             </div>
           ` : '<div style="font-size:11px;color:#9ca3af;font-style:italic;">No profile data</div>'}
         `;
