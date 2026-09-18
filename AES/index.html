@@ -275,8 +275,14 @@
          max-h- (not h-) is deliberate: it's a ceiling, not a forced size, so
          a station with only a few map units (e.g. AVRC) shrinks the whole
          column to match instead of leaving a mostly-empty panel over the
-         map. See the leftColumn comment above re: the calc() underscores. -->
-    <div id="rightColumn" class="absolute top-4 right-4 z-20 flex flex-row items-stretch max-h-[calc(100%_-_2rem_-_56px)] bg-white/95 backdrop-blur rounded-xl shadow-xl ring-1 ring-gray-200 overflow-hidden min-h-0">
+         map. See the leftColumn comment above re: the calc() underscores.
+         The 72px reserve (was 56px) is measured to clear the Leaflet scale
+         control at the bottom-right: at 56px, a station with enough map
+         units to hit this ceiling (e.g. ECRC) had the panel's bottom edge
+         overlap the scale bar by ~7px; 72px leaves an ~8px gap, verified
+         live against ECRC's legend. -->
+
+    <div id="rightColumn" class="absolute top-4 right-4 z-20 flex flex-row items-stretch max-h-[calc(100%_-_2rem_-_72px)] bg-white/95 backdrop-blur rounded-xl shadow-xl ring-1 ring-gray-200 overflow-hidden min-h-0">
       <div id="customPopup" class="slide-panel collapsed w-[420px] flex flex-col min-h-0">
         <button id="popupToggleBtn" type="button" class="slide-toggle" title="Toggle soil characteristics">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
