@@ -152,6 +152,12 @@
        reach over the soil-characteristics table. position:fixed plus a
        body-level append escapes all of that, letting it float freely. */
     .horizon-hotspot { position: absolute; cursor: help; }
+    /* Leaflet applies its own open-hand "grab" cursor to the pannable map
+       background by default -- override back to a plain arrow so the only
+       hand cursor left is on map units, legend cards, and the two panel
+       toggles (all untouched, native cursor:pointer). */
+    .leaflet-container.leaflet-grab { cursor: default; }
+    .leaflet-container.leaflet-grabbing { cursor: default; }
     .horizon-tip-floating {
       position: fixed; max-width: 280px;
       background: #1f2937; color: #fff; font-size: 0.7rem; line-height: 1.35;
@@ -352,7 +358,6 @@
                   Click a point on the map above, or a research center in the sidebar, to see <span class="font-medium">area-weighted</span> soil averages (Sand, Silt, Clay, pH, OM, BD, CaCO₃, EC).
                 </p>
               </div>
-              <div class="text-xs text-gray-300">live from ArcGIS services</div>
             </div>
           </div>
 
@@ -368,7 +373,7 @@
                 <div id="writeupHost" class="mb-4"></div>
                 <h4 class="font-semibold text-gray-800 mb-1">Data Source & Averaging Method</h4>
                 <ul class="list-disc pl-5 space-y-1">
-                  <li><span class="font-medium">Source:</span> Values are read from CSU AES soils Feature Layers (ArcGIS FeatureServer). Layers on this map are built from USDA-NRCS SSURGO geopackage data, sampled at 0-6" depth. Citation: Soil Survey Staff, Natural Resources Conservation Service, United States Department of Agriculture. Web Soil Survey. Available online at <a href="http://websoilsurvey.nrcs.usda.gov/" target="_blank" class="text-[#1E4D2B] underline hover:text-[#006144]">http://websoilsurvey.nrcs.usda.gov/</a>. Accessed 7/15/2025.</li>
+                  <li><span class="font-medium">Source:</span> These area-weighted averages are computed from CSU AES soils Feature Layers (ArcGIS FeatureServer), built from USDA-NRCS SSURGO data sampled at 0-6" depth. Each station's specific SSURGO survey area version and date are cited in its Station Description above, since survey areas were pulled and last updated on different dates.</li>
                   <li><span class="font-medium">Scope:</span> Features within the station boundary only.</li>
                   <li><span class="font-medium">Averaging:</span> <u>Area-weighted</u> by each feature's area field (e.g., <code>shape_Area</code>, <strong>EPSG:26913 / UTM Zone 13N m²</strong>). For every attribute we compute ∑(value × area) ÷ ∑(area) using only features with a value for that attribute.</li>
                   <li><span class="font-medium">Units:</span> Sand/Silt/Clay/OM and CaCO₃ are %, pH is unitless, EC is dS/m (if populated), BD is g/cm³ (if populated).</li>
@@ -576,16 +581,16 @@
 
     // ---------- Write-ups ----------
     const WRITEUPS = {
-      'ARDEC': `Based on the Larimer County Soil Survey (1:24,000). Soils formed on nearly level fans, terraces and valley side slopes from mixed alluvium and some eolian sediments weathered from nearby sandstones and shales. Most are very deep and well-drained, though areas such as MU 5 and 76 can have a seasonally high water table. Near-neutral sandy loams/loams/clay loams at the surface trend to higher clay and pH with depth.`,
-      'San Luis Valley RC': `From the Rio Grande County Soil Survey (1:24,000). Soils formed in calcareous coarse-textured alluvium over sand and gravel. Several soils have abundant gravel/cobbles with pH ~7.5–8.5. Norte (~45%) has a fluctuating water table (somewhat poorly drained). Quamon is moderately well drained (seasonally high WT at ~3–5 ft). Dunul is well to excessively drained. San Arcacio (~⅓) is well drained with higher clay and lower gravel than others.`,
-      'Arkansas Valley RC': `From the Otero County Soil Survey (1:24,000). Entire station is mapped as Rocky Ford silty clay loam (mostly 0–1% slopes). Very deep soil formed in mixed alluvium; surface clay content is elevated by sediment-rich irrigation water. Well drained; pH ~7.6 at surface increasing to ~8.6 with depth.`,
-      'Southwest Colorado RC': `From the Cortez Area Soil Survey (1:24,000). Wetherill soils (~75%) formed in eolian material from sandstone/shale; well drained; pH near neutral at surface rising to ~8.0 with depth; clay increases with depth. Cahona is very deep/well drained in eolian sandstone, typically with shallower carbonate accumulations. Sharps is similar, with shale/soft sandstone bedrock usually within ~40 inches.`,
-      'Orchard Mesa RC': `From the Mesa County Soil Survey (1:24,000). Level to gently sloping (0–2%), well-drained, very deep. Fruitvale formed in sandstone/shale alluvium; clay loam–silty clay loam throughout; pH ~7.6–7.8; gypsum masses ~2 ft. Gyprockmesa similar with cobbles starting ~15". Turley has clay loam throughout and higher CaCO₃ (pH ~8.2–8.6). Blackston is gravelly (15–60% in upper ~15", >60% below ~15").`,
-      'Grand Valley RC': `From the Mesa County Soil Survey (1:24,000). Seven mapped soils on 0–2% slopes; well drained; mostly alluvium from sandstone/shale; ≥5 ft deep (except Killpack with shale ~2–3 ft). Sagrlite loam (~⅓) has loam/silt loam with pH ~7.4–8.0. Sagers/Turley have higher clay than Sagrlite. Fruitvale clay loam ranges to silty clay; gypsum often within ~2 ft (pH ~7.7). Glenton/Fruitland are sandier (pH ~8.0–8.2).`,
-      'Rogers Mesa RC': `From the Paonia Area Soil Survey (1:24,000). Almost two-thirds is Mesa–Ultaline stony loam and Mesa loam. Very deep, well drained; formed in alluvium/colluvium. Mesa: loam/clay loam, gravel increases near ~20". pH ~7.6 at surface rising to ~8.4. Ultaline: loam throughout with cobbles (15–35% surface up to ~60% with depth; pH ~8.2). Agua Fria is very deep/well drained, alluvium from crystalline rocks; thin loam over clay/clay loam then loams again; gypsum ~4 ft; pH ~7.5 rising to ~8.5–9.0 with depth; rock fragments high at depth.`,
-      'Plainsman RC': `From the Baca County Soil Survey (1:20,000). Very deep, well-drained, nearly level to very gently sloping; slightly to strongly alkaline; derived mainly from loess. ~75% is Wiley loam and Richfield silt loam (silt loam over silty clay loam). A small area is Wiley, eroded (thinner surface). Ulysses–Norka complex from loess/loess+alluvium (Ulysses mostly silt loam; Norka higher-clay subsoil). Baca silt loam and Campo clay loam occur only in the southern PRC.`,
-      'Eastern Colorado RC': `From the Washington County Soil Survey (1:24,000). The soils in this area were originally surveyed in 1982 and finalized in correlation in 1986. The survey area is characterized by soils formed primarily in loess and alluvial deposits typical of the High Plains region of eastern Colorado. The landscape consists of nearly level to very gently sloping terrain. Detailed soil mapping and component data are maintained in SSURGO format with regular updates for classification and interpretation accuracy.`,
-      'ARDEC South': `Based on the Larimer County Soil Survey (1:24,000). Soils formed on nearly level fans, terraces and valley side slopes from mixed alluvium and some eolian sediments weathered from nearby sandstones and shales. Most are very deep and well-drained, though areas such as MU 5 and 76 can have a seasonally high water table. Near-neutral sandy loams/loams/clay loams at the surface trend to higher clay and pH with depth.`,
+      'ARDEC': `From the Larimer County Soil Survey (1:24,000). Garrett loam (~31%) is well to somewhat excessively drained, with a sandy loam surface over reddish-brown sandy clay loam argillic horizons and a calcareous substratum, formed in alluvium from reddish sedimentary rock. Fort Collins loam (~17%) is well drained, loam surface over a clay-film argillic horizon with secondary carbonates below, formed in mixed eolian and alluvial sediments. Nunn clay loam (~27% combined, including a wetter phase with a seasonally high water table) is well drained with a mollic surface and an increasingly clayey, calcareous argillic horizon, formed in loess and mixed alluvium. Connerton-Barnum complex (~10%) is well drained, reddish-brown loam over calcareous alluvium and slope alluvium from red sedimentary bedrock.`,
+      'San Luis Valley RC': `From the Rio Grande County Soil Survey (1:24,000). Norte gravelly sandy loam (~44%) is moderately well to somewhat poorly drained with a fluctuating water table, light brownish gray gravelly sandy loam surface over carbonate-enriched horizons and a sandy-skeletal substratum, formed in calcareous alluvium over sand and gravel. San Arcacio sandy loam (~34%) is well drained, sandy loam surface over a sandy clay loam argillic horizon grading to sand and gravel by about 26 inches, formed in mixed alluvium over coarse-textured deposits. Dunul cobbly sandy loam (~13%) is well to excessively drained, very gravelly sandy loam over very gravelly sand, formed in thick calcareous gravelly alluvial-fan sediment. Quamon gravelly sandy loam (~9%) is moderately well drained with a seasonal water table at 3 to 5 feet, cobbly sandy loam surface over gravelly and very cobbly substratum, formed in thick gravelly calcareous alluvium derived chiefly from basalt.`,
+      'Arkansas Valley RC': `From the Otero County Soil Survey (1:24,000). The entire station is mapped as Rocky Ford silty clay loam (nearly 98%, 0 to 1 percent slopes). Well drained, with a silty clay loam mollic surface extending to about 18 inches over a calcic horizon with notable carbonate accumulation beginning at the same depth, formed in clayey alluvium enriched by sediment-rich irrigation water over silty alluvium from mixed sedimentary sources.`,
+      'Southwest Colorado RC': `From the Cortez Area Soil Survey (1:24,000). Wetherill very fine sandy loam (~76% combined slope phases) is well drained, formed in wind-deposited sediment weathered from siltstone and sandstone, with a fine sandy loam surface over an argillic horizon and deep calcium carbonate accumulation. Sharps-Cahona complex (~25%) is well drained; Sharps has a light reddish brown loam surface over a clay-film argillic horizon and calcium carbonate below, formed in eolian sediment over shale/sandstone bedrock within 20 to 40 inches, while Cahona has a loam surface over argillic and calcic horizons, formed in windblown sandstone-derived material.`,
+      'Orchard Mesa RC': `From the Mesa County Soil Survey (1:24,000). Gyprockmesa clay loam (~44%) is well drained, pale brown clay loam surface over a calcareous argillic horizon, with gypsum masses appearing around 4 feet, formed in stream-terrace and fan alluvium. Fruitvale clay loam (~38%) is well drained, light brownish gray clay loam surface over argillic and gypsic subsoil, formed in slope alluvium from sandstone and shale over shale residuum. Turley clay loam (~12%) is well drained, grayish brown clay loam surface over a calcareous profile, formed in alluvium and eolian material from sandstone and shale. Blackston gravelly loam (~6%) is well drained, very gravelly sandy clay loam surface over a shallow calcic horizon, with extremely gravelly and cobbly material appearing by about 15 inches, formed in mixed alluvium and slope alluvium.`,
+      'Grand Valley RC': `From the Mesa County Soil Survey (1:24,000). Sagrlite loam (~32%) is well drained, light brownish gray loam surface over calcareous silt loam, formed in alluvium from shale and sandstone on fans and terraces. Turley clay loam (~17%) is well drained, grayish brown clay loam surface over a calcareous profile, formed in alluvium and eolian material from sandstone and shale. Sagers silty clay loam (~15%) is well drained, silt loam surface over a silty clay loam cambic horizon and deep calcium carbonate accumulation, formed in alluvium and slope alluvium from marine shale. Killpack silty clay (~13%) is a moderately deep, well-drained soil with a clay loam surface over a cambic horizon and gypsum-enriched transition to weathered shale within about 3 feet, formed in slope alluvium or alluvium over shale residuum. Fruitvale clay loam (~9%) is well drained, light brownish gray clay loam surface over argillic and gypsic subsoil, formed in slope alluvium from sandstone and shale over shale residuum.`,
+      'Rogers Mesa RC': `From the Paonia Area Soil Survey (1:24,000). Mesa loam and the Mesa-Utaline stony loams complex (~74% combined) are very deep, well drained; Mesa formed in slope alluvium and alluvium on terraces, fans, and mesas, with a pinkish gray loam surface over a clay-film argillic horizon and increasing calcium carbonate with depth. Utaline, mapped together with Mesa in the complex, is a cobbly loam formed in alluvium and colluvium from basalt, with an ochric surface over a calcic horizon from about 4 to 60 inches. Agua Fria stony loam and clay loam (~26% combined) are well drained, gravelly loam surface over an argillic horizon and then a calcic horizon by about 19 inches, formed in alluvium from Precambrian granite, gneiss, and schist mixed with loess.`,
+      'Plainsman RC': `From the Baca County Soil Survey (1:20,000). Wiley loam (~54% combined, including an eroded phase) is well drained, silt loam surface over a clay-film argillic horizon and calcareous substratum, formed in thick calcareous loess. Richfield silt loam (~24%) is well drained, grayish brown silt loam surface over a silty clay loam argillic horizon and secondary carbonate zone, formed in loess over a meter or more thick. Ulysses-Norka complex (~16%) is well drained; Ulysses has a mollic silt loam surface over a cambic horizon and deep carbonate accumulation formed in loess, while Norka has a loam surface over a clay-film argillic horizon formed in calcareous eolian or alluvial deposits with substantial fine sand. Baca silt loam (~5%) is well drained, silt loam surface over an argillic horizon and carbonate accumulation below, formed in wind-modified Tertiary pedisediment.`,
+      'Eastern Colorado RC': `From the Washington County Soil Survey (1:24,000), originally surveyed in 1982 and finalized in correlation in 1986. Valent sand (~59% combined, level and rolling slope phases) dominates the station — very deep, excessively drained, formed in eolian sand on upland dune topography. Osgood-Valent complex (~16%) is well drained, with a sandy surface over a weakly developed sandy loam argillic horizon in eolian sand showing two distinct periods of deposition. Glenberg sandy loam (~8%) is well drained, formed in thick, strongly stratified alluvium (sandy loam with thin loam/loamy sand lenses), with negligible to low runoff. Haxtun loamy sand and Ascalon loamy sand (a few percent each) are both well drained; Haxtun has a buried sandy clay loam argillic horizon with a deep mollic epipedon over older eolian sediment, while Ascalon has a fine sandy loam surface over a sandy clay loam argillic horizon with calcium carbonate accumulation in calcareous parent material.`,
+      'ARDEC South': `From the Larimer County Soil Survey (1:24,000). Nunn clay loam (~57% combined slope phases) is well drained, with a mollic clay loam surface over an increasingly clayey, calcareous argillic horizon, formed in loess and mixed alluvium. Satanta loam (~39% combined slope phases) is well drained, with a mollic loam surface over a clay-film argillic horizon, formed in eolian sand-sheet deposits on paleoterraces. Kim loam (~4%) is well drained, with a grayish brown loam surface grading to clay loam at depth, formed in alluvium and mixed eolian-alluvial sediment from sandstone and shale on fans below escarpments.`,
     };
 
     // ---------- Numeric fields ----------
@@ -762,6 +767,12 @@
       x: 'fragipan character — a dense, brittle layer',
       y: 'accumulation of gypsum',
       z: 'accumulation of salts more soluble than gypsum',
+      // Two-letter codes from the older (pre-1981) naming style. Defined
+      // under their own code rather than rewritten to a modern letter, so
+      // the description matches the designation actually shown -- the
+      // modern equivalent is only mentioned in passing, never substituted.
+      ca: "accumulation of secondary carbonates, commonly calcium carbonate (usually written as 'k' today)",
+      sa: "accumulation of salts more soluble than gypsum (usually written as 'z' today)",
     };
     // Parses a horizon name like "Bt2", "2Btk", "Oi1", or "AB" into a
     // plain-language description: an optional leading lithologic-
@@ -770,9 +781,20 @@
     // a trailing vertical-subdivision number (not otherwise described).
     function describeHorizon(hzname) {
       if (!hzname) return null;
-      const m = String(hzname).trim().match(/^(\d+)?([A-Z]{1,2})([a-z]*)(\d*)$/);
+      const raw = String(hzname).trim();
+      // Two naming conventions show up in this data: the modern one (a
+      // leading number only before the master letters, a sub-layer number
+      // only at the very end, e.g. "2Bt1") and an older style some OSDs
+      // still use (San Arcacio, etc.), where the sub-layer number sits
+      // right after the master letters instead ("B2t"), and a lithologic-
+      // discontinuity prefix can be a Roman numeral ("IIC2ca") rather than
+      // Arabic. Both number positions are captured and treated the same.
+      const m = raw.match(/^(\d+|I{1,3}V?)?([A-Z]{1,2})(\d*)([a-z]*)(\d*)$/);
       if (!m) return null;
-      const [, prefixNum, mastersRaw, suffixesRaw, suffixNum] = m;
+      const [, prefixRaw, mastersRaw, midNum, suffixesRaw, suffixNum] = m;
+      const ROMAN = { I: '1', II: '2', III: '3', IV: '4' };
+      const prefixNum = prefixRaw ? (ROMAN[prefixRaw] || prefixRaw) : '';
+      const subLayerNum = midNum || suffixNum;
       const masters = mastersRaw.split('');
       const masterDesc = ltr => HORIZON_MASTERS[ltr] || 'an unspecified horizon type';
 
@@ -780,14 +802,19 @@
       // so the designation can be read back against the description letter
       // by letter (e.g. "Btk" -> "...(B)...clay (t)...carbonate (k)").
       let desc = masters.length === 2
-        ? `${hzname} is a transitional horizon combining properties of ${masterDesc(masters[0])} (${masters[0]}) and ${masterDesc(masters[1])} (${masters[1]}), more like the former (${masters[0]}) — surveyors use these designations when a horizon shows a mix of traits rather than clearly fitting one type alone.`
-        : `${hzname} is ${masterDesc(masters[0])} (${masters[0]}).`;
+        ? `${raw} is a transitional horizon combining properties of ${masterDesc(masters[0])} (${masters[0]}) and ${masterDesc(masters[1])} (${masters[1]}), more like the former (${masters[0]}) — surveyors use these designations when a horizon shows a mix of traits rather than clearly fitting one type alone.`
+        : `${raw} is ${masterDesc(masters[0])} (${masters[0]}).`;
 
+      // "ss", "ca", and "sa" are the only two-letter suffix codes (the
+      // latter two from the older pre-1981 style) -- pulled out whole so
+      // each reads as its own code rather than being split into two
+      // unrelated single letters (e.g. "ca" isn't "c" + "a").
       const suffixLetters = [];
       let rest = suffixesRaw;
       while (rest.length) {
-        if (rest.startsWith('ss')) { suffixLetters.push('ss'); rest = rest.slice(2); }
-        else { suffixLetters.push(rest[0]); rest = rest.slice(1); }
+        if (rest.startsWith('ss') || rest.startsWith('ca') || rest.startsWith('sa')) {
+          suffixLetters.push(rest.slice(0, 2)); rest = rest.slice(2);
+        } else { suffixLetters.push(rest[0]); rest = rest.slice(1); }
       }
       const suffixClauses = suffixLetters
         .filter(s => HORIZON_SUFFIXES[s])
@@ -799,8 +826,16 @@
       } else if (suffixClauses.length > 2) {
         desc += ` It also shows ${suffixClauses.slice(0, -1).join(', ')}, and ${suffixClauses[suffixClauses.length - 1]}.`;
       }
-      if (prefixNum) desc += ` The leading number (${prefixNum}) marks a change in parent material from the layer above.`;
-      if (suffixNum) desc += ` The trailing number (${suffixNum}) numbers it among several ${mastersRaw}${suffixesRaw} sub-layers at different depths.`;
+      if (prefixNum) {
+        desc += prefixRaw !== prefixNum
+          ? ` The leading ${prefixRaw} is a Roman-numeral way of marking a change in parent material from the layer above — today this is usually written as a leading ${prefixNum}.`
+          : ` The leading ${prefixNum} marks a change in parent material from the layer above.`;
+      }
+      if (subLayerNum) {
+        const placementNote = midNum ? ' (placed right after the master letter here, rather than at the end)' : '';
+        desc += ` The number ${subLayerNum}${placementNote} numbers it among several ${mastersRaw}${suffixesRaw} sub-layers at different depths.`;
+      }
+
       return desc;
     }
 
@@ -817,7 +852,7 @@
       wrap.style.cssText = 'display:flex;gap:16px;align-items:stretch;flex:1;min-height:0;';
 
       const leftCol = document.createElement('div');
-      leftCol.style.cssText = 'flex:0 0 110px;align-self:flex-start;';
+      leftCol.style.cssText = 'flex:0 0 140px;align-self:flex-start;';
 
       const profile = soilProfiles && mukey != null ? soilProfiles[String(mukey)] : null;
 
@@ -826,7 +861,7 @@
         const svgH = 300;
         const topPad = 6;
         const scale = (svgH - topPad) / maxDepth;
-        const barX = 35, barW = 38;
+        const barX = 55, barW = 38;
         let svgContent = '';
         let hotspots = '';
         horizons.forEach(h => {
@@ -854,8 +889,8 @@
         const yBottom = (topPad + (last.hzdepb_r || 0) * scale).toFixed(1);
         svgContent += `<line x1="${barX + barW}" y1="${yBottom}" x2="${barX + barW + 4}" y2="${yBottom}" stroke="#9ca3af" stroke-width="0.5"/>`;
         svgContent += `<text x="${barX + barW + 6}" y="${(parseFloat(yBottom) + 4).toFixed(1)}" text-anchor="start" font-size="8" fill="#9ca3af" font-family="sans-serif">${last.hzdepb_r}</text>`;
-        return `<div style="position:relative;width:110px;height:${svgH}px;">
-          <svg width="110" height="${svgH}" style="overflow:visible;display:block;">${svgContent}</svg>
+        return `<div style="position:relative;width:140px;height:${svgH}px;">
+          <svg width="140" height="${svgH}" style="overflow:visible;display:block;">${svgContent}</svg>
           ${hotspots}
         </div>`;
       }
@@ -889,19 +924,19 @@
           <div id="prof-title-${mukey}" style="font-size:11px;font-weight:600;color:#374151;margin-bottom:2px;">${useOSD ? 'OSD' : hasSsurgo ? 'SSURGO' : ''} Soil Profile</div>
           ${compLabel ? `<div style="font-size:9px;color:#6b7280;margin-bottom:3px;">${compLabel}</div>` : ''}
           ${useOSD && hasSsurgo ? `
-            <div style="overflow:hidden;perspective:400px;perspective-origin:50% 0%;width:110px;height:375px;">
-              <div id="prof-${mukey}" style="position:relative;transform-style:preserve-3d;transition:transform 0.5s ease;width:110px;height:320px;">
-                <div style="position:absolute;width:110px;height:320px;top:0;background:white;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(55px);">
+            <div style="overflow:hidden;perspective:900px;perspective-origin:50% 0%;width:140px;height:355px;">
+              <div id="prof-${mukey}" style="position:relative;transform-style:preserve-3d;transition:transform 0.5s ease;width:140px;height:320px;">
+                <div style="position:absolute;width:140px;height:320px;top:0;background:white;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:translateZ(70px);">
                   ${osdSVG}
                   <div style="font-size:9px;color:#9ca3af;margin-top:6px;text-align:center;">depth (cm)</div>
                 </div>
-                <div style="position:absolute;width:110px;height:320px;top:0;background:white;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(90deg) translateZ(55px);">
+                <div style="position:absolute;width:140px;height:320px;top:0;background:white;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform:rotateY(90deg) translateZ(70px);">
                   ${ssurgoSVG}
                   <div style="font-size:9px;color:#9ca3af;margin-top:6px;text-align:center;">depth (cm)</div>
                 </div>
               </div>
             </div>
-            <div style="text-align:center;margin-top:4px;">
+            <div style="text-align:center;margin-top:2px;">
               <button data-showing="osd"
                 onclick="(function(b){var s=document.getElementById('prof-${mukey}');var t=document.getElementById('prof-title-${mukey}');var a=b.querySelector('.prof-arrow');var l=b.querySelector('.prof-label');if(b.dataset.showing==='osd'){s.style.transform='rotateY(-90deg)';a.style.transform='rotate(90deg)';a.style.order='-1';l.textContent='OSD';t.textContent='SSURGO Soil Profile';b.dataset.showing='ssurgo';}else{s.style.transform='rotateY(0deg)';a.style.transform='rotate(-90deg)';a.style.order='1';l.textContent='SSURGO';t.textContent='OSD Soil Profile';b.dataset.showing='osd';}})(this)"
                 style="font-size:10px;color:#1E4D2B;background:none;border:none;padding:0;cursor:pointer;text-decoration:underline;display:inline-flex;align-items:center;gap:3px;">
@@ -1205,8 +1240,53 @@
     const pageSub   = document.getElementById('pageSub');
     const writeupHost = document.getElementById('writeupHost');
 
+    // Each entry: the SSURGO survey area this station's soils data is drawn
+    // from, with its own version/established date -- these differ per
+    // station (collected individually from WSS's Survey Area Data Summary),
+    // not a single site-wide vintage, so each write-up cites its own rather
+    // than sharing one blanket date.
+    const SSURGO_CITATIONS = {
+      'ARDEC':              'Larimer County Area, Colorado — SSURGO version 20, established 8/29/2025.',
+      'ARDEC South':        'Larimer County Area, Colorado — SSURGO version 20, established 8/29/2025.',
+      'San Luis Valley RC': 'Rio Grande County Area, Colorado — SSURGO version 20, established 8/29/2025.',
+      'Arkansas Valley RC': 'Otero County, Colorado — SSURGO version 23, established 8/29/2025.',
+      'Southwest Colorado RC': 'Cortez Area, Colorado (parts of Dolores and Montezuma Counties) — SSURGO version 18, established 8/29/2025.',
+      'Orchard Mesa RC':    'Mesa County Area, Colorado — SSURGO version 17, established 9/8/2025 (partly certified).',
+      'Grand Valley RC':    'Mesa County Area, Colorado — SSURGO version 17, established 9/8/2025 (partly certified).',
+      'Rogers Mesa RC':     'Paonia Area, Colorado (parts of Delta, Gunnison, and Montrose Counties) — SSURGO version 18, established 8/29/2025.',
+      'Plainsman RC':       'Baca County, Colorado — SSURGO version 23, established 8/29/2025.',
+      'Eastern Colorado RC': 'Washington County, Colorado — SSURGO version 27, established 8/29/2025.',
+    };
+
+    // OSD (Official Series Description) citations -- the primary source for
+    // each write-up's narrative content (drainage class, horizons, parent
+    // material). Each series is revised independently by NRCS's National
+    // Cooperative Soil Survey on its own schedule, unrelated to any county's
+    // SSURGO version -- so this is cited separately from SSURGO_CITATIONS
+    // below, which only covers the underlying component %/pH/texture numbers.
+    const OSD_CITATIONS = {
+      'ARDEC': 'Garrett (rev. 03/2003), Fort Collins (rev. 11/2005), Nunn (rev. 12/2002), Connerton (rev. 05/2023).',
+      'ARDEC South': 'Nunn (rev. 12/2002), Satanta (rev. 08/2010), Kim (rev. 01/2000).',
+      'Orchard Mesa RC': 'Gyprockmesa (rev. 04/2019), Fruitvale (rev. 05/2004), Turley (rev. 08/2004), Blackston (rev. 04/2011).',
+      'Grand Valley RC': 'Sagrlite (rev. 03/2003), Turley (rev. 08/2004), Sagers (rev. 04/2011), Killpack (rev. 12/2017), Fruitvale (rev. 05/2004).',
+      'Rogers Mesa RC': 'Mesa (rev. 12/2017), Utaline (rev. 04/2011), Agua Fria (rev. 01/2008).',
+      'Southwest Colorado RC': 'Wetherill (rev. 03/2018), Sharps (rev. 03/2005), Cahona (rev. 03/2005).',
+      'San Luis Valley RC': 'Norte (rev. 03/2003), San Arcacio (rev. 03/2003), Dunul (rev. 04/1991), Quamon (rev. 09/1990).',
+      'Arkansas Valley RC': 'Rocky Ford (rev. 01/2014).',
+      'Plainsman RC': 'Wiley (rev. 06/2002), Richfield (rev. 01/2006), Ulysses (rev. 01/2017), Norka (rev. 01/2006), Baca (rev. 06/2002).',
+      'Eastern Colorado RC': 'Valent (rev. 08/2008), Osgood (rev. 09/2006), Glenberg (rev. 05/2005), Haxtun (rev. 11/2005), Ascalon (rev. 09/2005).',
+    };
+
     function renderWriteup(stationName){
-      writeupHost.textContent = WRITEUPS[stationName] || 'Write-up coming soon.';
+      const text = WRITEUPS[stationName];
+      const osdCitation = OSD_CITATIONS[stationName];
+      const ssurgoCitation = SSURGO_CITATIONS[stationName];
+      if (!text) { writeupHost.textContent = 'Write-up coming soon.'; return; }
+      writeupHost.innerHTML = `
+        <div>${text}</div>
+        ${osdCitation ? `<div style="font-size:10px;color:#9ca3af;margin-top:6px;">Description: NRCS Official Series Descriptions — ${osdCitation} Available at <a href="https://soilseries.sc.egov.usda.gov/" target="_blank" class="underline">soilseries.sc.egov.usda.gov</a>.</div>` : ''}
+        ${ssurgoCitation ? `<div style="font-size:10px;color:#9ca3af;margin-top:2px;">Component data: Soil Survey Staff, NRCS, USDA. Web Soil Survey — ${ssurgoCitation}</div>` : ''}
+      `;
     }
 
     async function showStation(item){
