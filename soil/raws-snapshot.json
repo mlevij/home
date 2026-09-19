@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-18T10:24:41Z",
+  "generated": "2026-09-19T10:08:30Z",
   "stations": {
     "BLACK MOUNTAIN": {
       "vwc2": 0.08,
@@ -8,28 +8,28 @@
       "precip_recent_in": 0.3
     },
     "BOSQUE": {
-      "vwc2": 0.11,
-      "vwc8": 0.23,
+      "vwc2": 0.1,
+      "vwc8": 0.22,
       "vwc20": 0.26,
       "precip_recent_in": 0.26
     },
     "BUCKLES": {
-      "vwc2": 0.21,
-      "vwc8": 0.35,
+      "vwc2": 0.2,
+      "vwc8": 0.33,
       "vwc20": 0.12,
-      "precip_recent_in": 2.19
+      "precip_recent_in": 2.77
     },
     "CHEESEMAN": {
       "vwc2": 0.02,
       "vwc8": 0.03,
       "vwc20": 0.02,
-      "precip_recent_in": 0.26
+      "precip_recent_in": 0.32
     },
     "CORRAL CREEK": {
-      "vwc2": 0.06,
+      "vwc2": 0.07,
       "vwc8": 0.08,
       "vwc20": 0.05,
-      "precip_recent_in": 0.25
+      "precip_recent_in": 0.53
     },
     "ESTES PARK": {
       "vwc2": 0.02,
@@ -38,25 +38,25 @@
       "precip_recent_in": 0.34
     },
     "FT CARSON": {
-      "vwc2": 0.12,
+      "vwc2": 0.11,
       "vwc8": 0.26,
       "vwc20": 0.2,
-      "precip_recent_in": 0.05
+      "precip_recent_in": 0.16
     },
     "GRAND MESA": {
-      "vwc2": 0.26,
-      "vwc8": 0.31,
-      "vwc20": 0.15,
-      "precip_recent_in": 2.17
+      "vwc2": 0.25,
+      "vwc8": 0.3,
+      "vwc20": 0.18,
+      "precip_recent_in": 2.18
     },
     "HARBISON": {
       "vwc2": 0.07,
       "vwc8": 0.12,
       "vwc20": 0.02,
-      "precip_recent_in": 0.39
+      "precip_recent_in": 0.47
     },
     "LODGEPOLE FLATS": {
-      "vwc2": 0.14,
+      "vwc2": 0.12,
       "vwc8": 0.01,
       "vwc20": 0.03,
       "precip_recent_in": 0.0
@@ -68,32 +68,32 @@
       "precip_recent_in": 0.06
     },
     "RED CREEK": {
-      "vwc2": 0.08,
+      "vwc2": 0.07,
       "vwc8": 0.08,
       "vwc20": 0.09,
-      "precip_recent_in": 0.05
+      "precip_recent_in": 0.11
     },
     "RED DEER": {
-      "vwc2": 0.13,
-      "vwc8": 0.07,
+      "vwc2": 0.14,
+      "vwc8": 0.06,
       "vwc20": 0.04,
-      "precip_recent_in": 0.63
+      "precip_recent_in": 0.84
     },
     "REDSTONE": {
       "vwc2": 0.03,
       "vwc8": 0.08,
-      "vwc20": 0.08,
+      "vwc20": 0.07,
       "precip_recent_in": 0.09
     },
     "SANBORN PARK": {
-      "vwc2": 0.28,
-      "vwc8": 0.18,
+      "vwc2": 0.26,
+      "vwc8": 0.17,
       "vwc20": 0.09,
-      "precip_recent_in": 1.81
+      "precip_recent_in": 1.66
     },
     "SILVER JACK": {
       "vwc2": 0.31,
-      "vwc8": 0.34,
+      "vwc8": 0.32,
       "vwc20": 0.19,
       "precip_recent_in": 2.92
     },
@@ -107,7 +107,7 @@
       "vwc2": 0.11,
       "vwc8": 0.13,
       "vwc20": 0.1,
-      "precip_recent_in": 0.17
+      "precip_recent_in": 0.23
     }
   }
 }
