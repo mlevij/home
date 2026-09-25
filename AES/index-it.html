@@ -363,7 +363,7 @@
                 <div id="writeupHost" class="mb-4"></div>
                 <h4 class="font-semibold text-gray-800 mb-1">Data Source & Averaging Method</h4>
                 <ul class="list-disc pl-5 space-y-1">
-                  <li><span class="font-medium">Source:</span> These area-weighted averages are computed from CSU AES soils Feature Layers (ArcGIS FeatureServer), built from USDA-NRCS SSURGO data sampled at 0-6" depth. Each station's specific SSURGO survey area version and date are cited in its Station Description above, since survey areas were pulled and last updated on different dates.</li>
+                  <li><span class="font-medium">Source:</span> These area-weighted averages are computed from a local export of the CSU AES soils dataset (originally built from CSU AES soils Feature Layers via ArcGIS FeatureServer, USDA-NRCS SSURGO data sampled at 0-6" depth). Each station's specific SSURGO survey area version and date are cited in its Station Description above.</li>
                   <li><span class="font-medium">Scope:</span> Features within the station boundary only.</li>
                   <li><span class="font-medium">Averaging:</span> <u>Area-weighted</u> by each feature's area field (e.g., <code>shape_Area</code>, <strong>EPSG:26913 / UTM Zone 13N m²</strong>). For every attribute we compute ∑(value × area) ÷ ∑(area) using only features with a value for that attribute.</li>
                   <li><span class="font-medium">Units:</span> Sand/Silt/Clay/OM and CaCO₃ are %, pH is unitless, EC is dS/m (if populated), BD is g/cm³ (if populated).</li>
@@ -546,24 +546,22 @@
     Chart.defaults.font.family = '"Poppins", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial';
 
     // ---------- Stations ----------
-    const BASE_URL = 'https://services1.arcgis.com/KNdRU5cN6ENqCTjk/arcgis/rest/services/CSU_AES_Soils/FeatureServer';
-
     const STATIONS = [
       { group:'AGRICULTURAL RESEARCH, DEVELOPMENT AND<br>EDUCATION CENTER', items:[
-        { name:'ARDEC',        svc:'ARDEC Soils',        url:`${BASE_URL}/23` },
-        { name:'ARDEC South',  svc:'ARDEC South Soils',  url:`${BASE_URL}/24` },
+        { name:'ARDEC',        svc:'ARDEC Soils' },
+        { name:'ARDEC South',  svc:'ARDEC South Soils' },
       ]},
       { group:'WESTERN COLORADO RC', items:[
-        { name:'Grand Valley RC',  svc:'GVRC Soils', url:`${BASE_URL}/27` },
-        { name:'Orchard Mesa RC',  svc:'OMRC Soils', url:`${BASE_URL}/28` },
-        { name:'Rogers Mesa RC',   svc:'RMRC Soils', url:`${BASE_URL}/30` },
+        { name:'Grand Valley RC',  svc:'GVRC Soils' },
+        { name:'Orchard Mesa RC',  svc:'OMRC Soils' },
+        { name:'Rogers Mesa RC',   svc:'RMRC Soils' },
       ]},
       { group:'OTHER RCs', items:[
-        { name:'Eastern Colorado RC',  svc:'ECRC Soils', url:`${BASE_URL}/26` },
-        { name:'Southwest Colorado RC',svc:'SWCRC Soils',url:`${BASE_URL}/32` },
-        { name:'San Luis Valley RC',   svc:'SLVRC Soils',url:`${BASE_URL}/31` },
-        { name:'Arkansas Valley RC',   svc:'AVRC Soils', url:`${BASE_URL}/25` },
-        { name:'Plainsman RC',         svc:'PRC Soils',  url:`${BASE_URL}/29` },
+        { name:'Eastern Colorado RC',  svc:'ECRC Soils' },
+        { name:'Southwest Colorado RC',svc:'SWCRC Soils' },
+        { name:'San Luis Valley RC',   svc:'SLVRC Soils' },
+        { name:'Arkansas Valley RC',   svc:'AVRC Soils' },
+        { name:'Plainsman RC',         svc:'PRC Soils' },
       ]},
     ];
     const ALL_STATION_ITEMS = STATIONS.flatMap(g => g.items);
