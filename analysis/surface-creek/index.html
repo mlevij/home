@@ -29,6 +29,7 @@
     --shadow: 0 10px 20px rgba(0,0,0,.06);
     --main-huc: #004DA8;
     --aux-huc: #C8560C;
+    --kiser-huc: #6A3D9A;
     --flowline: #2986B8;
   }
   @media (prefers-color-scheme: dark) {
@@ -195,6 +196,7 @@
       <h2>Map legend</h2>
       <div class="legend-row"><span class="legend-poly" style="border-color:var(--main-huc);"></span><span>Surface Creek HUC12 (main)</span></div>
       <div class="legend-row"><span class="legend-poly" style="border-color:var(--aux-huc);"></span><span>Fruit Growers Reservoir&ndash;Gunnison River HUC12 (auxiliary)</span></div>
+      <div class="legend-row"><span class="legend-poly" style="border-color:var(--kiser-huc);"></span><span>Kiser Creek HUC12 (auxiliary)</span></div>
       <div class="legend-row"><span class="legend-line" style="background:var(--flowline);"></span><span>Flowlines (3DHP, clipped)</span></div>
       <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);"></div>
       <div class="legend-row"><span class="legend-swatch" style="background:#C44E52;"></span><span>Stream gage</span></div>
@@ -205,6 +207,7 @@
       <div class="legend-row"><span class="legend-swatch" style="background:#CCB974;"></span><span>Measuring point</span></div>
       <div class="legend-row"><span class="legend-swatch" style="background:#64B5CD;"></span><span>Pipeline / diversion point</span></div>
       <div class="legend-row"><span class="legend-swatch" style="background:#937860;"></span><span>Reservoir system (group)</span></div>
+      <div class="legend-row"><span class="legend-swatch" style="background:#E377C2;"></span><span>Soil moisture sensor (Surface Creek Transect)</span></div>
     </div>
     <div class="card">
       <h2>Key results</h2>
@@ -602,6 +605,7 @@ const STRUCT_COLORS = {
   'Pipeline': '#64B5CD',
   'Reservoir System': '#937860',
   'SNOTEL': '#212121',
+  'Soil Moisture Sensor': '#E377C2',
 };
 
 // ---------- Map ----------
@@ -649,10 +653,12 @@ const boundsLayer = L.featureGroup().addTo(map);
 map.createPane('pointsPane');
 map.getPane('pointsPane').style.zIndex = 450;
 
+const HUC_ROLE_COLORS = { main: '#004DA8', auxiliary: '#C8560C', kiser: '#6A3D9A' };
+
 fetch('data/huc12_boundaries.geojson').then(r => r.json()).then(gj => {
   L.geoJSON(gj, {
     style: f => ({
-      color: f.properties.role === 'main' ? '#004DA8' : '#C8560C',
+      color: HUC_ROLE_COLORS[f.properties.role] || '#999',
       weight: 2, fillOpacity: 0.03,
     }),
     onEachFeature: (f, layer) => layer.bindPopup(`<b>${f.properties.name}</b><br>HUC12 ${f.properties.huc12}<br>${f.properties.areasqkm.toFixed(1)} sq km`),
@@ -668,6 +674,30 @@ fetch('data/flowlines.geojson').then(r => r.json()).then(gj => {
   }).addTo(boundsLayer);
 });
 
+let scSoilData = {};
+fetch('data/soil_zentra_sc.json').then(r => r.json()).then(d => { scSoilData = d; }).catch(() => {});
+
+function smsPopupHtml(siteKey, siteName) {
+  const d = scSoilData[siteKey];
+  if (!d || !d.time || !d.time.length) {
+    return `<b>${siteName}</b><br>Soil Moisture Sensor &middot; Surface Creek Transect<br>` +
+      `<span style="color:#666;">No recent data</span>`;
+  }
+  const i = d.time.length - 1;
+  const rows = ['2', '8', '20'].map(dep => {
+    const vwc = d[`vwc${dep}`] ? d[`vwc${dep}`][i] : null;
+    const temp = d[`temp${dep}`] ? d[`temp${dep}`][i] : null;
+    return `<tr><td style="padding-right:10px;">${dep}&Prime;</td>` +
+      `<td style="padding-right:10px;">${vwc != null ? vwc + '%' : '&ndash;'}</td>` +
+      `<td>${temp != null ? temp + '&deg;F' : '&ndash;'}</td></tr>`;
+  }).join('');
+  return `<b>${siteName}</b><br>Soil Moisture Sensor &middot; Surface Creek Transect<br>` +
+    `<span style="color:#666;">Latest reading: ${d.time[i]}</span>` +
+    `<table style="margin-top:4px;font-size:0.85em;border-collapse:collapse;">` +
+    `<tr style="color:#666;"><th style="text-align:left;padding-right:10px;">Depth</th><th style="padding-right:10px;">VWC</th><th>Temp</th></tr>` +
+    rows + `</table>`;
+}
+
 fetch('data/points.geojson').then(r => r.json()).then(gj => {
   const layer = L.geoJSON(gj, {
     pointToLayer: (f, latlng) => L.circleMarker(latlng, {
@@ -676,10 +706,16 @@ fetch('data/points.geojson').then(r => r.json()).then(gj => {
       color: '#fff', weight: 1, fillColor: STRUCT_COLORS[f.properties.structType] || '#999',
       fillOpacity: 0.9,
     }),
-    onEachFeature: (f, lyr) => lyr.bindPopup(
-      `<b>${f.properties.name}</b><br>${f.properties.structType} &middot; ${f.properties.WDID}<br>` +
-      `<span style="color:#666;">${f.properties.subBasin}</span>`
-    ),
+    onEachFeature: (f, lyr) => {
+      if (f.properties.structType === 'Soil Moisture Sensor') {
+        lyr.bindPopup(() => smsPopupHtml(f.properties.WDID, f.properties.name));
+      } else {
+        lyr.bindPopup(
+          `<b>${f.properties.name}</b><br>${f.properties.structType} &middot; ${f.properties.WDID}<br>` +
+          `<span style="color:#666;">${f.properties.subBasin}</span>`
+        );
+      }
+    },
   }).addTo(boundsLayer);
   map.fitBounds(boundsLayer.getBounds(), { padding: [20, 20] });
 });
