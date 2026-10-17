@@ -1,4 +1,113 @@
 {
-  "generated": "2026-10-16T10:30:12Z",
-  "stations": {}
+  "generated": "2026-10-17T10:01:13Z",
+  "stations": {
+    "BLACK MOUNTAIN": {
+      "vwc2": 0.11,
+      "vwc8": 0.2,
+      "vwc20": 0.06,
+      "precip_recent_in": 0.35
+    },
+    "BOSQUE": {
+      "vwc2": 0.17,
+      "vwc8": 0.29,
+      "vwc20": 0.25,
+      "precip_recent_in": 0.25
+    },
+    "BUCKLES": {
+      "vwc2": 0.22,
+      "vwc8": 0.33,
+      "vwc20": 0.35,
+      "precip_recent_in": 1.68
+    },
+    "CHEESEMAN": {
+      "vwc2": 0.07,
+      "vwc8": 0.07,
+      "vwc20": 0.01,
+      "precip_recent_in": 0.71
+    },
+    "CORRAL CREEK": {
+      "vwc2": 0.14,
+      "vwc8": 0.12,
+      "vwc20": 0.04,
+      "precip_recent_in": 0.81
+    },
+    "ESTES PARK": {
+      "vwc2": 0.09,
+      "vwc8": 0.09,
+      "vwc20": 0.04,
+      "precip_recent_in": 0.69
+    },
+    "FT CARSON": {
+      "vwc2": 0.12,
+      "vwc8": 0.24,
+      "vwc20": 0.18,
+      "precip_recent_in": 0.19
+    },
+    "GRAND MESA": {
+      "vwc2": 0.3,
+      "vwc8": 0.33,
+      "vwc20": 0.16,
+      "precip_recent_in": 3.68
+    },
+    "HARBISON": {
+      "vwc2": 0.06,
+      "vwc8": 0.11,
+      "vwc20": 0.02,
+      "precip_recent_in": 0.28
+    },
+    "LODGEPOLE FLATS": {
+      "vwc2": 0.13,
+      "vwc8": 0.01,
+      "vwc20": 0.03,
+      "precip_recent_in": 0.39
+    },
+    "PINION CANYON": {
+      "vwc2": null,
+      "vwc8": null,
+      "vwc20": null,
+      "precip_recent_in": 0.45
+    },
+    "RED CREEK": {
+      "vwc2": 0.1,
+      "vwc8": 0.09,
+      "vwc20": 0.09,
+      "precip_recent_in": 0.18
+    },
+    "RED DEER": {
+      "vwc2": 0.17,
+      "vwc8": 0.18,
+      "vwc20": 0.12,
+      "precip_recent_in": 1.32
+    },
+    "REDSTONE": {
+      "vwc2": 0.13,
+      "vwc8": 0.07,
+      "vwc20": 0.07,
+      "precip_recent_in": 0.57
+    },
+    "SANBORN PARK": {
+      "vwc2": 0.27,
+      "vwc8": 0.22,
+      "vwc20": 0.28,
+      "precip_recent_in": 2.02
+    },
+    "SILVER JACK": {
+      "vwc2": 0.36,
+      "vwc8": 0.35,
+      "vwc20": 0.3,
+      "precip_recent_in": 1.36
+    },
+    "UTE CANYON": {
+      "vwc2": 0.1,
+      "vwc8": 0.09,
+      "vwc20": 0.13,
+      "precip_recent_in": 0.06
+    },
+    "WILLIS CREEK": {
+      "vwc2": 0.23,
+      "vwc8": 0.23,
+      "vwc20": 0.18,
+      "precip_recent_in": 0.59
+    }
+  }
 }
