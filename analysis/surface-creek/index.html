@@ -131,6 +131,20 @@
   table.data-table th { color: var(--muted); font-weight: 600; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.02em; }
   table.data-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
 
+  /* Station data panel (opens below the map when an SC sensor is selected) */
+  .station-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .station-head h2 { margin: 0; }
+  .station-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+  .station-select {
+    background: var(--panel); border: 1px solid var(--border); color: var(--text);
+    font: inherit; font-size: 0.78rem; font-weight: 600; padding: 5px 8px; border-radius: 8px;
+  }
+  .station-sub { margin: 18px 0 6px; font-size: 0.8rem; font-weight: 700; color: var(--text); }
+  .station-subhead { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+  .station-subhead .station-sub { margin-bottom: 6px; }
+  .station-subhead .station-select { margin-bottom: 4px; }
+  #stationPropsWrap { overflow-x: auto; }
+
   @media (max-width: 860px) {
     main { flex-direction: column; }
     .sidebar { width: 100%; }
@@ -213,9 +227,11 @@
       <h2>Key results</h2>
       <p class="chart-note">
         Gaged streamflow correlates with peak SWE at r&nbsp;=&nbsp;0.98 (SURACECO, 2016&ndash;2025);
-        total diverted volume correlates at r&nbsp;=&nbsp;0.81 (all 88 structures). Large/senior
-        structures track SWE more weakly than small/junior ones (1979&ndash;2025) &mdash; see
-        ranking chart.
+        total diverted volume correlates at r&nbsp;=&nbsp;0.81 (all 88 structures). Across the 45
+        structures with complete 1979&ndash;2025 records, large decreed rights track SWE most
+        closely (Spearman &rho;&nbsp;=&nbsp;0.88), small decreed rights show no significant
+        relationship (&rho;&nbsp;=&nbsp;0.06), and junior rights track SWE least closely of the
+        seniority tiers (&rho;&nbsp;=&nbsp;0.32) &mdash; see ranking chart.
       </p>
     </div>
   </aside>
@@ -224,6 +240,66 @@
     <div class="card">
       <h2>Study area &amp; diversion structures</h2>
       <div id="map"></div>
+      <p class="chart-note">Select a soil moisture sensor on the map to view its station data below.</p>
+    </div>
+
+    <div class="card" id="stationPanel" hidden>
+      <div class="station-head">
+        <h2 id="stationTitle">Station data</h2>
+        <div class="station-controls">
+          <select id="stationSelect" class="station-select" aria-label="Station"></select>
+          <select id="stationSpan" class="station-select" aria-label="Time span">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="0">Full record</option>
+          </select>
+        </div>
+      </div>
+      <p class="chart-note" id="stationLatest"></p>
+
+      <h3 class="station-sub">Soil properties</h3>
+      <div id="stationPropsWrap"></div>
+      <p class="chart-note">
+        Laboratory particle size, wilting point (WP), field capacity (FC), and saturation (Sat) by
+        sensor depth, as volumetric water content. Plant-available water (PAW) is FC minus WP.
+      </p>
+
+      <div class="station-subhead">
+        <h3 class="station-sub">Soil moisture &mdash; % VWC</h3>
+        <select id="vwcDepth" class="station-select" aria-label="Depth (soil moisture and plant-available water)">
+          <option value="all">All depths</option>
+          <option value="2" selected>2&Prime;</option>
+          <option value="8">8&Prime;</option>
+          <option value="20">20&Prime;</option>
+        </select>
+      </div>
+      <div style="position:relative;height:220px;"><canvas id="stVwcChart"></canvas></div>
+      <p class="chart-note" id="stVwcNote"></p>
+
+      <h3 class="station-sub">Plant-available water filled &mdash; %</h3>
+      <p class="chart-note" id="stPawLatest"></p>
+      <div style="position:relative;height:220px;"><canvas id="stPawChart"></canvas></div>
+      <p class="chart-note">
+        (VWC &minus; WP) / (FC &minus; WP) at the depth selected above. 0% is the wilting point and 100%
+        is field capacity; values above 100% indicate water in excess of field capacity, which
+        drains rather than being held for plant use.
+      </p>
+
+      <h3 class="station-sub">Soil temperature &mdash; &deg;F</h3>
+      <div style="position:relative;height:200px;"><canvas id="stSoilTempChart"></canvas></div>
+      <p class="chart-note" id="stSoilTempNote"></p>
+
+      <h3 class="station-sub">Air temperature &mdash; &deg;F</h3>
+      <div style="position:relative;height:200px;"><canvas id="stAirTempChart"></canvas></div>
+
+      <h3 class="station-sub">Precipitation &mdash; inches</h3>
+      <div style="position:relative;height:180px;"><canvas id="stPrecipChart"></canvas></div>
+
+      <h3 class="station-sub">Solar radiation &mdash; W/m&sup2;</h3>
+      <div style="position:relative;height:180px;"><canvas id="stSolarChart"></canvas></div>
+
+      <h3 class="station-sub">Wind speed &mdash; mph</h3>
+      <div style="position:relative;height:180px;"><canvas id="stWindChart"></canvas></div>
     </div>
 
     <div class="card">
@@ -257,18 +333,24 @@
     </div>
 
     <div class="card">
-      <h2>Water-rights priority &amp; size effects (Spearman &rho;, 1979&ndash;2025)</h2>
+      <h2>Water-rights priority &amp; size vs. Park Reservoir SNOTEL snowpack (Spearman &rho;, 1979&ndash;2025)</h2>
       <div style="position:relative;height:240px;"><canvas id="rankingChart"></canvas></div>
       <div id="rankingTableWrap"></div>
       <p class="chart-note">
-        Colorado water rights are prior-appropriation: in a dry year, senior rights get their
-        full decreed amount before junior rights see any water, and a large decreed amount
-        doesn't automatically insulate a structure from a small snowpack. This asks whether that
-        legal protection actually shows up in the data &mdash; do senior and large-decree
-        structures' diversions stay steady regardless of snowpack while junior and small ones
-        swing up and down with it? For this 45-structure subset with a complete record across all
-        47 years, large/senior structures do correlate with SWE more weakly than small/junior
-        ones in two of the three rankings.
+        Colorado water rights follow prior appropriation: in a dry year, senior rights receive
+        their full decreed amount before junior rights receive any water. Structures were grouped
+        into three tiers by seniority (administration number), decreed quantity, and average
+        annual diverted volume, and each tier's total annual diversion was correlated with Park
+        Reservoir peak SWE. Data: DWR annual diversion records for the 45 of 88 structures with a
+        record in every year 1979&ndash;2025 (n&nbsp;=&nbsp;47 years; 14&ndash;15 structures per
+        tier) and Park Reservoir SNOTEL peak SWE. Large and mid decreed rights track SWE closely
+        (&rho;&nbsp;=&nbsp;0.88 and 0.82); small decreed rights show no significant relationship
+        (&rho;&nbsp;=&nbsp;0.06, p&nbsp;=&nbsp;0.70). By seniority, mid-priority rights track SWE
+        most closely (&rho;&nbsp;=&nbsp;0.76) and junior rights least (&rho;&nbsp;=&nbsp;0.32).
+        Priority and size do not account for total diversions tracking SWE less closely
+        (r&nbsp;=&nbsp;0.81) than gaged streamflow (r&nbsp;=&nbsp;0.98). Points show Spearman
+        &rho; and lines its 95% confidence interval; blue: p&nbsp;&lt;&nbsp;0.05, gold: not
+        significant.
       </p>
     </div>
 
@@ -314,16 +396,20 @@
     </div>
 
     <div class="card">
-      <h2>Soil moisture&ndash;SWE lag, by depth (2016&ndash;2025)</h2>
+      <h2>Soil moisture&ndash;SWE lag, by depth (Park Reservoir SNOTEL, 2016&ndash;2025)</h2>
       <div style="position:relative;height:220px;"><canvas id="soilMoistureLagChart"></canvas></div>
       <p class="chart-note">
         Departure from saturation (each depth's own dataset maximum, treated as a saturation proxy)
         cross-correlated against SWE at lags of 0&ndash;120 days, excluding readings while soil
         temperature at that depth is at or below 32&deg;F (frozen soil reads as a sharp, artificial
-        VWC drop rather than a real moisture change). Same-day correlation is weak-to-moderate at
-        every depth; shifting to account for melt/infiltration timing roughly doubles the
-        correlation strength, and the best-fit lag grows with depth &mdash; 33 days at 2in, 45 at
-        8in, 72 at 20in &mdash; consistent with meltwater taking longer to reach deeper soil.
+        VWC drop rather than a real moisture change). Each point pairs soil moisture on day D with
+        SWE on day D&nbsp;&minus;&nbsp;lag. Greater snowpack followed by wetter soil gives a smaller
+        departure from saturation, so a stronger relationship appears as a more negative r, and
+        each line's low point marks the best-fit lag. Accounting for lag strengthens the
+        correlation at every depth (2in: &minus;0.27 to &minus;0.37; 8in: &minus;0.22 to
+        &minus;0.42; 20in: &minus;0.13 to &minus;0.42), and the best-fit lag grows with depth
+        &mdash; 33 days at 2in, 45 at 8in, 72 at 20in &mdash; consistent with meltwater taking
+        longer to reach deeper soil.
       </p>
     </div>
 
@@ -351,7 +437,9 @@
           across that full period, so this analysis uses the 45 (of 88) structures with a complete
           record in every year, comparing the same set of structures from year to year rather than
           a count that shifts with reporting gaps. Correlations are reported using Pearson,
-          log-transformed Pearson, and Spearman methods.
+          log-transformed Pearson, and Spearman methods. Confidence intervals for Spearman's
+          &rho; use the Fisher z-transformation with the Fieller et al. (1957) standard error,
+          1.06&nbsp;/&nbsp;&radic;(n&nbsp;&minus;&nbsp;3), with n the number of years.
         </p>
         <p>
           SURCEDCO's and SURACECO's contributing drainage areas were delineated from a 30-meter
@@ -507,12 +595,12 @@ const CHART_TITLES = {
   snotelChart: 'SNOTEL (Park Reservoir) — inches',
   volumeChart: 'Streamflow & diverted volume — acre-feet',
   ratioChart: 'Runoff ratio — dimensionless',
-  rankingChart: 'Water-rights priority & size effects (Spearman ρ, 1979–2025)',
+  rankingChart: 'Water-rights priority & size vs. Park Reservoir SNOTEL snowpack (Spearman ρ, 1979–2025)',
   monthlySwePrecipChart: 'Monthly SWE & precipitation (Park Reservoir) — inches',
   monthlySoilMoistureChart: 'Monthly soil moisture (Park Reservoir) — % VWC',
   monthlyStreamflowChart: 'Monthly streamflow — cfs',
   lagChart: 'Snowmelt-to-streamflow lag (1979–2025)',
-  soilMoistureLagChart: 'Soil moisture–SWE lag, by depth (2016–2025)',
+  soilMoistureLagChart: 'Soil moisture–SWE lag, by depth (Park Reservoir SNOTEL, 2016–2025)',
 };
 
 function wireChartDownload(linkId, getChart, filename, title, opts) {
@@ -709,6 +797,8 @@ fetch('data/points.geojson').then(r => r.json()).then(gj => {
     onEachFeature: (f, lyr) => {
       if (f.properties.structType === 'Soil Moisture Sensor') {
         lyr.bindPopup(() => smsPopupHtml(f.properties.WDID, f.properties.name));
+        registerStation(f.properties.WDID, f.properties.name);
+        lyr.on('click', () => showStation(f.properties.WDID, true));
       } else {
         lyr.bindPopup(
           `<b>${f.properties.name}</b><br>${f.properties.structType} &middot; ${f.properties.WDID}<br>` +
@@ -719,6 +809,242 @@ fetch('data/points.geojson').then(r => r.json()).then(gj => {
   }).addTo(boundsLayer);
   map.fitBounds(boundsLayer.getBounds(), { padding: [20, 20] });
 });
+
+// ---------- Station data panel ----------
+// Opens below the map when an SC sensor marker is clicked (or picked from the dropdown).
+// Time series come from soil_zentra_sc.json (hourly, oldest-first); lab soil properties
+// from sc_soil_properties.json. Depth colors follow /soil's 2"/8"/20" convention.
+let scSoilProps = {};
+fetch('data/sc_soil_properties.json').then(r => r.json()).then(d => { scSoilProps = d; }).catch(() => {});
+
+const stationNames = {};
+const stationCharts = {};
+let currentStation = null;
+const DEPTHS = ['2', '8', '20'];
+const DEPTH_COLORS = { '2': '#32A5E2', '8': '#2986B8', '20': '#164863' };
+const TEMP_COLORS = { '2': '#D35400', '8': '#B03A00', '20': '#800B04' };
+
+function registerStation(key, name) {
+  stationNames[key] = name;
+  const sel = document.getElementById('stationSelect');
+  const keys = Object.keys(stationNames).sort();
+  sel.innerHTML = keys.map(k => `<option value="${k}">${stationNames[k]}</option>`).join('');
+  if (currentStation) sel.value = currentStation;
+}
+
+document.getElementById('stationSelect').addEventListener('change', e => showStation(e.target.value, false));
+document.getElementById('stationSpan').addEventListener('change', () => { if (currentStation) showStation(currentStation, false); });
+
+function stationChart(id, config) {
+  if (stationCharts[id]) stationCharts[id].destroy();
+  stationCharts[id] = new Chart(document.getElementById(id).getContext('2d'), config);
+}
+
+function stationOptions(yTitle, extra = {}) {
+  const gridColor = 'rgba(128,128,128,0.12)';
+  return {
+    responsive: true, maintainAspectRatio: false, animation: false,
+    interaction: { mode: 'index', intersect: false },
+    scales: {
+      x: { ticks: { maxTicksLimit: 6, font: { size: 11 }, maxRotation: 0 }, grid: { color: gridColor } },
+      y: { title: { display: true, text: yTitle, font: { size: 11 } }, ticks: { font: { size: 11 } }, grid: { color: gridColor }, ...(extra.y || {}) },
+    },
+    plugins: {
+      legend: { display: extra.legend !== false, labels: { font: { size: 11 }, boxWidth: 12, padding: 8 } },
+      tooltip: { titleFont: { size: 13, weight: '600' }, bodyFont: { size: 12 }, padding: 10, boxPadding: 5 },
+      annotation: { annotations: extra.annotations || {} },
+    },
+  };
+}
+
+const lineBase = { backgroundColor: 'transparent', borderWidth: 2, pointRadius: 0, tension: 0.3, spanGaps: true };
+const hasData = arr => arr && arr.some(v => v != null);
+
+function propsTableHtml(p) {
+  if (!p) return '<p class="chart-note">No laboratory soil data for this station.</p>';
+  const f = v => (v == null ? '&ndash;' : v);
+  const rows = DEPTHS.map(dep => {
+    const d = p.depths[dep];
+    return `<tr><td>${dep}&Prime;</td><td>${d.texture}</td>` +
+      `<td class="num">${f(d.sand)}</td><td class="num">${f(d.silt)}</td><td class="num">${f(d.clay)}</td>` +
+      `<td class="num">${f(d.wp)}</td><td class="num">${f(d.fc)}</td><td class="num">${f(d.sat)}</td>` +
+      `<td class="num"><b>${f(d.paw)}</b></td><td class="num">${f(d.coarseFrag)}</td>` +
+      `<td class="num">${f(d.om)}</td><td class="num">${f(d.pH)}</td><td class="num">${f(d.ec)}</td></tr>`;
+  }).join('');
+  return `<table class="data-table"><tr><th>Depth</th><th>Texture</th><th>Sand %</th><th>Silt %</th>` +
+    `<th>Clay %</th><th>WP %</th><th>FC %</th><th>Sat %</th><th>PAW %</th><th>Coarse frag. %</th>` +
+    `<th>OM %</th><th>pH</th><th>EC dS/m</th></tr>${rows}</table>`;
+}
+
+// Latest-selected station's sliced series, shared by the two depth-dropdown charts.
+let stationCtx = null;
+const BAND_COLORS = { belowWp: 'rgba(250,85,85,0.18)', available: 'rgba(141,237,142,0.18)', aboveFc: 'rgba(247,251,118,0.22)' };
+const lastValue = arr => { for (let i = arr.length - 1; i >= 0; i--) if (arr[i] != null) return arr[i]; return null; };
+const pawPct = (v, wp, fc) => (v == null ? null : Math.round((v - wp) / (fc - wp) * 1000) / 10);
+
+// VWC: "All depths" shows the three series together without bands; a single depth shows that
+// depth's lab WP / FC / Sat as bands (below WP, WP-FC, FC-Sat) with a line at saturation.
+function renderVwcChart() {
+  if (!stationCtx) return;
+  const { labels, vwcSeries, p } = stationCtx;
+  const sel = document.getElementById('vwcDepth').value;
+  const note = document.getElementById('stVwcNote');
+  const depths = sel === 'all' ? DEPTHS : [sel];
+  const datasets = depths.filter(dep => hasData(vwcSeries[dep])).map(dep => ({
+    ...lineBase, label: `VWC ${dep}"`, data: vwcSeries[dep], borderColor: DEPTH_COLORS[dep],
+    borderDash: sel === 'all' && dep === '8' ? [5, 3] : [],
+  }));
+  const vals = datasets.flatMap(s => s.data).filter(v => v != null);
+  const lab = sel !== 'all' && p ? p.depths[sel] : null;
+  const yMax = Math.ceil(Math.max(...vals, lab ? lab.sat : 0, 10) * 1.08);
+  const annotations = lab ? {
+    belowWp: { type: 'box', yScaleID: 'y', yMin: 0, yMax: lab.wp, backgroundColor: BAND_COLORS.belowWp, borderWidth: 0 },
+    available: { type: 'box', yScaleID: 'y', yMin: lab.wp, yMax: lab.fc, backgroundColor: BAND_COLORS.available, borderWidth: 0 },
+    aboveFc: { type: 'box', yScaleID: 'y', yMin: lab.fc, yMax: lab.sat, backgroundColor: BAND_COLORS.aboveFc, borderWidth: 0 },
+    sat: { type: 'line', yScaleID: 'y', yMin: lab.sat, yMax: lab.sat, borderColor: 'rgba(128,128,128,0.7)', borderWidth: 1, borderDash: [4, 3] },
+  } : {};
+  stationChart('stVwcChart', {
+    type: 'line',
+    data: { labels, datasets },
+    options: stationOptions('VWC (%)', { y: { min: 0, max: yMax }, annotations }),
+  });
+  note.textContent = lab
+    ? `Bands at ${sel}": below wilting point (0–${lab.wp}%), plant-available (${lab.wp}–${lab.fc}%), field capacity to saturation (${lab.fc}–${lab.sat}%); dashed line marks saturation.`
+    : 'Select a single depth to show that depth\'s wilting point, field capacity, and saturation bands.';
+}
+
+function renderPawChart() {
+  if (!stationCtx) return;
+  const { labels, vwcSeries, p } = stationCtx;
+  // Shares the soil moisture chart's depth dropdown. Each depth is scaled to its own WP/FC,
+  // so the 0/100% bands stay valid when "All depths" overlays all three.
+  const sel = document.getElementById('vwcDepth').value;
+  const latest = document.getElementById('stPawLatest');
+  const depths = (sel === 'all' ? DEPTHS : [sel]).filter(dep => hasData(vwcSeries[dep]));
+  if (!p || !depths.length) {
+    latest.textContent = p ? 'No soil moisture data at this depth for this station.' : 'No laboratory soil data for this station.';
+    stationChart('stPawChart', { type: 'line', data: { labels, datasets: [] }, options: stationOptions('% of PAW') });
+    return;
+  }
+  const datasets = depths.map(dep => {
+    const { wp, fc } = p.depths[dep];
+    return { ...lineBase, label: `PAW filled ${dep}"`, data: vwcSeries[dep].map(v => pawPct(v, wp, fc)),
+      borderColor: DEPTH_COLORS[dep], borderDash: sel === 'all' && dep === '8' ? [5, 3] : [] };
+  });
+  const vals = datasets.flatMap(s => s.data).filter(v => v != null);
+  const yMin = Math.min(0, Math.floor(Math.min(...vals) / 10) * 10);
+  const yMax = Math.max(110, Math.ceil(Math.max(...vals) / 10) * 10);
+  latest.textContent = 'Latest: ' + depths.map(dep => {
+    const { wp, fc } = p.depths[dep], v = lastValue(vwcSeries[dep]);
+    return `${dep}" ${v}% VWC, ${pawPct(v, wp, fc)}% of plant-available water (WP ${wp}%, FC ${fc}%)`;
+  }).join('; ') + '.';
+  stationChart('stPawChart', {
+    type: 'line',
+    data: { labels, datasets },
+    options: stationOptions('% of PAW', {
+      y: { min: yMin, max: yMax },
+      legend: sel === 'all',
+      annotations: {
+        belowWp: { type: 'box', yScaleID: 'y', yMin, yMax: 0, backgroundColor: BAND_COLORS.belowWp, borderWidth: 0 },
+        available: { type: 'box', yScaleID: 'y', yMin: 0, yMax: 100, backgroundColor: BAND_COLORS.available, borderWidth: 0 },
+        aboveFc: { type: 'box', yScaleID: 'y', yMin: 100, yMax, backgroundColor: BAND_COLORS.aboveFc, borderWidth: 0 },
+      },
+    }),
+  });
+}
+
+document.getElementById('vwcDepth').addEventListener('change', () => { renderVwcChart(); renderPawChart(); });
+
+function showStation(key, fromMap) {
+  currentStation = key;
+  const panel = document.getElementById('stationPanel');
+  const d = scSoilData[key];
+  const p = scSoilProps[key];
+  panel.hidden = false;
+  document.getElementById('stationSelect').value = key;
+  document.getElementById('stationTitle').textContent = stationNames[key] || key;
+  document.getElementById('stationPropsWrap').innerHTML = propsTableHtml(p);
+
+  const latest = document.getElementById('stationLatest');
+  if (!d || !d.time || !d.time.length) {
+    latest.textContent = 'No sensor data available for this station.';
+    stationCtx = null;
+    Object.values(stationCharts).forEach(c => c.destroy());
+    for (const k in stationCharts) delete stationCharts[k];
+    if (fromMap) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+  latest.textContent = `Hourly readings, ${d.time[0]} to ${d.time[d.time.length - 1]} (latest).`;
+
+  const span = parseInt(document.getElementById('stationSpan').value, 10);
+  const n = span ? Math.min(span * 24, d.time.length) : d.time.length;
+  const slice = arr => (arr || []).slice(-n);
+  // Single-hour VWC readings below 2% occur only at install/site-visit hours (probe not yet
+  // seated in soil); they are hidden from the charts here, raw data file unchanged.
+  const vwcSeries = {};
+  DEPTHS.forEach(dep => { vwcSeries[dep] = slice(d[`vwc${dep}`]).map(v => (v != null && v < 2 ? null : v)); });
+  const labels = d.time.slice(-n);
+
+  // Soil moisture and PAW charts re-render on their own depth dropdowns
+  stationCtx = { labels, vwcSeries, p };
+  renderVwcChart();
+  renderPawChart();
+
+  // Soil temperature (the 20" channel is not currently reported by the logger feed)
+  const soilTempDepths = DEPTHS.filter(dep => hasData(d[`temp${dep}`]));
+  stationChart('stSoilTempChart', {
+    type: 'line',
+    data: {
+      labels,
+      datasets: soilTempDepths.map(dep => ({
+        ...lineBase, borderWidth: 1.5, label: `Temp ${dep}"`, data: slice(d[`temp${dep}`]), borderColor: TEMP_COLORS[dep],
+      })),
+    },
+    options: stationOptions('Temp (°F)', { annotations: { freeze: { type: 'line', yScaleID: 'y', yMin: 32, yMax: 32, borderColor: 'rgba(128,128,128,0.6)', borderWidth: 1, borderDash: [4, 3] } } }),
+  });
+  const missingTemp = DEPTHS.filter(dep => !soilTempDepths.includes(dep));
+  document.getElementById('stSoilTempNote').textContent =
+    'Dashed line marks 32°F.' + (missingTemp.length ? ` No ${missingTemp.map(x => x + '"').join(', ')} soil temperature reported for this station.` : '');
+
+  stationChart('stAirTempChart', {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { ...lineBase, label: 'Avg', data: slice(d.airTemp), borderColor: '#164863' },
+        { ...lineBase, borderWidth: 1.5, borderDash: [4, 3], label: 'Max', data: slice(d.airTempMax), borderColor: '#D35400' },
+        { ...lineBase, borderWidth: 1.5, borderDash: [4, 3], label: 'Min', data: slice(d.airTempMin), borderColor: '#32A5E2' },
+      ].filter(s => hasData(s.data)),
+    },
+    options: stationOptions('Temp (°F)'),
+  });
+
+  stationChart('stPrecipChart', {
+    type: 'bar',
+    data: { labels, datasets: [{ label: 'Precip (in)', data: slice(d.precip), backgroundColor: '#2986B8', borderRadius: 2, maxBarThickness: 16 }] },
+    options: stationOptions('inches', { y: { min: 0 }, legend: false }),
+  });
+
+  stationChart('stSolarChart', {
+    type: 'line',
+    data: { labels, datasets: [{ ...lineBase, label: 'Solar radiation (W/m²)', data: slice(d.solar), borderColor: '#C9A227' }] },
+    options: stationOptions('W/m²', { y: { min: 0 }, legend: false }),
+  });
+
+  stationChart('stWindChart', {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { ...lineBase, label: 'Avg wind speed', data: slice(d.windSpeed), borderColor: '#2986B8' },
+        { ...lineBase, borderWidth: 1.5, borderDash: [4, 3], label: 'Gust speed', data: slice(d.gustSpeed), borderColor: '#D35400' },
+      ].filter(s => hasData(s.data)),
+    },
+    options: stationOptions('mph', { y: { min: 0 } }),
+  });
+
+  if (fromMap) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
 
 // ---------- Charts ----------
 function numCol(rows, col) { return rows.map(r => parseFloat(r[col])); }
@@ -811,25 +1137,41 @@ fetch('data/surface_creek_priority_ranking_correlations_extended.json').then(r =
   const labels = rows.map(r => `${r.ranking.split(' (')[0]}: ${r.tier}`);
   const gridColor = 'rgba(128,128,128,0.12)';
 
+  // Forest plot: point = Spearman ρ, whiskers = 95% CI via Fisher z with the Fieller et al.
+  // (1957) standard error for Spearman's ρ, 1.06 / sqrt(n − 3), where n = years.
+  const rho = rows.map(r => parseFloat(r.spearman_rho));
+  const ci = rows.map((r, i) => {
+    const z = Math.atanh(rho[i]), se = 1.06 / Math.sqrt(parseInt(r.n_years, 10) - 3);
+    return [Math.tanh(z - 1.96 * se), Math.tanh(z + 1.96 * se)];
+  });
+  const sigColor = rows.map(r => (parseFloat(r.spearman_p) < 0.05 ? '#4C72B0' : '#CCB974'));
+  const fmt2 = v => v.toFixed(2);
+
   rankingChart = new Chart(document.getElementById('rankingChart').getContext('2d'), {
-    type: 'bar',
     data: {
       labels,
-      datasets: [{ label: "Spearman ρ vs. peak SWE", data: rows.map(r => parseFloat(r.spearman_rho)), backgroundColor: rows.map(r => parseFloat(r.spearman_p) < 0.05 ? '#4C72B0' : '#CCB974') }],
+      datasets: [
+        { type: 'bar', label: '95% CI', data: ci, backgroundColor: sigColor, barThickness: 3, borderSkipped: false },
+        { type: 'line', label: 'Spearman ρ vs. peak SWE', data: rho, showLine: false, pointRadius: 6, pointHoverRadius: 7,
+          pointBackgroundColor: sigColor, pointBorderColor: '#ffffff', pointBorderWidth: 1.5 },
+      ],
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       indexAxis: 'y',
       scales: {
-        x: { min: -1, max: 1, title: { display: true, text: "Spearman ρ", font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } },
+        x: { min: -0.5, max: 1, title: { display: true, text: "Spearman ρ (95% CI)", font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } },
         y: { ticks: { font: { size: 12 } }, grid: { display: false } },
       },
       plugins: {
         legend: { display: false },
         zoom: zoomOpt(),
+        annotation: { annotations: { zero: { type: 'line', xMin: 0, xMax: 0, borderColor: 'rgba(128,128,128,0.7)', borderWidth: 1, borderDash: [4, 3] } } },
         tooltip: {
           titleFont: { size: 14, weight: '600' }, bodyFont: { size: 13 }, padding: 8,
+          filter: item => item.datasetIndex === 1,
           callbacks: {
+            label: ctx => `ρ = ${fmt2(rho[ctx.dataIndex])} (95% CI ${fmt2(ci[ctx.dataIndex][0])} to ${fmt2(ci[ctx.dataIndex][1])})`,
             afterLabel: ctx => {
               const r = rows[ctx.dataIndex];
               return `n=${r.n_structures} structures, ${r.n_years} years\np = ${parseFloat(r.spearman_p).toFixed(4)}${parseFloat(r.spearman_p) >= 0.05 ? ' (not significant)' : ''}`;
@@ -843,14 +1185,15 @@ fetch('data/surface_creek_priority_ranking_correlations_extended.json').then(r =
   const table = document.createElement('table');
   table.className = 'data-table';
   table.innerHTML = `
-    <thead><tr><th>Ranking</th><th>Tier</th><th class="num">n</th><th class="num">Pearson r</th><th class="num">log-Pearson r</th><th class="num">Spearman <span style="text-transform:lowercase;">&rho;</span></th><th class="num">p (Spearman)</th></tr></thead>
-    <tbody>${rows.map(r => `
+    <thead><tr><th>Ranking</th><th>Tier</th><th class="num">n</th><th class="num">Pearson r</th><th class="num">log-Pearson r</th><th class="num">Spearman <span style="text-transform:lowercase;">&rho;</span></th><th class="num">95% CI</th><th class="num">p (Spearman)</th></tr></thead>
+    <tbody>${rows.map((r, i) => `
       <tr>
         <td>${r.ranking}</td><td>${r.tier}</td>
         <td class="num">${r.n_structures}</td>
         <td class="num">${parseFloat(r.pearson_r).toFixed(2)}</td>
         <td class="num">${parseFloat(r.log_pearson_r).toFixed(2)}</td>
         <td class="num">${parseFloat(r.spearman_rho).toFixed(2)}</td>
+        <td class="num">${fmt2(ci[i][0])} to ${fmt2(ci[i][1])}</td>
         <td class="num">${parseFloat(r.spearman_p) < 0.001 ? '<0.001' : parseFloat(r.spearman_p).toFixed(3)}</td>
       </tr>`).join('')}</tbody>`;
   document.getElementById('rankingTableWrap').appendChild(table);
@@ -991,6 +1334,7 @@ fetch('data/surface_creek_soil_moisture_swe_lag.json').then(r => r.json()).then(
     },
     options: {
       responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
       scales: {
         x: { ticks: { font: { size: 12 }, maxTicksLimit: 12 }, grid: { color: gridColor }, title: { display: true, text: 'lag (days, SWE leading soil moisture)', font: { size: 12 } } },
         y: { min: -0.5, max: 0.3, title: { display: true, text: 'Pearson r', font: { size: 12 } }, ticks: { font: { size: 12 } }, grid: { color: gridColor } },

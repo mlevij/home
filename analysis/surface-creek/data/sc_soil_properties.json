@@ -1,0 +1,284 @@
+{
+ "sc1-haypark": {
+  "label": "SC1",
+  "depths": {
+   "2": {
+    "sand": 48.0,
+    "silt": 36.0,
+    "clay": 16.0,
+    "texture": "Loam",
+    "wp": 16.7,
+    "fc": 34.2,
+    "sat": 65.6,
+    "paw": 17.5,
+    "coarseFrag": 15.0,
+    "pH": 5.3,
+    "ec": 0.2,
+    "om": 9.7
+   },
+   "8": {
+    "sand": 50.0,
+    "silt": 32.0,
+    "clay": 18.0,
+    "texture": "Loam",
+    "wp": 12.1,
+    "fc": 24.2,
+    "sat": 43.2,
+    "paw": 12.1,
+    "coarseFrag": 35.0,
+    "pH": 5.2,
+    "ec": 0.0,
+    "om": 1.8
+   },
+   "20": {
+    "sand": 54.0,
+    "silt": 20.0,
+    "clay": 26.0,
+    "texture": "Sandy Clay Loam",
+    "wp": 16.3,
+    "fc": 26.9,
+    "sat": 41.7,
+    "paw": 10.6,
+    "coarseFrag": 15.0,
+    "pH": 5.4,
+    "ec": 0.0,
+    "om": 1.2
+   }
+  }
+ },
+ "sc2-scrd": {
+  "label": "SC2",
+  "depths": {
+   "2": {
+    "sand": 50.0,
+    "silt": 30.0,
+    "clay": 20.0,
+    "texture": "Loam",
+    "wp": 16.9,
+    "fc": 31.6,
+    "sat": 56.4,
+    "paw": 14.7,
+    "coarseFrag": 0.0,
+    "pH": 6.2,
+    "ec": 0.1,
+    "om": 7.2
+   },
+   "8": {
+    "sand": 49.0,
+    "silt": 29.0,
+    "clay": 22.0,
+    "texture": "Loam",
+    "wp": 16.5,
+    "fc": 30.0,
+    "sat": 50.9,
+    "paw": 13.5,
+    "coarseFrag": 0.0,
+    "pH": 5.8,
+    "ec": 0.0,
+    "om": 5.1
+   },
+   "20": {
+    "sand": 48.0,
+    "silt": 30.0,
+    "clay": 22.0,
+    "texture": "Loam",
+    "wp": 15.5,
+    "fc": 28.4,
+    "sat": 47.3,
+    "paw": 12.9,
+    "coarseFrag": 0.0,
+    "pH": 5.7,
+    "ec": 0.0,
+    "om": 3.5
+   }
+  }
+ },
+ "sc3-leonlk": {
+  "label": "SC3",
+  "depths": {
+   "2": {
+    "sand": 42.0,
+    "silt": 40.0,
+    "clay": 18.0,
+    "texture": "Loam",
+    "wp": 20.8,
+    "fc": 42.9,
+    "sat": 81.6,
+    "paw": 22.1,
+    "coarseFrag": 0.0,
+    "pH": 6.3,
+    "ec": 0.3,
+    "om": 15.0
+   },
+   "8": {
+    "sand": 38.0,
+    "silt": 42.0,
+    "clay": 20.0,
+    "texture": "Loam",
+    "wp": 16.2,
+    "fc": 33.1,
+    "sat": 57.6,
+    "paw": 16.9,
+    "coarseFrag": 25.0,
+    "pH": 5.9,
+    "ec": 0.1,
+    "om": 6.7
+   },
+   "20": {
+    "sand": 37.0,
+    "silt": 41.0,
+    "clay": 22.0,
+    "texture": "Loam",
+    "wp": 15.3,
+    "fc": 30.3,
+    "sat": 48.6,
+    "paw": 15.0,
+    "coarseFrag": 35.0,
+    "pH": 5.9,
+    "ec": 0.0,
+    "om": 3.4
+   }
+  }
+ },
+ "sc4-horseck": {
+  "label": "SC4",
+  "depths": {
+   "2": {
+    "sand": 42.0,
+    "silt": 34.0,
+    "clay": 24.0,
+    "texture": "Loam",
+    "wp": 18.0,
+    "fc": 33.1,
+    "sat": 54.2,
+    "paw": 15.1,
+    "coarseFrag": 20.0,
+    "pH": 5.8,
+    "ec": 0.0,
+    "om": 6.2
+   },
+   "8": {
+    "sand": 38.0,
+    "silt": 32.0,
+    "clay": 30.0,
+    "texture": "Clay Loam",
+    "wp": 19.7,
+    "fc": 33.5,
+    "sat": 48.6,
+    "paw": 13.8,
+    "coarseFrag": 15.0,
+    "pH": 5.6,
+    "ec": 0.0,
+    "om": 3.7
+   },
+   "20": {
+    "sand": 50.0,
+    "silt": 12.0,
+    "clay": 38.0,
+    "texture": "Sandy Clay Loam",
+    "wp": 23.1,
+    "fc": 34.1,
+    "sat": 42.8,
+    "paw": 11.0,
+    "coarseFrag": 25.0,
+    "pH": 4.7,
+    "ec": 0.0,
+    "om": 0.9
+   }
+  }
+ },
+ "sc5-cedar": {
+  "label": "SC5",
+  "depths": {
+   "2": {
+    "sand": 27.0,
+    "silt": 37.0,
+    "clay": 36.0,
+    "texture": "Clay Loam",
+    "wp": 22.3,
+    "fc": 36.5,
+    "sat": 48.3,
+    "paw": 14.2,
+    "coarseFrag": 30.0,
+    "pH": 6.7,
+    "ec": 0.2,
+    "om": 2.5
+   },
+   "8": {
+    "sand": 26.0,
+    "silt": 32.0,
+    "clay": 42.0,
+    "texture": "Clay",
+    "wp": 25.3,
+    "fc": 38.7,
+    "sat": 47.6,
+    "paw": 13.4,
+    "coarseFrag": 15.0,
+    "pH": 7.1,
+    "ec": 0.1,
+    "om": 1.4
+   },
+   "20": {
+    "sand": 24.0,
+    "silt": 28.0,
+    "clay": 48.0,
+    "texture": "Clay",
+    "wp": 28.6,
+    "fc": 41.4,
+    "sat": 49.5,
+    "paw": 12.7,
+    "coarseFrag": 15.0,
+    "pH": 8.1,
+    "ec": 0.1,
+    "om": 2.0
+   }
+  }
+ },
+ "sc6-harts": {
+  "label": "SC6",
+  "depths": {
+   "2": {
+    "sand": 38.0,
+    "silt": 34.0,
+    "clay": 28.0,
+    "texture": "Clay Loam",
+    "wp": 18.0,
+    "fc": 31.6,
+    "sat": 45.8,
+    "paw": 13.6,
+    "coarseFrag": 35.0,
+    "pH": 9.3,
+    "ec": 1.1,
+    "om": 2.3
+   },
+   "8": {
+    "sand": 34.0,
+    "silt": 36.0,
+    "clay": 30.0,
+    "texture": "Clay Loam",
+    "wp": 18.8,
+    "fc": 32.7,
+    "sat": 45.5,
+    "paw": 13.9,
+    "coarseFrag": 40.0,
+    "pH": 8.9,
+    "ec": 0.8,
+    "om": 1.8
+   },
+   "20": {
+    "sand": 35.0,
+    "silt": 29.0,
+    "clay": 36.0,
+    "texture": "Clay Loam",
+    "wp": 22.4,
+    "fc": 35.6,
+    "sat": 46.9,
+    "paw": 13.2,
+    "coarseFrag": 40.0,
+    "pH": 8.6,
+    "ec": 12.8,
+    "om": 2.5
+   }
+  }
+ }
+}
